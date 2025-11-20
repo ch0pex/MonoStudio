@@ -1,5 +1,4 @@
 
-#include "rflect3d/core/logging/logger_config.hpp"
 #include <source_location>
 
 #include <rflect3d/config/parser.hpp>
@@ -9,24 +8,20 @@
 
 #include <filesystem>
 
-struct ConfigExample {
-  rflect::config::Logger logger{};
-};
+struct ConfigExample : rflect::config::Base { };
 
-inline bool check_file(std::filesystem::path const &path) {
+inline bool check_file(std::filesystem::path const& path) {
   if (not std::filesystem::exists(path)) {
     return false;
   }
-  return rflect::config::parse_file<ConfigExample>(path) ? true : false;
+  return static_cast<bool>(rflect::config::parse_file<ConfigExample>(path));
 }
 
 TEST_SUITE_BEGIN("Program");
 
 TEST_CASE("Program configuration") {
-  std::filesystem::path const current_file =
-      std::source_location::current().file_name();
-  std::filesystem::path const config_folder =
-      current_file.parent_path() / "../../config";
+  std::filesystem::path const current_file  = std::source_location::current().file_name();
+  std::filesystem::path const config_folder = current_file.parent_path() / "../../config";
 
   CHECK(check_file(config_folder / "default.toml"));
   CHECK_FALSE(check_file(config_folder / "bad_toml_syntax.toml"));

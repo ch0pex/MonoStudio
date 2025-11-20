@@ -5,12 +5,13 @@
 #include "rflect3d/core/logging/logger.hpp"
 
 #include <exception>
+#include <utility>
 
 namespace rflect::program {
 
 inline ex::sender auto handle_error(std::exception_ptr err) {
   try {
-    std::rethrow_exception(err);
+    std::rethrow_exception(std::move(err));
   }
   catch (std::exception const& e) {
     LOG_ERROR("An exception was thrown: {}", e.what());

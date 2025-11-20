@@ -11,5 +11,5 @@ endif()
 add_subdirectory(src/engine)
 
 # Games
-# add_subdirectory(src/games/vixel)
+add_subdirectory(src/games/vixel)
 

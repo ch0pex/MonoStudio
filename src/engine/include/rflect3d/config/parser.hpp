@@ -1,19 +1,20 @@
 #pragma once
 
+#include "rflect3d/config/base_config.hpp"
 #include "rflect3d/core/error/expected.hpp"
 #include "rflect3d/core/logging/logger.hpp"
-#include "rflect3d/core/logging/logger_config.hpp"
 
 #include <rfl/toml/load.hpp>
 
 namespace rflect::config {
 
+
 /**
  * @brief Parses toml file to config structure
  */
-template <typename T>
-inline err::expected<T> parse_file(std::filesystem::path const &path) {
-  auto const result = rfl::toml::load<T>(path);
+template<Game GameConfig>
+inline err::expected<GameConfig> parse_file(std::filesystem::path const& path) {
+  auto const result = rfl::toml::load<GameConfig>(path);
 
   if (not result) {
     return err::unexpected(result.error().what());
@@ -24,10 +25,10 @@ inline err::expected<T> parse_file(std::filesystem::path const &path) {
 /**
  * @brief Initializes logger from game config
  */
-template <typename T>
-inline auto init_logger = [](T &&config) -> err::expected<T> {
+template<Game GameConfig>
+inline auto init_logger(GameConfig&& config) -> err::expected<GameConfig> {
   GlobalLogger::configure(config.logger);
-  return {std::move(config)};
+  return {std::forward<GameConfig>(config)};
 };
 
 } // namespace rflect::config
