@@ -1,0 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2024 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vertex.hpp
+ * @version 1.0
+ * @date 06/04/2024
+ * @brief Vertex
+ *
+ * mesh vertex definition
+ *
+ */
+
+#pragma once
+
+#include <rflect3d/math/math.hpp>
+
+namespace rflect::render {
+
+struct Vertex {
+  math::vec3 pos {0.0F, 0.0F, 0.0f};
+  math::vec4 color {0.4F, 0.4F, 0.4F, 0.0f};
+  math::vec3 normal {0.0F, 0.0F, 0.0f};
+  math::vec2 uv {0.0F, 0.0f};
+};
+
+} // namespace rflect::render

@@ -1,0 +1,184 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 1
+  },
+  "configurePresets": [
+    {
+      "name": "Ninja",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "build",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "26",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Coverage;Sanitize",
+        "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "Debug",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "Debug",
+        "CMAKE_CXX_FLAGS": "-Wextra  -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body",
+        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
+        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
+        "CONAN_INSTALL_ARGS": "--build=missing;-u",
+        "BUILD_TESTING": true
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug",
+      "configurePreset": "Ninja",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Release",
+      "configurePreset": "Ninja",
+      "configuration": "Release"
+    },
+    {
+      "name": "RelWithDebInfo",
+      "configurePreset": "Ninja",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "Coverage",
+      "configurePreset": "Ninja",
+      "configuration": "Coverage"
+    },
+    {
+      "name": "Sanitize",
+      "configurePreset": "Ninja",
+      "configuration": "Sanitize"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base-test",
+      "hidden": true,
+      "configurePreset": "Ninja",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true,
+        "jobs": 32
+      }
+    },
+    {
+      "name": "Debug",
+      "configuration": "Debug",
+      "inherits": "base-test"
+    },
+    {
+      "name": "RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "inherits": "base-test"
+    },
+    {
+      "name": "Release",
+      "configuration": "Release",
+      "inherits": "base-test"
+    },
+    {
+      "name": "Coverage",
+      "configuration": "Coverage",
+      "inherits": "base-test"
+    },
+    {
+      "name": "Sanitize",
+      "configuration": "Sanitize",
+      "inherits": "base-test"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "Debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja"
+        },
+        {
+          "type": "build",
+          "name": "Debug"
+        },
+        {
+          "type": "test",
+          "name": "Debug"
+        }
+      ]
+    },
+    {
+      "name": "RelWithDebInfo",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja"
+        },
+        {
+          "type": "build",
+          "name": "RelWithDebInfo"
+        },
+        {
+          "type": "test",
+          "name": "RelWithDebInfo"
+        }
+      ]
+    },
+    {
+      "name": "Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja"
+        },
+        {
+          "type": "build",
+          "name": "Release"
+        },
+        {
+          "type": "test",
+          "name": "Release"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize"
+        }
+      ]
+    },
+    {
+      "name": "Coverage",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja"
+        },
+        {
+          "type": "build",
+          "name": "Coverage"
+        },
+        {
+          "type": "test",
+          "name": "Coverage"
+        }
+      ]
+    }
+  ]
+}
