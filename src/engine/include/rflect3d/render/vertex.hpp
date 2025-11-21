@@ -19,10 +19,10 @@
 namespace rflect::render {
 
 struct Vertex {
-  math::vec3 pos {0.0F, 0.0F, 0.0f};
-  math::vec4 color {0.4F, 0.4F, 0.4F, 0.0f};
-  math::vec3 normal {0.0F, 0.0F, 0.0f};
-  math::vec2 uv {0.0F, 0.0f};
+  math::vec3 pos {0.0F, 0.0F, 0.0F};
+  math::vec4 color {0.4F, 0.4F, 0.4F, 0.0F};
+  math::vec3 normal {0.0F, 0.0F, 0.0F};
+  math::vec2 uv {0.0F, 0.0F};
 };
 
 } // namespace rflect::render
