@@ -1,0 +1,3 @@
+[logger]
+path = '/tmp/'
+name = 'Vixel'
