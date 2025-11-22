@@ -10,12 +10,11 @@ namespace rflect::config {
  * Base config for game builded with the rflect
  * engine
  */
-struct Base {
+struct Engine {
   config::Logger logger {};
 };
 
 template<typename T>
-  requires(std::is_base_of_v<Base, T>)
 T example() {
   return {};
 }
@@ -25,8 +24,9 @@ T example() {
  * and provide an example configuration
  */
 template<typename T>
-concept Game = std::is_base_of_v<Base, T> and requires(T t) {
+concept Game = requires(T t) {
   { example<T>() } -> std::same_as<T>;
+  { t.engine } -> std::same_as<Engine&>;
 };
 
 } // namespace rflect::config

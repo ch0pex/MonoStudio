@@ -8,7 +8,9 @@
 #include <filesystem>
 #include <fstream>
 
-struct SampleConfig : rflect::config::Base { };
+struct SampleConfig {
+  rflect::config::Engine engine;
+};
 
 static std::filesystem::path create_temp_toml(std::string const& content) {
   auto tmp = std::filesystem::temp_directory_path() / "test_config.toml";
@@ -56,8 +58,8 @@ TEST_CASE("Valid TOML") {
 
   auto result = rflect::po::parse_options<SampleConfig>(argv);
   CHECK(result.has_value());
-  CHECK(result->logger.name == "rflect3d");
-  CHECK(result->logger.path == "/tmp/");
+  CHECK(result->engine.logger.name == "rflect3d");
+  CHECK(result->engine.logger.path == "/tmp/");
 }
 
 TEST_CASE("Invalid TOML") {

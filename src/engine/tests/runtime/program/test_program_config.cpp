@@ -8,7 +8,9 @@
 
 #include <filesystem>
 
-struct ConfigExample : rflect::config::Base { };
+struct ConfigExample {
+  rflect::config::Engine engine;
+};
 
 inline bool check_file(std::filesystem::path const& path) {
   if (not std::filesystem::exists(path)) {

@@ -27,7 +27,7 @@ inline err::expected<GameConfig> parse_file(std::filesystem::path const& path) {
  */
 template<Game GameConfig>
 inline auto init_logger(GameConfig&& config) -> err::expected<GameConfig> {
-  GlobalLogger::configure(config.logger);
+  GlobalLogger::configure(config.engine.logger);
   return {std::forward<GameConfig>(config)};
 };
 
