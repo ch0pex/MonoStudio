@@ -36,4 +36,4 @@ using exec::single_thread_context;
 
 } // namespace rflect::ex
 
-// clang-format off
+// clang-format on

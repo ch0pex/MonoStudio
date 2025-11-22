@@ -5,33 +5,34 @@
 #include "rflect3d/platform/window/utils/callbacks.hpp"
 #include "rflect3d/platform/window/window_config.hpp"
 #include "rflect3d/platform/window/window_handle.hpp"
+#include "rflect3d/platform/window/window_modes.hpp"
 
 #include <GLFW/glfw3.h>
 
 namespace rflect {
 
+/**
+ * @brief Builder class to create platform windows
+ *
+ * By providing a window configuration the user can create
+ * plaform independent windows.
+ *
+ * It also facilatates setting the desired callbacks for callbacks
+ * for such window.
+ *
+ * 'default_callbacks' method can be used to set default debugging callbacks
+ */
 class WindowBuilder {
 public:
-  using native_type = GLFWwindow *;
+  using native_type = GLFWwindow*;
 
-  explicit WindowBuilder(WindowConfig const &config = {}) {
-    static GlfwContext context{PassKey<WindowBuilder>{}};
+  explicit WindowBuilder(config::Window const& config = {}) {
+    static GlfwContext context {PassKey<WindowBuilder> {}};
 
-    for (auto [hint, value] : config.hints) {
-      glfwWindowHint(hint, value);
-    }
+    // Handle must be created after GLFW context
+    handle = detail::native_window(config); // NOLINT
 
-    handle = glfwCreateWindow(    //
-        config.resolution.width,  //
-        config.resolution.height, //
-        config.title.c_str(),     //
-        nullptr,                  //
-        nullptr                   //
-    );
-
-    glfwDefaultWindowHints();
-
-    if (!handle) {
+    if (handle == nullptr) {
       LOG_ERROR("Failed to create GLFW window with title '{}'", config.title);
       throw std::runtime_error("Failed to create GLFW window");
     }
@@ -39,97 +40,97 @@ public:
 
   // --- Window Callbacks ---
 
-  WindowBuilder &on_close(callbacks::WindowClose cb) {
+  WindowBuilder& on_close(callbacks::WindowClose cb) {
     glfwSetWindowCloseCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_focus(callbacks::WindowFocus cb) {
+  WindowBuilder& on_focus(callbacks::WindowFocus cb) {
     glfwSetWindowFocusCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_refresh(callbacks::WindowRefresh cb) {
+  WindowBuilder& on_refresh(callbacks::WindowRefresh cb) {
     glfwSetWindowRefreshCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_position(callbacks::WindowPos cb) {
+  WindowBuilder& on_position(callbacks::WindowPos cb) {
     glfwSetWindowPosCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_size(callbacks::WindowSize cb) {
+  WindowBuilder& on_size(callbacks::WindowSize cb) {
     glfwSetWindowSizeCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_iconify(callbacks::WindowIconify cb) {
+  WindowBuilder& on_iconify(callbacks::WindowIconify cb) {
     glfwSetWindowIconifyCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_maximize(callbacks::WindowMaximize cb) {
+  WindowBuilder& on_maximize(callbacks::WindowMaximize cb) {
     glfwSetWindowMaximizeCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_framebuffer_size(callbacks::FramebufferSize cb) {
+  WindowBuilder& on_framebuffer_size(callbacks::FramebufferSize cb) {
     glfwSetFramebufferSizeCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_content_scale(callbacks::WindowContentScale cb) {
+  WindowBuilder& on_content_scale(callbacks::WindowContentScale cb) {
     glfwSetWindowContentScaleCallback(handle, cb);
     return *this;
   }
 
   // --- Input Callbacks ---
 
-  WindowBuilder &on_key(callbacks::Key cb) {
+  WindowBuilder& on_key(callbacks::Key cb) {
     glfwSetKeyCallback(handle, cb);
 
     return *this;
   }
 
-  WindowBuilder &on_char(callbacks::Char cb) {
+  WindowBuilder& on_char(callbacks::Char cb) {
     glfwSetCharCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_char_mods(callbacks::CharMods cb) {
+  WindowBuilder& on_char_mods(callbacks::CharMods cb) {
     glfwSetCharModsCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_mouse_button(callbacks::MouseButton cb) {
+  WindowBuilder& on_mouse_button(callbacks::MouseButton cb) {
     glfwSetMouseButtonCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_cursor_position(callbacks::CursorPos cb) {
+  WindowBuilder& on_cursor_position(callbacks::CursorPos cb) {
     glfwSetCursorPosCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_cursor_enter(callbacks::CursorEnter cb) {
+  WindowBuilder& on_cursor_enter(callbacks::CursorEnter cb) {
     glfwSetCursorEnterCallback(handle, cb);
 
     return *this;
   }
 
-  WindowBuilder &on_scroll(callbacks::Scroll cb) {
+  WindowBuilder& on_scroll(callbacks::Scroll cb) {
     glfwSetScrollCallback(handle, cb);
     return *this;
   }
 
-  WindowBuilder &on_drop(callbacks::Drop cb) {
+  WindowBuilder& on_drop(callbacks::Drop cb) {
     glfwSetDropCallback(handle, cb);
     return *this;
   }
 
   // Registra todas las callbackas por defecto
-  WindowBuilder &default_callbacks() {
+  WindowBuilder& default_callbacks() {
     using namespace callbacks::defaults;
 
     return this->on_close(window_close)
@@ -152,13 +153,13 @@ public:
   }
 
   WindowHandle build() {
-    WindowHandle window_handle{handle, PassKey<WindowBuilder>{}};
+    WindowHandle window_handle {handle, PassKey<WindowBuilder> {}};
     handle = nullptr;
     return window_handle;
   }
 
 private:
-  native_type handle{};
+  native_type handle {};
 };
 
 } // namespace rflect

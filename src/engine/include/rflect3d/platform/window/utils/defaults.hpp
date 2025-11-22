@@ -8,11 +8,11 @@
 
 namespace rflect::defaults {
 
-inline WindowHandle make_window_handle(rflect::WindowConfig const& config = {}) {
+inline WindowHandle make_window_handle(rflect::config::Window const& config = {}) {
   return WindowBuilder(config).default_callbacks().build();
 }
 
-inline Window make_window(rflect::WindowConfig const& config = {}) { //
+inline Window make_window(rflect::config::Window const& config = {}) { //
   return Window {make_window_handle(config)};
 }
 

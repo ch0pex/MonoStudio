@@ -14,7 +14,7 @@ class WindowHandle {
 public:
   using native_type = GLFWwindow*;
 
-  WindowHandle(native_type handle, PassKey<WindowBuilder>) : handle(handle) { }
+  WindowHandle(native_type handle, PassKey<WindowBuilder> /*unused*/) : handle(handle) { }
 
   WindowHandle(WindowHandle&& other) noexcept : handle(other.handle) { other.handle = nullptr; }
 
@@ -31,14 +31,15 @@ public:
     return *this;
   }
 
-  bool should_close() { return glfwWindowShouldClose(handle); }
+  bool should_close() { return glfwWindowShouldClose(handle) != 0; }
 
-  [[nodiscard]] std::string_view const title() { return {glfwGetWindowTitle(handle)}; }
+  [[nodiscard]] std::string_view title() const { return {glfwGetWindowTitle(handle)}; }
 
   [[nodiscard]] Resolution resolution() const {
-    int width, height;
+    int width  = 0;
+    int height = 0;
     glfwGetWindowSize(handle, &width, &height);
-    return {static_cast<std::uint16_t>(width), static_cast<std::uint16_t>(height)};
+    return {.width = static_cast<std::uint16_t>(width), .height = static_cast<std::uint16_t>(height)};
   }
 
   [[nodiscard]] native_type native_handle() const { return handle; }

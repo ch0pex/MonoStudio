@@ -11,20 +11,23 @@ TEST_SUITE("WindowBuilder") {
   TEST_CASE("Crear ventana básica") {
     REQUIRE(glfwInit() == GLFW_TRUE);
 
-    rflect::WindowBuilder builder(rflect::WindowConfig{
-        .title = "TestWindow",
-        .resolution = {800, 600},
-    });
+    rflect::WindowBuilder builder(
+        rflect::config::Window {
+          .title      = "TestWindow",
+          .resolution = {.width = 800, .height = 600},
+        }
+    );
 
     auto window = builder.build();
     REQUIRE(window.native_handle() != nullptr);
 
-    int width, height;
+    int width  = 0;
+    int height = 0;
     glfwGetWindowSize(window.native_handle(), &width, &height);
     CHECK(width == 800);
     CHECK(height == 600);
 
-    char const *title = glfwGetWindowTitle(window.native_handle());
+    char const* title = glfwGetWindowTitle(window.native_handle());
 
     CHECK(std::string(title) == "TestWindow");
 
@@ -33,14 +36,10 @@ TEST_SUITE("WindowBuilder") {
 
   TEST_CASE("Asignar callbacks y comprobar encadenamiento") {
     static bool focus_called = false;
-    auto focus_callback = [](GLFWwindow * /*w*/, int /*f*/) {
-      focus_called = true;
-    };
+    auto focus_callback      = [](GLFWwindow* /*w*/, int /*f*/) { focus_called = true; };
 
     rflect::WindowBuilder builder;
-    builder.on_focus(focus_callback)
-        .on_close([](GLFWwindow *) {})
-        .on_size([](GLFWwindow *, int, int) {});
+    builder.on_focus(focus_callback).on_close([](GLFWwindow*) { }).on_size([](GLFWwindow*, int, int) { });
 
     auto window = builder.build();
     REQUIRE(window.native_handle() != nullptr);
