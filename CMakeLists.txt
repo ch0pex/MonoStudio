@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 4.1.2)
-project(MonoGames)
+cmake_minimum_required(VERSION 3.26)
+project(MonoGames LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 

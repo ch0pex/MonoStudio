@@ -10,6 +10,7 @@ using WindowHint      = int;
 using WindowHintValue = int;
 using NativeWindow    = GLFWwindow*;
 using Monitor         = GLFWmonitor*;
+using MonitorId       = std::uint8_t;
 
 enum class WindowMode : std::uint8_t {
   full_screen = 0,

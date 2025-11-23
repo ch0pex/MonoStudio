@@ -19,14 +19,14 @@ inline std::span<Monitor> get_monitors() {
   return {monitors, static_cast<std::size_t>(count)};
 }
 
-inline std::optional<Monitor> get_monitor(std::uint8_t const monitor_index) {
+inline std::optional<Monitor> get_monitor(MonitorId const monitor_id) {
   auto monitors = get_monitors();
 
-  if (monitors.size() < monitor_index) {
+  if (monitors.size() < monitor_id) {
     LOG_WARNING("Specified monitor doesn't exist")
     return std::nullopt;
   }
-  return monitors[monitor_index];
+  return monitors[monitor_id];
 }
 
 } // namespace rflect

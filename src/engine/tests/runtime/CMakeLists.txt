@@ -1,4 +1,3 @@
-include(testing)
 
 # Thread
 create_test(thread core/test_thread.cpp)

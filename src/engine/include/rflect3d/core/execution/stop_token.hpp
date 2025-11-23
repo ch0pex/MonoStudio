@@ -11,7 +11,7 @@ namespace detail {
  * Vixel program execution stop token.
  * This source can be used to stop the program execution main loop
  */
-inline std::stop_source const stop_source {};
+inline std::stop_source stop_source {};
 
 } // namespace detail
 

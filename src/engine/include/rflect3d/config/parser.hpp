@@ -13,8 +13,8 @@ namespace rflect::config {
  * @brief Parses toml file to config structure
  */
 template<Game GameConfig>
-inline err::expected<GameConfig> parse_file(std::filesystem::path const& path) {
-  auto const result = rfl::toml::load<GameConfig>(path);
+err::expected<GameConfig> parse_file(std::filesystem::path const& path) {
+  auto const result = rfl::toml::load<GameConfig>(path.string());
 
   if (not result) {
     return err::unexpected(result.error().what());

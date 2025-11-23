@@ -32,7 +32,7 @@ inline std::string help_message(boost::program_options::options_description cons
 } // namespace detail
 
 template<config::Game T>
-inline err::expected<T> parse_options(std::span<char*> const args) try {
+err::expected<T> parse_options(std::span<char*> const args) try {
   namespace po = boost::program_options;
   po::options_description desc("Allowed options");
   desc.add_options() //

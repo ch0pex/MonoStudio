@@ -36,7 +36,8 @@ target_sources(
 
       # Math
       rflect3d/math/math.hpp
-      # Platform
+
+      # Window
       rflect3d/platform/window/window_tracker.hpp
       rflect3d/platform/window/utils/callbacks.hpp
       rflect3d/platform/window/utils/resolution.hpp

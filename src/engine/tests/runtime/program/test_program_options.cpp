@@ -52,7 +52,7 @@ TEST_CASE("Valid TOML") {
   temp.path = create_temp_toml(rfl::toml::write(SampleConfig {}));
 
   std::array<char*, 3> argv = {
-    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.c_str())
+    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.string().c_str())
 
   };
 
@@ -67,7 +67,7 @@ TEST_CASE("Invalid TOML") {
   temp.path = create_temp_toml("invalid_toml = { this_is_not_valid }");
 
   std::array<char*, 3> argv = {
-    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.c_str())
+    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.string().c_str())
   };
 
   auto result = rflect::po::parse_options<SampleConfig>(argv);

@@ -8,7 +8,7 @@
 namespace vix {
 
 // clang-format off
-inline rflect::Window main_window(rflect::WindowConfig const& config = {}) {
+inline rflect::Window main_window(rflect::config::Window const& config = {}) {
 
   return rflect::Window {  
     rflect::WindowBuilder() 
