@@ -14,27 +14,39 @@
 #pragma once
 
 #include "rflect3d/core/logging/logger_config.hpp"
+
+#include <quill/LogMacros.h>
 #include <quill/Logger.h>
+
+// STD
+#include <filesystem>
+#include <print>
 
 namespace rflect {
 
 class GlobalLogger {
-  GlobalLogger() = default;
+  GlobalLogger()  = default;
   ~GlobalLogger() = default;
 
 public:
-  explicit GlobalLogger(GlobalLogger const &) = delete;
-  GlobalLogger &operator=(GlobalLogger const &) = delete;
+  GlobalLogger(GlobalLogger&&)                 = delete;
+  GlobalLogger& operator=(GlobalLogger&&)      = delete;
+  explicit GlobalLogger(GlobalLogger const&)   = delete;
+  GlobalLogger& operator=(GlobalLogger const&) = delete;
 
-  static quill::Logger *instance() { return logger; }
+  static quill::Logger* instance() { return instance_impl(); }
 
-  static void configure(config::Logger const &config) {
-    logger = config::create_logger(config);
-  }
+  static void configure(config::Logger const& config) { instance_impl() = config::create_logger(config); }
 
 private:
-  inline static quill::Logger *logger =
-      config::create_logger({"Rflect", "/tmp/"});
+  static quill::Logger*& instance_impl() noexcept try {
+    static auto* logger = config::create_logger({.name = "Rflect", .path = std::filesystem::temp_directory_path()});
+    return logger;
+  }
+  catch (std::exception& e) {
+    std::println("Something went wrong while accessing to the logger. {}", e.what());
+    std::exit(-1);
+  }
 };
 
 // clang-format off
