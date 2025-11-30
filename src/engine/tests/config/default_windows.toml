@@ -1,0 +1,3 @@
+[engine.logger]
+path = 'C:\Windows\tmp\'
+name = 'MonoEngine'

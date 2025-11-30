@@ -28,8 +28,11 @@ struct TempFile {
   }
 };
 
+
 TEST_CASE("parse_options devuelve error si no se pasa ningún argumento") {
-  std::array<char*, 1> argv = {const_cast<char*>("program")};
+  std::string program {"program"};
+  std::string config {"--config"};
+  std::array<char*, 1> argv = {program.data()};
   auto result               = rflect::po::parse_options<SampleConfig>(argv);
 
   CHECK_FALSE(result.has_value());
@@ -48,34 +51,39 @@ TEST_CASE("help_message contiene las opciones y el ejemplo TOML") {
 }
 
 TEST_CASE("Valid TOML") {
+  std::string program {"program"};
+  std::string config {"--config"};
   TempFile temp {};
   temp.path = create_temp_toml(rfl::toml::write(SampleConfig {}));
+  auto arg  = temp.path.string();
 
-  std::array<char*, 3> argv = {
-    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.string().c_str())
-
-  };
+  std::array<char*, 3> argv = {program.data(), config.data(), arg.data()};
 
   auto result = rflect::po::parse_options<SampleConfig>(argv);
   CHECK(result.has_value());
   CHECK(result->engine.logger.name == "rflect3d");
-  CHECK(result->engine.logger.path == "/tmp/");
+  CHECK(result->engine.logger.path == std::filesystem::temp_directory_path());
 }
 
 TEST_CASE("Invalid TOML") {
+  std::string program {"program"};
+  std::string config {"--config"};
+
   TempFile temp;
   temp.path = create_temp_toml("invalid_toml = { this_is_not_valid }");
 
-  std::array<char*, 3> argv = {
-    const_cast<char*>("program"), const_cast<char*>("--config"), const_cast<char*>(temp.path.string().c_str())
-  };
+  std::string temp_path = temp.path.string();
+
+  std::array<char*, 3> argv = {program.data(), config.data(), temp_path.data()};
 
   auto result = rflect::po::parse_options<SampleConfig>(argv);
   CHECK_FALSE(result.has_value());
 }
 
 TEST_CASE("Invalid options") {
-  std::array<char*, 2> argv = {const_cast<char*>("program"), const_cast<char*>("--wrong-option")};
+  std::string program {"program"};
+  std::string config {"--wrong-config"};
+  std::array<char*, 2> argv = {program.data(), config.data()};
 
   auto result = rflect::po::parse_options<SampleConfig>(argv);
   CHECK_FALSE(result.has_value());

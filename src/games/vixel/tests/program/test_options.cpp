@@ -9,10 +9,11 @@
 
 TEST_SUITE_BEGIN("Program");
 
-TEST_CASE("Program options") {
-  std::array<char*, 1> argv = {const_cast<char*>("program")};
+TEST_CASE("No Program options") {
+  std::string program       = "program";
+  std::array<char*, 1> argv = {program.data()};
 
-  CHECK(vix::po::parse_options(argv));
+  CHECK_FALSE(vix::po::parse_options(argv));
   CHECK_FALSE(rflect::po::parse_options<vix::config::Vixel>(argv));
 }
 

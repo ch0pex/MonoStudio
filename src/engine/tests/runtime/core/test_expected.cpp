@@ -15,11 +15,9 @@ TEST_CASE("unexpected() without format arguments returns plain message") {
   auto err = unexpected("simple error");
 
   // Comprueba que el tipo sea std::unexpected<std::runtime_error>
-  static_assert(
-      std::is_same_v<decltype(err), std::unexpected<std::runtime_error>>);
+  static_assert(std::is_same_v<decltype(err), std::unexpected<std::runtime_error>>);
 
-  CHECK_THROWS_AS(std::rethrow_exception(std::make_exception_ptr(err.error())),
-                  std::runtime_error);
+  CHECK_THROWS_AS(std::rethrow_exception(std::make_exception_ptr(err.error())), std::runtime_error);
 
   CHECK_EQ(std::string(err.error().what()), "simple error");
 }
@@ -37,11 +35,11 @@ TEST_CASE("expected<T> works correctly with success case") {
 }
 
 TEST_CASE("expected<T> works correctly with unexpected error") {
-  auto err = unexpected("boom");
+  auto err             = unexpected("boom");
   expected<int> result = err;
 
   CHECK_FALSE(result.has_value());
-  CHECK_THROWS_AS(result.value(), std::bad_expected_access<std::runtime_error>);
+  CHECK_THROWS_AS({ std::ignore = result.value(); }, std::bad_expected_access<std::runtime_error>);
   CHECK_EQ(std::string(result.error().what()), "boom");
 }
 
