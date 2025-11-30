@@ -11,8 +11,8 @@ namespace rflect::ex {
  * returns the token of such source.
  */
 inline std::stop_token setup_signals() {
-  std::signal(SIGINT, request_stop);
-  std::signal(SIGTERM, request_stop);
+  std::ignore = std::signal(SIGINT, request_stop);
+  std::ignore = std::signal(SIGTERM, request_stop);
 
   return detail::stop_source.get_token();
 }
