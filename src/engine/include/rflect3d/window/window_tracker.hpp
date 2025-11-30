@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "rflect3d/platform/window/window_handle.hpp"
+#include "rflect3d/window/window_handle.hpp"
 
 //
 #include <GLFW/glfw3.h>

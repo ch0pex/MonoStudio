@@ -2,10 +2,10 @@
 
 #include "rflect3d/core/logging/logger.hpp"
 #include "rflect3d/core/misc/passkey.hpp"
-#include "rflect3d/platform/window/monitor.hpp"
-#include "rflect3d/platform/window/utils/context.hpp"
-#include "rflect3d/platform/window/utils/resolution.hpp"
-#include "rflect3d/platform/window/window_types.hpp"
+#include "rflect3d/window/monitor.hpp"
+#include "rflect3d/window/utils/context.hpp"
+#include "rflect3d/window/utils/resolution.hpp"
+#include "rflect3d/window/window_types.hpp"
 
 #include <GLFW/glfw3.h>
 

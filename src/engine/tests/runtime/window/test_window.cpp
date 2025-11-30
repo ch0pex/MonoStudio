@@ -1,5 +1,5 @@
-#include "rflect3d/platform/window/utils/defaults.hpp"
-#include <rflect3d/platform/window/window.hpp>
+#include "rflect3d/window/utils/defaults.hpp"
+#include <rflect3d/window/window.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rflect3d/platform/window/monitor.hpp"
-#include "rflect3d/platform/window/utils/resolution.hpp"
-#include "rflect3d/platform/window/window_config.hpp"
-#include "rflect3d/platform/window/window_types.hpp"
+#include "rflect3d/window/monitor.hpp"
+#include "rflect3d/window/utils/resolution.hpp"
+#include "rflect3d/window/window_config.hpp"
+#include "rflect3d/window/window_types.hpp"
 
 #include <GLFW/glfw3.h>
 

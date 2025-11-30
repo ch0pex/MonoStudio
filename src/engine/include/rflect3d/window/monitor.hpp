@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rflect3d/core/logging/logger.hpp"
-#include "rflect3d/platform/window/window_types.hpp"
+#include "rflect3d/window/window_types.hpp"
 
 #include <optional>
 #include <span>

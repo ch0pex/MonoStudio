@@ -2,9 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <doctest/doctest.h>
 
-#include <rflect3d/platform/window/window_builder.hpp>
-#include <rflect3d/platform/window/window_config.hpp>
-#include <rflect3d/platform/window/window_handle.hpp>
+#include <rflect3d/window/window_builder.hpp>
+#include <rflect3d/window/window_config.hpp>
+#include <rflect3d/window/window_handle.hpp>
 
 TEST_SUITE("WindowBuilder") {
 

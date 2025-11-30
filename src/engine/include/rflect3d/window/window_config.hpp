@@ -1,15 +1,14 @@
 #pragma once
 
 //
-#include "rflect3d/platform/window/utils/resolution.hpp"
-#include "rflect3d/platform/window/window_types.hpp"
+#include "rflect3d/window/utils/resolution.hpp"
+#include "rflect3d/window/window_types.hpp"
 
 //
 #include <GLFW/glfw3.h>
 
 //
 #include <cstdint>
-#include <rfl/Skip.hpp>
 #include <string>
 #include <unordered_map>
 

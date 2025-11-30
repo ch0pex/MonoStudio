@@ -1,9 +1,9 @@
 #include <GLFW/glfw3.h>
-#include "rflect3d/platform/window/monitor.hpp"
+#include "rflect3d/window/monitor.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include <rflect3d/platform/window/window_modes.hpp>
+#include <rflect3d/window/window_modes.hpp>
 
 TEST_SUITE_BEGIN("Window");
 

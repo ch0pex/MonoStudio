@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "rflect3d/platform/window/window.hpp"
-#include "rflect3d/platform/window/window_builder.hpp"
-#include "rflect3d/platform/window/window_config.hpp"
-#include "rflect3d/platform/window/window_handle.hpp"
+#include "rflect3d/window/window.hpp"
+#include "rflect3d/window/window_builder.hpp"
+#include "rflect3d/window/window_config.hpp"
+#include "rflect3d/window/window_handle.hpp"
 
 namespace rflect::defaults {
 

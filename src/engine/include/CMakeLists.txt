@@ -38,15 +38,15 @@ target_sources(
       rflect3d/math/math.hpp
 
       # Window
-      rflect3d/platform/window/window_tracker.hpp
-      rflect3d/platform/window/utils/callbacks.hpp
-      rflect3d/platform/window/utils/resolution.hpp
-      rflect3d/platform/window/utils/context.hpp
-      rflect3d/platform/window/utils/defaults.hpp
-      rflect3d/platform/window/window_builder.hpp
-      rflect3d/platform/window/window_config.hpp
-      rflect3d/platform/window/window.hpp
-      rflect3d/platform/window/window_handle.hpp
+      rflect3d/window/window_tracker.hpp
+      rflect3d/window/utils/callbacks.hpp
+      rflect3d/window/utils/resolution.hpp
+      rflect3d/window/utils/context.hpp
+      rflect3d/window/utils/defaults.hpp
+      rflect3d/window/window_builder.hpp
+      rflect3d/window/window_config.hpp
+      rflect3d/window/window.hpp
+      rflect3d/window/window_handle.hpp
 
       # Render
       rflect3d/render/viewport.hpp
