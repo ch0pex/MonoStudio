@@ -49,6 +49,7 @@ class MonoGameRecipe(ConanFile):
         self.requires("boost/[>=1]")
         self.requires("reflect-cpp/[>=0]")
         self.requires("quill/[>=10]")
+        self.requires("glm/[>=1]")
 
     def build_requirements(self):
         self.test_requires("doctest/2.4.11")

@@ -3,6 +3,7 @@ find_package(VulkanLoader CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED)
 find_package(quill CONFIG REQUIRED)
 find_package(reflectcpp CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 include(stdexec)
 
 add_library(rflect3d-lib INTERFACE)
@@ -64,6 +65,7 @@ target_link_libraries(
     quill::quill
     reflectcpp::reflectcpp
     STDEXEC::stdexec
+    glm::glm
 )
 
 # add_library(rflect3d::rflect3d-lib ALIAS rflect3d-lib)
