@@ -14,7 +14,7 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
         "CONAN_INSTALL_ARGS": "--build=missing;-u",
-        "CONAN_BUILD_PROFILE": "auto-cmake;cmake/build_profile",
+        "CONAN_BUILD_PROFILE": "auto-cmake;${sourceDir}/cmake/build_profile",
         "BUILD_TESTING": true
       },
       "condition": {
@@ -42,7 +42,7 @@
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Coverage;Sanitize",
         "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "Debug",
         "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "Debug",
-        "CMAKE_CXX_FLAGS": "-Wextra  -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body",
+        "CMAKE_CXX_FLAGS": "-Wextra  -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body -Wno-deprecated-variadic-comma-omission ",
         "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3",
         "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
         "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
