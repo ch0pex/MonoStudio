@@ -11,6 +11,12 @@ class PassKey {
   friend T;
   explicit PassKey()      = default;
   PassKey(PassKey const&) = default;
+  ~PassKey()              = default;
+
+public:
+  PassKey(PassKey&&)                 = delete;
+  PassKey& operator=(PassKey const&) = delete;
+  PassKey& operator=(PassKey&&)      = delete;
 };
 
 } // namespace rflect
