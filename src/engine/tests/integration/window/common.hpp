@@ -1,9 +1,8 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include <chrono>
-#include <thread>
+
 #include "rflect3d/core/execution/signals.hpp"
+#include "rflect3d/core/execution/stop_token.hpp"
 #include "rflect3d/input/input.hpp"
 #include "rflect3d/window/window.hpp"
 #include "rflect3d/window/window_builder.hpp"
@@ -15,13 +14,10 @@ inline void test_window(rflect::WindowMode const mode, std::uint8_t const monito
 
   rflect::Window window {rflect::WindowBuilder(window_spec).build()};
 
-  auto const token = rflect::ex::setup_signals();
-  std::size_t count {0};
+  rflect::ex::setup_signals();
 
-  while (not token.stop_requested()) {
+  while (rflect::ex::should_run()) {
     rflect::input::poll_events();
     glfwSwapBuffers(window.native_handle());
-    if ((count++) == 0U)
-      window.windowed();
   }
 }

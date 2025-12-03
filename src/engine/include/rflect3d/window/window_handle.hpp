@@ -52,26 +52,29 @@ public:
   void hide() { glfwHideWindow(handle); }
 
   void full_screen(MonitorId const monitor_id) {
-    auto monitor = get_monitor(monitor_id);
-    if (not monitor) {
+    auto opt_monitor = Monitor::from_id(monitor_id);
+    if (not opt_monitor) {
       LOG_WARNING("Couldn't set window in full screen mode, monitor with id {} doesn't exist", monitor_id);
       return;
     }
 
-    auto const* mode = glfwGetVideoMode(monitor.value());
+    auto monitor = opt_monitor.value();
 
-    glfwSetWindowMonitor(handle, monitor.value(), 0, 0, mode->width, mode->height, mode->refreshRate);
-    glfwSetWindowAttrib(handle, GLFW_DECORATED, false);
-    glfwSetWindowAttrib(handle, GLFW_RED_BITS, mode->redBits);
-    glfwSetWindowAttrib(handle, GLFW_GREEN_BITS, mode->greenBits);
-    glfwSetWindowAttrib(handle, GLFW_BLUE_BITS, mode->blueBits);
-    glfwSetWindowAttrib(handle, GLFW_REFRESH_RATE, mode->refreshRate);
+    glfwSetWindowMonitor(
+        handle, monitor.native_handle(), 0, 0, monitor.resolution().width, monitor.resolution().height,
+        monitor.refreshRate()
+    );
+    glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
+    glfwSetWindowAttrib(handle, GLFW_RED_BITS, monitor.redBits());
+    glfwSetWindowAttrib(handle, GLFW_GREEN_BITS, monitor.greenBits());
+    glfwSetWindowAttrib(handle, GLFW_BLUE_BITS, monitor.blueBits());
+    glfwSetWindowAttrib(handle, GLFW_REFRESH_RATE, monitor.refreshRate());
   }
 
   void windowed() {
     auto res = resolution();
     glfwSetWindowMonitor(handle, nullptr, 0, 0, res.width, res.height, 0);
-    glfwSetWindowAttrib(handle, GLFW_DECORATED, true);
+    glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_TRUE);
   }
 
   [[nodiscard]] bool is_full_screen() const { return glfwGetWindowMonitor(handle) != nullptr; }

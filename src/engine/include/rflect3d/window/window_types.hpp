@@ -9,12 +9,12 @@ namespace rflect {
 using WindowHint      = int;
 using WindowHintValue = int;
 using NativeWindow    = GLFWwindow*;
-using Monitor         = GLFWmonitor*;
+using NativeMonitor   = GLFWmonitor*;
 using MonitorId       = std::uint8_t;
 
 enum class WindowMode : std::uint8_t {
-  full_screen = 0,
-  full_screen_borderless,
+  exclusive_full_screen = 0,
+  borderless_full_screen,
   windowed_borderless,
   windowed,
 };

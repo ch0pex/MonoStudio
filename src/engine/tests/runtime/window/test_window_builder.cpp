@@ -8,7 +8,7 @@
 
 TEST_SUITE("WindowBuilder") {
 
-  TEST_CASE("Crear ventana básica") {
+  TEST_CASE("Create siemple window") {
     REQUIRE(glfwInit() == GLFW_TRUE);
 
     rflect::WindowBuilder builder(

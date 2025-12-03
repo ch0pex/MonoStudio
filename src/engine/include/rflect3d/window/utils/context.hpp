@@ -16,19 +16,17 @@ class WindowBuilder;
  * This can only be instantiated by window class
  */
 struct GlfwContext {
-  GlfwContext(GlfwContext&&)            = delete;
-  GlfwContext& operator=(GlfwContext&&) = delete;
+  GlfwContext(GlfwContext&&)                 = delete;
+  GlfwContext& operator=(GlfwContext&&)      = delete;
+  GlfwContext(GlfwContext const&)            = delete;
+  GlfwContext& operator=(GlfwContext const&) = delete;
+  ~GlfwContext() { glfwTerminate(); }
+
   GlfwContext(PassKey<WindowBuilder> key [[maybe_unused]]) {
     if (glfwInit() == 0) {
       throw std::runtime_error("Couldn't initilize glfw");
     };
   }
-
-  GlfwContext(GlfwContext const&) = delete;
-
-  GlfwContext& operator=(GlfwContext const&) = delete;
-
-  ~GlfwContext() { glfwTerminate(); }
 };
 
 } // namespace rflect
