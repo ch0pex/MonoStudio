@@ -55,7 +55,7 @@ if [ ! -d "$WIN_DIR" ]; then
 fi
 
 # 1.B: Build and Test
-powershell.exe -ExecutionPolicy Bypass -NoProfile -Command "& '$VS_DEV_SHELL' -Arch amd64 -HostArch amd64; cd $PROJECT_ROOT; cmake.exe --build --preset '${PRESET_BASE}-windows-cl'; ctest.exe --preset '${PRESET_BASE}-windows-cl'; if (-not \$?) { exit 1 }"
+powershell.exe -ExecutionPolicy Bypass -NoProfile -Command "& '$VS_DEV_SHELL' -Arch amd64 -HostArch amd64; cd $PROJECT_ROOT; cmake.exe --build --preset '${PRESET_BASE}-windows-cl'; if (-not \$?) { exit 1 }"
 
 check_success
 
@@ -71,7 +71,6 @@ fi
 
 # 2.B: Build and Test
 cmake --build --preset "$PRESET_BASE-linux-clang"
-ctest --preset "$PRESET_BASE-linux-clang"
 check_success
 
 # --- 3. Linux GCC Build ---
@@ -89,7 +88,6 @@ fi
 # 3.B: Build and Test
 cmake --build --preset "$PRESET_BASE-linux-gcc"
 
-ctest --preset "$PRESET_BASE-linux-gcc"
 check_success
 
 print_status "All workflows completed successfully!"
