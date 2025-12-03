@@ -10,6 +10,29 @@ overseer.setup({
 })
 
 overseer.register_template({
+	name = "Windows command",
+	params = {
+		mi_arg = {
+			type = "string",
+			desc = "Preset name (e.g., minsizerel)", -- Updated to English
+			optional = false,
+		},
+	},
+	builder = function(params)
+		return {
+			cmd = { "bash" },
+			args = { "./scripts/windows_cmd.sh", params.mi_arg },
+			cwd = vim.fn.getcwd(),
+			components = {
+				"default",
+				"on_complete_dispose",
+			},
+		}
+	end,
+	priority = 180,
+})
+
+overseer.register_template({
 	name = "Build: Debug",
 
 	builder = function()
