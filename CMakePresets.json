@@ -196,6 +196,12 @@
       "configurePreset": "Ninja-linux-gcc"
     },
     {
+      "name": "Sanitize-linux-gcc",
+      "configuration": "Sanitize",
+      "inherits": "base-test",
+      "configurePreset": "Ninja-linux-gcc"
+    },
+    {
       "name": "Debug-linux-clang",
       "configuration": "Debug",
       "inherits": "base-test",
@@ -314,6 +320,23 @@
         {
           "type": "test",
           "name": "RelWithDebInfo-linux-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-linux-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja-linux-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-linux-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-linux-gcc"
         }
       ]
     },
