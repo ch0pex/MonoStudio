@@ -31,7 +31,6 @@ struct TempFile {
 
 TEST_CASE("parse_options devuelve error si no se pasa ningún argumento") {
   std::string program {"program"};
-  std::string config {"--config"};
   std::array<char*, 1> argv = {program.data()};
   auto result               = rflect::po::parse_options<SampleConfig>(argv);
 
