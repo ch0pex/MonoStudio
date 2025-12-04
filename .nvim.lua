@@ -10,6 +10,55 @@ overseer.setup({
 })
 
 overseer.register_template({
+	name = "Run vixel linux",
+
+	params = {
+		config_file = {
+			type = "string",
+			desc = "Config file",
+			optional = false,
+		},
+	},
+
+	builder = function(params)
+		return {
+			cmd = { "./build/linux/gcc/bin/Debug/vixel" },
+			args = { "--config", params.config_file },
+			components = {
+				"default",
+				"on_complete_dispose",
+			},
+		}
+	end,
+
+	priority = 100,
+})
+
+overseer.register_template({
+	name = "Run vixel windows",
+
+	params = {
+		config_file = {
+			type = "string",
+			desc = "Config file",
+			optional = false,
+		},
+	},
+	builder = function(params)
+		return {
+			cmd = { "./scripts/windows_cmd.sh" },
+			args = { "build/windows/bin/Debug/vixel.exe", "--config", params.config_file },
+			components = {
+				"default",
+				"on_complete_dispose",
+			},
+		}
+	end,
+
+	priority = 100,
+})
+
+overseer.register_template({
 	name = "Windows command",
 	params = {
 		mi_arg = {
@@ -48,6 +97,7 @@ overseer.register_template({
 
 	priority = 100,
 })
+
 overseer.register_template({
 	name = "Build: Release",
 
