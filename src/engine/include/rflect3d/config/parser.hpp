@@ -4,6 +4,8 @@
 #include "rflect3d/core/error/expected.hpp"
 #include "rflect3d/core/logging/logger.hpp"
 
+#include <rfl/DefaultIfMissing.hpp>
+#include <rfl/NoExtraFields.hpp>
 #include <rfl/toml/load.hpp>
 
 namespace rflect::config {
@@ -14,7 +16,7 @@ namespace rflect::config {
  */
 template<Game GameConfig>
 err::expected<GameConfig> parse_file(std::filesystem::path const& path) {
-  auto const result = rfl::toml::load<GameConfig>(path.string());
+  auto const result = rfl::toml::load<GameConfig, rfl::DefaultIfMissing, rfl::NoExtraFields>(path.string());
 
   if (not result) {
     return err::unexpected(result.error().what());
