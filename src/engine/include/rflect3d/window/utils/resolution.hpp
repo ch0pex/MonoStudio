@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <format>
 
 namespace rflect {
 
@@ -11,4 +12,15 @@ struct Resolution {
   bool operator==(Resolution const& other) const = default;
 };
 
+
 } // namespace rflect
+//
+
+template<>
+struct std::formatter<rflect::Resolution> {
+  static constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  static auto format(rflect::Resolution const& r, std::format_context& ctx) {
+    return std::format_to(ctx.out(), "{}x{}", r.width, r.height);
+  }
+};

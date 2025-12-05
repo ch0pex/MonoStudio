@@ -1,7 +1,13 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "rflect3d/core/execution/stop_token.hpp"
 #include "rflect3d/core/logging/logger.hpp"
+
+//
+#include <GLFW/glfw3.h>
+
+//
+#include <chrono>
 
 namespace rflect::callbacks {
 
@@ -33,86 +39,96 @@ namespace defaults {
 
 // --- Window callbacks ---
 
-inline WindowClose window_close = [](GLFWwindow* handle [[maybe_unused]]) {
+inline constexpr WindowClose window_close = [](GLFWwindow* handle [[maybe_unused]]) {
+  ex::request_stop();
   LOG_INFO("Window '{}' is closing (close requested).", glfwGetWindowTitle(handle));
 };
 
-inline WindowFocus window_focus = [](GLFWwindow* handle [[maybe_unused]], int focus) {
+inline constexpr WindowFocus window_focus = [](GLFWwindow* handle [[maybe_unused]], int focus) {
   LOG_INFO("Window '{}' focus changed: {}", glfwGetWindowTitle(handle), focus ? "focused" : "unfocused");
 };
 
-inline WindowRefresh window_refresh = [](GLFWwindow* handle [[maybe_unused]]) {
+inline constexpr WindowRefresh window_refresh = [](GLFWwindow* handle [[maybe_unused]]) {
   LOG_INFO_LIMIT(std::chrono::seconds {1}, "Window '{}' requested refresh.", glfwGetWindowTitle(handle));
 };
 
-inline WindowPos window_pos = [](GLFWwindow* handle [[maybe_unused]], int x, int y) {
+inline constexpr WindowPos window_pos = [](GLFWwindow* handle [[maybe_unused]], int x, int y) {
   LOG_INFO_LIMIT(std::chrono::seconds {1}, "Window '{}' moved to position ({}, {}).", glfwGetWindowTitle(handle), x, y);
 };
 
-
-inline WindowSize window_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
+inline constexpr WindowSize window_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
   LOG_INFO_LIMIT(std::chrono::seconds {1}, "Window '{}' resized to {}x{}.", glfwGetWindowTitle(handle), width, height);
 };
 
-inline WindowIconify window_iconify = [](GLFWwindow* handle [[maybe_unused]], int iconified) {
+inline constexpr WindowIconify window_iconify = [](GLFWwindow* handle [[maybe_unused]], int iconified) {
   LOG_INFO("Window '{}' iconify state changed: {}", glfwGetWindowTitle(handle), iconified ? "minimized" : "restored");
 };
 
-inline WindowMaximize window_maximize = [](GLFWwindow* handle [[maybe_unused]], int maximized) {
+inline constexpr WindowMaximize window_maximize = [](GLFWwindow* handle [[maybe_unused]], int maximized) {
   LOG_INFO("Window '{}' maximize state changed: {}", glfwGetWindowTitle(handle), maximized ? "maximized" : "restored");
 };
 
-inline FramebufferSize framebuffer_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
+inline constexpr FramebufferSize framebuffer_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
   LOG_INFO_LIMIT(
       std::chrono::seconds {1}, "Framebuffer for window '{}' resized to {}x{}.", glfwGetWindowTitle(handle), width,
       height
   );
 };
 
-inline WindowContentScale window_content_scale = [](GLFWwindow* handle [[maybe_unused]], float xscale, float yscale) {
-  LOG_INFO("Content scale for window '{}' changed: x = {}, y = {}.", glfwGetWindowTitle(handle), xscale, yscale);
+inline constexpr WindowContentScale window_content_scale = [](GLFWwindow* handle [[maybe_unused]], float xscale,
+                                                              float yscale) {
+  LOG_INFO_LIMIT(
+      std::chrono::milliseconds {500}, "Content scale for window '{}' changed: x = {}, y = {}.",
+      glfwGetWindowTitle(handle), xscale, yscale
+  );
 };
 
 // --- Input callbacks ---
 
-inline Key key = [](GLFWwindow* handle [[maybe_unused]], int key, int scancode, int action, int mods) {
+inline constexpr Key key = [](GLFWwindow* handle [[maybe_unused]], int key, int scancode, int action, int mods) {
   LOG_INFO(
       "Key event on window '{}': key = {}, scancode = {}, action = {}, mods = {}", glfwGetWindowTitle(handle), key,
       scancode, action, mods
   );
 };
 
-inline Char character = [](GLFWwindow* handle [[maybe_unused]], unsigned int codepoint) {
+inline constexpr Char character = [](GLFWwindow* handle [[maybe_unused]], unsigned int codepoint) {
   LOG_INFO("Character input on window '{}': codepoint = {}", glfwGetWindowTitle(handle), codepoint);
 };
 
-inline CharMods char_mods = [](GLFWwindow* handle [[maybe_unused]], unsigned int codepoint, int mods) {
+inline constexpr CharMods char_mods = [](GLFWwindow* handle [[maybe_unused]], unsigned int codepoint, int mods) {
   LOG_INFO(
       "Character with mods on window '{}': codepoint = {}, mods = {}", glfwGetWindowTitle(handle), codepoint, mods
   );
 };
 
-inline MouseButton mouse_button = [](GLFWwindow* handle [[maybe_unused]], int button, int action, int mods) {
+inline constexpr MouseButton mouse_button = [](GLFWwindow* handle [[maybe_unused]], int button, int action, int mods) {
   LOG_INFO(
       "Mouse button on window '{}': button = {}, action = {}, mods = {}", glfwGetWindowTitle(handle), button, action,
       mods
   );
 };
 
-inline CursorPos cursor_pos = [](GLFWwindow* handle [[maybe_unused]], double xpos, double ypos) {
-  LOG_INFO("Cursor moved on window '{}': position = ({}, {}).", glfwGetWindowTitle(handle), xpos, ypos);
+inline constexpr CursorPos cursor_pos = [](GLFWwindow* handle [[maybe_unused]], double xpos, double ypos) {
+  LOG_INFO_LIMIT(
+      std::chrono::seconds {1}, "Cursor moved on window '{}': position = ({}, {}).", glfwGetWindowTitle(handle), xpos,
+      ypos
+  );
 };
 
 
-inline CursorEnter cursor_enter = [](GLFWwindow* handle [[maybe_unused]], int entered) {
+inline constexpr CursorEnter cursor_enter = [](GLFWwindow* handle [[maybe_unused]], int entered) {
   LOG_INFO("Cursor {} window '{}'.", entered ? "entered" : "left", glfwGetWindowTitle(handle));
 };
 
-inline Scroll scroll = [](GLFWwindow* handle [[maybe_unused]], double xoffset, double yoffset) {
-  LOG_INFO("Scroll event on window '{}': offset = ({}, {}).", glfwGetWindowTitle(handle), xoffset, yoffset);
+inline constexpr Scroll scroll = [](GLFWwindow* handle [[maybe_unused]], double xoffset, double yoffset) {
+  LOG_INFO_LIMIT(
+      std::chrono::seconds {1}, "Scroll event on window '{}': offset = ({}, {}).", glfwGetWindowTitle(handle), xoffset,
+      yoffset
+  );
 };
 
-inline Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, char const** paths) {
+inline constexpr Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, char const** paths) {
   LOG_INFO("File drop event on window '{}': {} file(s) dropped.", glfwGetWindowTitle(handle), count);
   for (int i = 0; i < count; ++i)
     LOG_INFO(" - {}", paths[i]);

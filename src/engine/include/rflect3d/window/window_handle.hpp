@@ -51,6 +51,8 @@ public:
 
   void hide() { glfwHideWindow(handle); }
 
+  void swap_buffers() { glfwSwapBuffers(handle); }
+
   void full_screen(MonitorId const monitor_id) {
     auto opt_monitor = Monitor::from_id(monitor_id);
     if (not opt_monitor) {

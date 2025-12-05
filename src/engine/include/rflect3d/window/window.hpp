@@ -8,10 +8,10 @@
 namespace rflect {
 
 /**
- * @brief Window class that destroies window handle when destructor is invoked
+ * @brief This window class destroys gflw window handle when destructor is invoked
  *
  * Can be used to controll the lifetime of a window handle
- * following RAII principles.
+ * using RAII .
  *
  * As windows lifetime is actually controlled by
  * the user, this is only usefull to use with one window applications

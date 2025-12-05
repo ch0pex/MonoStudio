@@ -1,58 +1,58 @@
 #include <GLFW/glfw3.h>
-#include "rflect3d/window/monitor.hpp"
+
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+#include <rflect3d/window/utils/resolution.hpp>
+#include <rflect3d/window/window_builder.hpp>
+#include <rflect3d/window/window_handle.hpp>
 #include <rflect3d/window/window_modes.hpp>
+#include <rflect3d/window/window_types.hpp>
 
 TEST_SUITE_BEGIN("Window");
-//
-// TEST_CASE("No context") {
-//   CHECK_THROWS([]() { auto _ = rflect::detail::create_windowed({}); }());
-// }
+
+using namespace rflect;
+
+constexpr Resolution resolution {
+  .width  = 800,
+  .height = 600,
+};
+
+auto constexpr window_config = [](WindowMode const mode) {
+  return config::Window {
+    .title      = "TestWindow",
+    .resolution = resolution,
+    .mode       = mode,
+  };
+};
 
 TEST_CASE("Full screen") {
-  using namespace rflect;
-  glfwInit();
-  auto monitor = Monitor::from_id(0).value();
+  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
 
-
-  config::Window cfg;
-
-  auto* window = rflect::detail::create_exclusive_fullscreen(cfg, monitor);
-  CHECK(window != nullptr);
+  CHECK(window.native_handle() != nullptr);
+  CHECK(window.resolution() != resolution); // Specified resolution is ignored by this mode
 }
 
-// TEST_CASE("Full screen borderless") {
-//   using namespace rflect;
-//   glfwInit();
-//
-//   auto* monitor = get_monitor(0).value();
-//   config::Window cfg;
-//
-//   auto* window = rflect::detail::create_fullscreen_borderless(cfg, monitor);
-//   CHECK(window != nullptr);
-// }
-//
-// TEST_CASE("Windowed borderless") {
-//   using namespace rflect;
-//   glfwInit();
-//
-//   auto* monitor = get_monitor(0).value();
-//   config::Window cfg;
-//
-//   auto* window = rflect::detail::create_windowed_borderless(cfg, monitor);
-//   CHECK(window != nullptr);
-// }
-//
-// TEST_CASE("Windowed normal") {
-//   using namespace rflect;
-//   glfwInit();
-//
-//   config::Window cfg;
-//
-//   auto* window = rflect::detail::create_windowed(cfg);
-//   CHECK(window != nullptr);
-// }
+TEST_CASE("Full screen borderless") {
+  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
+
+  CHECK(window.native_handle() != nullptr);
+  CHECK(window.resolution() != resolution); // Specified resolution is ignored by this mode
+}
+
+TEST_CASE("Windowed borderless") {
+  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
+
+  CHECK(window.native_handle() != nullptr);
+  CHECK(window.resolution() == resolution);
+}
+
+TEST_CASE("Windowed normal") {
+  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::windowed)).build();
+
+  CHECK(window.resolution() == resolution);
+  CHECK(window.native_handle() != nullptr);
+}
 
 TEST_SUITE_END();

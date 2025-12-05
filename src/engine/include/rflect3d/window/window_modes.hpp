@@ -51,6 +51,9 @@ inline NativeWindow create_handle(
   return window;
 }
 
+/**************************
+ *       Window Modes     *
+ **************************/
 inline NativeWindow create_windowed(config::Window const& config, Monitor monitor) {
   glfwDefaultWindowHints();
 
@@ -105,6 +108,9 @@ NativeWindow create_exclusive_fullscreen(config::Window const& config, Monitor c
   return create_handle(config.resolution, config.title, monitor.native_handle());
 }
 
+/************************************
+ *       Native window builder      *
+ ************************************/
 inline NativeWindow native_window(config::Window const& config) {
   glfwDefaultWindowHints();
 
