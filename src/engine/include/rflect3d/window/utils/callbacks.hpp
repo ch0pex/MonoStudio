@@ -116,7 +116,6 @@ inline constexpr CursorPos cursor_pos = [](GLFWwindow* handle [[maybe_unused]], 
   );
 };
 
-
 inline constexpr CursorEnter cursor_enter = [](GLFWwindow* handle [[maybe_unused]], int entered) {
   LOG_INFO("Cursor {} window '{}'.", entered ? "entered" : "left", glfwGetWindowTitle(handle));
 };
@@ -135,5 +134,5 @@ inline constexpr Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, 
 };
 
 } // namespace defaults
-//
+
 } // namespace rflect::callbacks

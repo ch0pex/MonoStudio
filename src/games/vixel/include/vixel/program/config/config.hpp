@@ -9,9 +9,14 @@
 
 namespace vix::config {
 
+struct Game {
+  rflect::config::Window window;
+};
+
+
 struct Vixel {
   rflect::config::Engine engine;
-  rflect::config::Window window;
+  Game game;
 };
 
 } // namespace vix::config

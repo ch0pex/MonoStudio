@@ -22,6 +22,7 @@ class MonoGameRecipe(ConanFile):
 
     default_options = {
         "reflect-cpp/*:with_toml": True,
+        "boost/*:without_stacktrace":True
     }
 
     def layout(self):
@@ -33,6 +34,7 @@ class MonoGameRecipe(ConanFile):
         tc = CMakeToolchain(self)
         tc.user_presets_path = ""
         tc.generate()
+
 
     def build(self):
         cmake = CMake(self)

@@ -6,29 +6,7 @@
   },
   "configurePresets": [
     {
-      "name": "Ninja-windows-cl",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "build/windows",
-      "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
-        "CONAN_INSTALL_ARGS": "--build=missing;-u",
-        "CONAN_BUILD_PROFILE": "auto-cmake;${sourceDir}/cmake/build_profile",
-        "BUILD_TESTING": true
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      },
-      "vendor": {
-        "jetbrains.com/clion": {
-          "toolchain": "Visual Studio"
-        }
-      }
-    },
-    {
+
       "name": "linux-base",
       "generator": "Ninja Multi-Config",
       "hidden": true,
@@ -37,6 +15,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
+
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "26",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
@@ -53,11 +32,25 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
         "CONAN_INSTALL_ARGS": "--build=missing;-u",
-        "CONAN_BUILD_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
+        "CONAN_BUILD_PROFILE": "default;${sourceDir}/cmake/conan_profile",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
         "BUILD_TESTING": true
       }
     },
+    {
+      "name": "Ninja-windows-mingw",
+      "description": "Cross-compile for Windows using MinGW-w64 on Linux",
+      "inherits": "linux-base",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "build/windows/mingw",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "CMAKE_C_COMPILER": "x86_64-w64-mingw32-gcc",
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_ASM_COMPILER": "x86_64-w64-mingw32-gcc"
+      }
+    },
+
     {
       "name": "Ninja-linux-gcc",
       "generator": "Ninja Multi-Config",
@@ -71,34 +64,41 @@
     {
       "name": "Ninja-linux-clang",
       "generator": "Ninja Multi-Config",
+
       "binaryDir": "build/linux/clang",
       "inherits": "linux-base",
       "cacheVariables": {
+
         "CMAKE_CXX_FLAGS": "-stdlib=libc++",
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
       }
+
     }
   ],
+
   "buildPresets": [
     {
-      "name": "Debug-windows-cl",
-      "configurePreset": "Ninja-windows-cl",
+      "name": "Debug-windows-mingw",
+
+      "configurePreset": "Ninja-windows-mingw",
       "configuration": "Debug"
     },
     {
-      "name": "Release-windows-cl",
-      "configurePreset": "Ninja-windows-cl",
+      "name": "Release-windows-mingw",
+      "configurePreset": "Ninja-windows-mingw",
       "configuration": "Release"
     },
     {
-      "name": "RelWithDebInfo-windows-cl",
-      "configurePreset": "Ninja-windows-cl",
+      "name": "RelWithDebInfo-windows-mingw",
+
+      "configurePreset": "Ninja-windows-mingw",
       "configuration": "RelWithDebInfo"
     },
     {
       "name": "Debug-linux-gcc",
+
       "configurePreset": "Ninja-linux-gcc",
       "configuration": "Debug"
     },
@@ -111,12 +111,14 @@
       "name": "RelWithDebInfo-linux-gcc",
       "configurePreset": "Ninja-linux-gcc",
       "configuration": "RelWithDebInfo"
+
     },
     {
       "name": "Sanitize-linux-gcc",
       "configurePreset": "Ninja-linux-gcc",
       "configuration": "Sanitize"
     },
+
     {
       "name": "Coverage-linux-gcc",
       "configurePreset": "Ninja-linux-gcc",
@@ -126,11 +128,14 @@
       "name": "Debug-linux-clang",
       "configurePreset": "Ninja-linux-clang",
       "configuration": "Debug"
+
     },
     {
       "name": "Release-linux-clang",
+
       "configurePreset": "Ninja-linux-clang",
       "configuration": "Release"
+
     },
     {
       "name": "RelWithDebInfo-linux-clang",
@@ -146,13 +151,15 @@
       "name": "Coverage-linux-clang",
       "configurePreset": "Ninja-linux-clang",
       "configuration": "Coverage"
+
     }
   ],
+
   "testPresets": [
     {
       "name": "base-test",
       "hidden": true,
-      "configurePreset": "Ninja",
+      "configurePreset": "Ninja-linux-gcc",
       "output": {
         "outputOnFailure": true
       },
@@ -162,27 +169,30 @@
         "jobs": 32
       }
     },
+
     {
-      "name": "Debug-windows-cl",
+      "name": "Debug-windows-mingw",
       "configuration": "Debug",
       "inherits": "base-test",
-      "configurePreset": "Ninja-windows-cl"
+      "configurePreset": "Ninja-windows-mingw"
     },
     {
-      "name": "RelWithDebInfo-windows-cl",
+      "name": "RelWithDebInfo-windows-mingw",
+
       "configuration": "RelWithDebInfo",
       "inherits": "base-test",
-      "configurePreset": "Ninja-windows-cl"
+      "configurePreset": "Ninja-windows-mingw"
     },
     {
-      "name": "Release-windows-cl",
+      "name": "Release-windows-mingw",
       "configuration": "Release",
       "inherits": "base-test",
-      "configurePreset": "Ninja-windows-cl"
+      "configurePreset": "Ninja-windows-mingw"
     },
     {
       "name": "Debug-linux-gcc",
       "configuration": "Debug",
+
       "inherits": "base-test",
       "configurePreset": "Ninja-linux-gcc"
     },
@@ -190,6 +200,7 @@
       "name": "Release-linux-gcc",
       "configuration": "Release",
       "inherits": "base-test",
+
       "configurePreset": "Ninja-linux-gcc"
     },
     {
@@ -204,20 +215,25 @@
       "inherits": "base-test",
       "configurePreset": "Ninja-linux-gcc"
     },
+
     {
       "name": "Debug-linux-clang",
       "configuration": "Debug",
       "inherits": "base-test",
       "configurePreset": "Ninja-linux-clang"
+
     },
     {
       "name": "Release-linux-clang",
+
       "configuration": "Release",
       "inherits": "base-test",
+
       "configurePreset": "Ninja-linux-clang"
     },
     {
       "name": "RelWithDebInfo-linux-clang",
+
       "configuration": "RelWithDebInfo",
       "inherits": "base-test",
       "configurePreset": "Ninja-linux-clang"
@@ -229,55 +245,57 @@
       "configurePreset": "Ninja-linux-clang"
     }
   ],
+
   "workflowPresets": [
     {
-      "name": "Debug-windows-cl",
+      "name": "Debug-windows-mingw",
       "steps": [
         {
           "type": "configure",
-          "name": "Ninja-windows-cl"
+          "name": "Ninja-windows-mingw"
         },
         {
           "type": "build",
-          "name": "Debug-windows-cl"
+          "name": "Debug-windows-mingw"
         },
         {
           "type": "test",
-          "name": "Debug-windows-cl"
+          "name": "Debug-windows-mingw"
         }
       ]
     },
     {
-      "name": "Release-windows-cl",
+      "name": "Release-windows-mingw",
       "steps": [
         {
           "type": "configure",
-          "name": "Ninja-windows-cl"
+          "name": "Ninja-windows-mingw"
         },
         {
           "type": "build",
-          "name": "Release-windows-cl"
+          "name": "Release-windows-mingw"
         },
         {
           "type": "test",
-          "name": "Release-windows-cl"
+          "name": "Release-windows-mingw"
         }
       ]
     },
     {
-      "name": "RelWithDebInfo-windows-cl",
+      "name": "RelWithDebInfo-windows-mingw",
       "steps": [
         {
           "type": "configure",
-          "name": "Ninja-windows-cl"
+          "name": "Ninja-windows-mingw"
+
         },
         {
           "type": "build",
-          "name": "RelWithDebInfo-windows-cl"
+          "name": "RelWithDebInfo-windows-mingw"
         },
         {
           "type": "test",
-          "name": "RelWithDebInfo-windows-cl"
+          "name": "RelWithDebInfo-windows-mingw"
         }
       ]
     },
@@ -292,6 +310,7 @@
           "type": "build",
           "name": "Debug-linux-gcc"
         },
+
         {
           "type": "test",
           "name": "Debug-linux-gcc"
@@ -303,6 +322,7 @@
       "steps": [
         {
           "type": "configure",
+
           "name": "Ninja-linux-gcc"
         },
         {
@@ -314,6 +334,7 @@
           "name": "Release-linux-gcc"
         }
       ]
+
     },
     {
       "name": "RelWithDebInfo-linux-gcc",
@@ -323,9 +344,11 @@
           "name": "Ninja-linux-gcc"
         },
         {
+
           "type": "build",
           "name": "RelWithDebInfo-linux-gcc"
         },
+
         {
           "type": "test",
           "name": "RelWithDebInfo-linux-gcc"
@@ -333,6 +356,7 @@
       ]
     },
     {
+
       "name": "Sanitize-linux-gcc",
       "steps": [
         {
@@ -344,6 +368,7 @@
           "name": "Sanitize-linux-gcc"
         },
         {
+
           "type": "test",
           "name": "Sanitize-linux-gcc"
         }
@@ -353,6 +378,7 @@
       "name": "Debug-linux-clang",
       "steps": [
         {
+
           "type": "configure",
           "name": "Ninja-linux-clang"
         },
@@ -365,6 +391,7 @@
           "name": "Debug-linux-clang"
         }
       ]
+
     },
     {
       "name": "Release-linux-clang",
@@ -389,6 +416,7 @@
         {
           "type": "configure",
           "name": "Ninja-linux-clang"
+
         },
         {
           "type": "build",

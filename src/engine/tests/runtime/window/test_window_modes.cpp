@@ -29,7 +29,6 @@ auto constexpr window_config = [](WindowMode const mode) {
 
 TEST_CASE("Full screen") {
   WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
-
   CHECK(window.native_handle() != nullptr);
   CHECK(window.resolution() != resolution); // Specified resolution is ignored by this mode
 }

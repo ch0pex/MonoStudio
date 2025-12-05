@@ -1,3 +1,0 @@
-[engine.logger]
-path = '/tmp/'
-name = 'Vixel'

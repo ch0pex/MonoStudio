@@ -1,0 +1,82 @@
+name: Multi-Compiler Matrix
+
+on: [push]
+
+jobs:
+
+  # -----------------------
+  # JOB 1: GCC 15
+  # -----------------------
+  build-gcc:
+    name: Build with GCC 15
+    runs-on: self-hosted
+    container:
+      image: gcc:15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Conan (via pipx)
+        run: |
+          # Install pipx and system dependencies
+          apt-get update
+          apt-get install -y pipx git cmake
+
+          # Install Conan using pipx
+          pipx install conan
+
+          # IMPORTANT: Add pipx binary location to GitHub Actions PATH
+          # so subsequent steps can find the 'conan' command.
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure Conan Remote
+        # Now conan is available in the path
+        run: |
+          conan profile detect --force
+          conan remote add my_remote ${{ secrets.CONAN_URL }}
+          conan remote login -p "${{ secrets.CONAN_PASSWORD }}" chopex-conan "${{ secrets.CONAN_USER }}"
+
+      - name: Release Workflow
+        run: cmake --workflow --preset Release-linux-gcc
+
+  # # ----------------------
+  # # JOB 2: Clang 21
+  # # ----------------------
+  # build-clang:
+  #   name: Build with Clang 21
+  #
+  #   runs-on: self-hosted
+  #   container:
+  #     image: silkeh/clang:latest
+  #
+  #   steps:
+  #
+  #     - name: Checkout code
+  #
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Conan (via pipx)
+  #       run: |
+  #
+  #         # Install pipx and dependencies
+  #         # silkeh/clang is usually Debian/Ubuntu based
+  #         apt-get update
+  #         apt-get install -y pipx git cmake
+  #
+  #         # Install Conan using pipx
+  #         pipx install conan
+  #
+  #
+  #         # Add pipx binary location to PATH
+  #
+  #         echo "$HOME/.local/bin" >> $GITHUB_PATH
+  #
+  #     - name: Configure Conan Remote
+  #       run: |
+  #         conan profile detect --force
+  #         conan remote add my_remote ${{ secrets.CONAN_URL }}
+  #         conan remote login my_remote "${{ secrets.CONAN_USER }}" -p "${{ secrets.CONAN_PASSWORD }}"
+  #
+  #     - name: Release Workflow
+  #
+  #       run: cmake --workflow --preset Release-linux-clang

@@ -9,6 +9,7 @@ target_sources(
     # Program
     vixel/program/main_window.hpp
     vixel/program/dispatcher.hpp
+    vixel/program/options.hpp
     vixel/program/config/config.hpp
     vixel/program/config/example.hpp
 

@@ -10,6 +10,10 @@ create_test(signals program/test_signals.cpp)
 # Error
 create_test(expected core/test_expected.cpp)
 
+# Graphics
+create_test(vk_extension graphics/test_vk_extension.cpp)
+
+
 # Input
 create_test(input test_input.cpp)
 

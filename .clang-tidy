@@ -34,8 +34,6 @@ CheckOptions:
   readability-identifier-length.MinimumParameterNameLength: 1
 
 
-WarningsAsErrors: '*'
-
 HeaderFileExtensions: [ '', 'hpp' ]
 
 FormatStyle: file

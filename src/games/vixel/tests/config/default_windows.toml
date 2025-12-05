@@ -1,0 +1,9 @@
+[engine.logger]
+path = '/tmp/'
+name = 'Vixel'
+
+[game]
+[window]
+title = "Vixel"
+mode = "windowed"
+monitor = 0 
