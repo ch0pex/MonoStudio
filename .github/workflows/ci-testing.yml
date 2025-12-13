@@ -1,6 +1,12 @@
 name: Build and Test
 
-on: [push]
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - "scripts/**"
+
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,8 +21,6 @@ jobs:
     runs-on: self-hosted
     container:
       image: fedora:latest
-    env:
-      CONAN_HOME: /root/.conan2
 
     strategy:
       fail-fast: false
@@ -25,16 +29,12 @@ jobs:
           - compiler: gcc
             configure: Ninja-linux-gcc
             debug: Debug-linux-gcc
-            relwithdebinfo: RelWithDebInfo-linux-gcc
             release: Release-linux-gcc
-            sanitize: Sanitize-linux-gcc
             
           - compiler: clang
             configure: Ninja-linux-clang
             debug: Debug-linux-clang
-            relwithdebinfo: RelWithDebInfo-linux-clang
             release: Release-linux-clang
-
             sanitize: Sanitize-linux-clang
 
     steps:
@@ -42,7 +42,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set Parallel Jobs
-
         run: |
           CORES=$(nproc)
           JOBS=$((CORES - 2))
@@ -55,9 +54,7 @@ jobs:
           dnf -y update
           dnf -y install git xorg-x11-server-Xvfb
           git clone https://github.com/ch0pex/dotfiles
-
           cd dotfiles
-
           ./setup.sh install_packages
           ./setup.sh install_languages
           ./setup.sh install_conan
@@ -74,19 +71,12 @@ jobs:
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Configure CMake
-
         run: cmake --preset ${{ matrix.configure }}
 
       - name: Build & Test (Debug)
         run: |
           cmake --build --preset ${{ matrix.debug }}
           xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }}
-
-      - name: Build & Test (RelWithDebInfo)
-        run: |
-          cmake --build --preset ${{ matrix.relwithdebinfo }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.relwithdebinfo }}
-
 
       - name: Build & Test (Release)
         run: |
@@ -96,10 +86,11 @@ jobs:
       - name: Build & Test (Sanitize)
         if: matrix.sanitize != ''
         run: |
-
           cmake --build --preset ${{ matrix.sanitize }}
           xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }}
 
+      - name: Valgrind
+        run: valgrind --leak-check=full xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }}
 
   # -------------------------------------------------------------------
   # JOB 2: WINDOWS (MSVC Nativo)
@@ -113,9 +104,6 @@ jobs:
       matrix:
         include:
           - toolchain: MSVC
-
-            # CORREGIDO: Nombres deben coincidir con CMakePresets.json
-
             configure: Ninja-windows-cl
             debug: Debug-windows-cl
             relwithdebinfo: RelWithDebInfo-windows-cl
@@ -126,7 +114,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Conan
-
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
