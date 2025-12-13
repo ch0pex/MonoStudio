@@ -1,95 +1,156 @@
 #!/bin/bash
 
-# SYNOPSIS
-#   Runs CMake workflows for Windows (CL) and Linux (Clang/GCC) presets from WSL.
-#
-# USAGE
-#   ./build_workflows.sh <preset_base>
-#   Example: ./build_workflows.sh debug
+# ==============================================================================
+# CONFIGURATION
+# ==============================================================================
 
 PRESET_BASE=$1
 
 if [ -z "$PRESET_BASE" ]; then
   echo "Usage: $0 <preset-base>"
+
   exit 1
 fi
 
-# Function to print colored status messages
+# 1. Get the actual UNC path of the current directory
+
+# This returns something like: \\wsl.localhost\Fedora\home\chope\dev\MonoGames
+WSL_UNC_PATH=$(wslpath -w $(pwd))
+
+# Use drive B: to avoid conflicts with Z: or C:
+TEMP_DRIVE="B:"
+
 function print_status {
   echo -e "\033[1;36m[$(date +'%H:%M:%S')] $1\033[0m"
+
 }
 
-# Function to check exit code and stop if failed
 function check_success {
   if [ $? -ne 0 ]; then
     echo -e "\033[1;31mBuild failed! Stopping workflow.\033[0m"
+
     exit 1
   fi
 }
 
-# --- 0. Fix Git Permissions ---
-print_status "Configuring Windows Git to trust WSL paths..."
-powershell.exe -NoProfile -Command "git config --global --replace-all safe.directory '*'"
-check_success
-
-# --- PATH VARIABLES (Adjust according to CMakePresets.json) ---
-# Assumes folder structure: build/<preset-name>
-
-# If paths are fixed in JSON (e.g., build/windows), update these variables.
-WIN_DIR="build/windows"
+# Relative folders (inside the project)
+WIN_BUILD_DIR="build/windows/cl"
 LIN_CLANG_DIR="build/linux/clang"
 LIN_GCC_DIR="build/linux/gcc"
 
-# --- 1. Windows CL Build ---
+# ==============================================================================
+# 1. WINDOWS CL BUILD
+# ==============================================================================
 print_status "Starting Windows (CL) Workflow for: $PRESET_BASE"
+print_status "Mapping WSL path to virtual drive $TEMP_DRIVE..."
+print_status "Source: $WSL_UNC_PATH"
 
-VS_DEV_SHELL="C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1"
-PROJECT_ROOT="Z:\home\chope\dev\MonoGames"
+PS_SCRIPT="temp_build_worker.ps1"
 
-# 1.A: Configure (Generate) if folder does not exist
+# Generate PowerShell script
+cat <<EOF >"$PS_SCRIPT"
+\$ErrorActionPreference = "Stop"
 
-if [ ! -d "$WIN_DIR" ]; then
-  print_status "Build folder not found ($WIN_DIR). Running Configure step..."
-  powershell.exe -ExecutionPolicy Bypass -NoProfile -Command "& '$VS_DEV_SHELL' -Arch amd64 -HostArch amd64; cd $PROJECT_ROOT; cmake.exe --preset 'Ninja-windows-cl'; if (-not \$?) { exit 1 }"
-  check_success
+# VS Dev Shell Path
+\$VsDevCmd = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1"
+# Uncomment if using Community:
+# \$VsDevCmd = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1"
+
+# ---------------------------------------------------------
+# VIRTUAL DRIVE MOUNT (SUBST)
+# ---------------------------------------------------------
+\$Drive = "$TEMP_DRIVE"
+\$Target = "$WSL_UNC_PATH"
+
+# Pre-emptive cleanup in case of a previous stuck state
+if (Test-Path \$Drive) {
+    cmd /c "subst \$Drive /d" > \$null
+}
+
+# Create virtual drive B: pointing to the WSL folder
+cmd /c "subst \$Drive ""\$Target"""
+
+if (-not (Test-Path \$Drive)) {
+    Write-Host "FATAL: Could not create virtual drive \$Drive" -ForegroundColor Red
+    exit 1
+}
+
+# ---------------------------------------------------------
+# COMPILATION
+# ---------------------------------------------------------
+try {
+    # Load VS Environment
+    Write-Host "Loading Visual Studio Environment..." -ForegroundColor Cyan
+    & \$VsDevCmd -Arch amd64 -HostArch amd64 | Out-Null
+
+    # Switch to drive B: (Current project root)
+    Set-Location "\$Drive\\"
+
+    \$PresetConfigure = "Ninja-windows-cl"
+    \$PresetBuild     = "${PRESET_BASE}-windows-cl"
+    \$BuildDir        = "$WIN_BUILD_DIR"
+
+    # Configure
+    if (-not (Test-Path \$BuildDir)) {
+        Write-Host "Configuring CMake preset: \$PresetConfigure" -ForegroundColor Yellow
+        cmake.exe --preset \$PresetConfigure
+        if (\$LASTEXITCODE -ne 0) { throw "CMake Configuration Failed" }
+    }
+
+    # Build
+    Write-Host "Building preset: \$PresetBuild" -ForegroundColor Yellow
+    cmake.exe --build --preset \$PresetBuild
+    if (\$LASTEXITCODE -ne 0) { throw "CMake Build Failed" }
+
+    # Test
+    Write-Host "Running Tests..." -ForegroundColor Yellow
+    ctest.exe --preset \$PresetBuild
+    if (\$LASTEXITCODE -ne 0) { throw "CTest Failed" }
+
+} catch {
+    Write-Host "Error: \$_.Exception.Message" -ForegroundColor Red
+    # Ensure drive unmount even on failure
+    cmd /c "subst \$Drive /d"
+    exit 1
+}
+
+# Unmount drive upon success
+cmd /c "subst \$Drive /d"
+EOF
+
+# Execute PowerShell
+powershell.exe -ExecutionPolicy Bypass -File "$PS_SCRIPT"
+EXIT_CODE=$?
+rm "$PS_SCRIPT"
+
+if [ $EXIT_CODE -ne 0 ]; then
+  echo -e "\033[1;31mWindows Build failed!\033[0m"
+  exit 1
 fi
 
-# 1.B: Build and Test
-powershell.exe -ExecutionPolicy Bypass -NoProfile -Command "& '$VS_DEV_SHELL' -Arch amd64 -HostArch amd64; cd $PROJECT_ROOT; cmake.exe --build --preset '${PRESET_BASE}-windows-cl'; ctest.exe --preset '${PRESET_BASE}-windows-cl'; if (-not \$?) { exit 1 }"
+# ==============================================================================
+# 2. LINUX WORKFLOWS
+# ==============================================================================
+print_status "Starting Linux Workflows..."
 
-check_success
-
-# --- 2. Linux Clang Build ---
-print_status "Starting Linux (Clang) Workflow for: $PRESET_BASE"
-
-# 2.A: Configure if folder does not exist
 if [ ! -d "$LIN_CLANG_DIR" ]; then
-  print_status "Build folder not found ($LIN_CLANG_DIR). Running Configure step..."
   cmake --preset "Ninja-linux-clang"
   check_success
 fi
 
-# 2.B: Build and Test
-cmake --build --preset "$PRESET_BASE-linux-clang"
-ctest --preset "$PRESET_BASE-linux-clang"
+cmake --build --preset "${PRESET_BASE}-linux-clang"
+check_success
+ctest --preset "${PRESET_BASE}-linux-clang"
 check_success
 
-# --- 3. Linux GCC Build ---
-
-print_status "Starting Linux (GCC) Workflow for: $PRESET_BASE"
-
-# 3.A: Configure if folder does not exist
 if [ ! -d "$LIN_GCC_DIR" ]; then
-  print_status "Build folder not found ($LIN_GCC_DIR). Running Configure step..."
   cmake --preset "Ninja-linux-gcc"
-
   check_success
 fi
 
-# 3.B: Build and Test
-cmake --build --preset "$PRESET_BASE-linux-gcc"
-
-ctest --preset "$PRESET_BASE-linux-gcc"
+cmake --build --preset "${PRESET_BASE}-linux-gcc"
+check_success
+ctest --preset "${PRESET_BASE}-linux-gcc"
 check_success
 
 print_status "All workflows completed successfully!"

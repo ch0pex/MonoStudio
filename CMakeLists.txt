@@ -10,8 +10,9 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 # Engine
-add_subdirectory(src/engine)
+add_subdirectory(src/libs/rflect3d)
 
 # Games
-add_subdirectory(src/games/vixel)
+add_subdirectory(src/apps/vixel)
+# add_subdirectory(src/apps/ezTrade)
 

@@ -11,7 +11,7 @@ class MonoGameRecipe(ConanFile):
     license = "MIT License"
     author = "Álvaro Cabrera Barrio"
     url = ""
-    description = "MonoGame Studio games dependencies"
+    description = "MonoGame Studio dependencies"
     topics = ("<Put some tag here>", "<here>", "<and here>")
 
     # Binary configuration
@@ -21,8 +21,7 @@ class MonoGameRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     default_options = {
-        "reflect-cpp/*:with_toml": True,
-        "boost/*:without_stacktrace":True
+        "reflect-cpp/*:with_toml": True
     }
 
     def layout(self):

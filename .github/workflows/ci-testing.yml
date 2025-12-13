@@ -1,82 +1,175 @@
-name: Multi-Compiler Matrix
+name: Build and Test
 
 on: [push]
 
 jobs:
 
-  # -----------------------
-  # JOB 1: GCC 15
-  # -----------------------
-  build-gcc:
-    name: Build with GCC 15
+  # -------------------------------------------------------------------
+  # JOB 1: LINUX (GCC / CLANG en Fedora Container)
+  # -------------------------------------------------------------------
+  linux-builds:
+    name: Linux - ${{ matrix.compiler }}
     runs-on: self-hosted
     container:
-      image: gcc:15
+      image: fedora:latest
     
+    env:
+      CONAN_HOME: /root/.conan2
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: gcc
+            configure: Ninja-linux-gcc
+            debug: Debug-linux-gcc
+            relwithdebinfo: RelWithDebInfo-linux-gcc
+            release: Release-linux-gcc
+            sanitize: Sanitize-linux-gcc
+            
+          - compiler: clang
+            configure: Ninja-linux-clang
+            debug: Debug-linux-clang
+            relwithdebinfo: RelWithDebInfo-linux-clang
+            release: Release-linux-clang
+
+            sanitize: Sanitize-linux-clang
+
+    steps:
+
+      - name: Clean Workspace (Self-Hosted)
+        run: |
+
+          rm -rf ./*
+          rm -rf *
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Parallel Jobs
+
+        run: |
+          CORES=$(nproc)
+          JOBS=$((CORES - 2))
+          if [ "$JOBS" -lt 1 ]; then JOBS=1; fi
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$JOBS" >> $GITHUB_ENV
+          echo "PARALLEL_JOBS=$JOBS" >> $GITHUB_ENV
+
+      - name: Install System Dependencies
+        run: |
+          dnf -y update
+          dnf -y install git xorg-x11-server-Xvfb
+          git clone https://github.com/ch0pex/dotfiles
+
+          cd dotfiles
+
+          ./setup.sh install_packages
+          ./setup.sh install_languages
+          ./setup.sh install_conan
+          cd ..
+          rm -rf dotfiles
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+
+      - name: Configure Conan Remote
+        run: |
+          conan profile detect --force
+          conan remote remove '*'
+          conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
+          conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
+
+      - name: Configure CMake
+
+        run: cmake --preset ${{ matrix.configure }}
+
+      - name: Build & Test (Debug)
+        run: |
+          cmake --build --preset ${{ matrix.debug }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }}
+
+      - name: Build & Test (RelWithDebInfo)
+        run: |
+          cmake --build --preset ${{ matrix.relwithdebinfo }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.relwithdebinfo }}
+
+
+      - name: Build & Test (Release)
+        run: |
+          cmake --build --preset ${{ matrix.release }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.release }}
+
+      - name: Build & Test (Sanitize)
+        if: matrix.sanitize != ''
+        run: |
+
+          cmake --build --preset ${{ matrix.sanitize }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }}
+
+
+  # -------------------------------------------------------------------
+  # JOB 2: WINDOWS (MSVC Nativo)
+  # -------------------------------------------------------------------
+  windows-builds:
+    name: Windows - ${{ matrix.toolchain }}
+    runs-on: windows-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolchain: MSVC
+
+            # CORREGIDO: Nombres deben coincidir con CMakePresets.json
+
+            configure: Ninja-windows-cl
+            debug: Debug-windows-cl
+            relwithdebinfo: RelWithDebInfo-windows-cl
+            release: Release-windows-cl
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Conan (via pipx)
-        run: |
-          # Install pipx and system dependencies
-          apt-get update
-          apt-get install -y pipx git cmake
 
-          # Install Conan using pipx
-          pipx install conan
+      - name: Install Conan
 
-          # IMPORTANT: Add pipx binary location to GitHub Actions PATH
-          # so subsequent steps can find the 'conan' command.
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install Conan Package
+        shell: bash
+        run: pip install conan
+
+      - name: Setup MSVC Environment
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure Conan Remote
-        # Now conan is available in the path
+        shell: bash
         run: |
           conan profile detect --force
-          conan remote add my_remote ${{ secrets.CONAN_URL }}
-          conan remote login -p "${{ secrets.CONAN_PASSWORD }}" chopex-conan "${{ secrets.CONAN_USER }}"
+          conan remote remove '*'
+          conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
+          conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
-      - name: Release Workflow
-        run: cmake --workflow --preset Release-linux-gcc
+      - name: Configure CMake
 
-  # # ----------------------
-  # # JOB 2: Clang 21
-  # # ----------------------
-  # build-clang:
-  #   name: Build with Clang 21
-  #
-  #   runs-on: self-hosted
-  #   container:
-  #     image: silkeh/clang:latest
-  #
-  #   steps:
-  #
-  #     - name: Checkout code
-  #
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Setup Conan (via pipx)
-  #       run: |
-  #
-  #         # Install pipx and dependencies
-  #         # silkeh/clang is usually Debian/Ubuntu based
-  #         apt-get update
-  #         apt-get install -y pipx git cmake
-  #
-  #         # Install Conan using pipx
-  #         pipx install conan
-  #
-  #
-  #         # Add pipx binary location to PATH
-  #
-  #         echo "$HOME/.local/bin" >> $GITHUB_PATH
-  #
-  #     - name: Configure Conan Remote
-  #       run: |
-  #         conan profile detect --force
-  #         conan remote add my_remote ${{ secrets.CONAN_URL }}
-  #         conan remote login my_remote "${{ secrets.CONAN_USER }}" -p "${{ secrets.CONAN_PASSWORD }}"
-  #
-  #     - name: Release Workflow
-  #
-  #       run: cmake --workflow --preset Release-linux-clang
+        shell: bash
+        run: cmake --preset ${{ matrix.configure }}
+
+      - name: Build & Test (Debug)
+        shell: bash
+        run: |
+          cmake --build --preset ${{ matrix.debug }}
+          ctest --preset ${{ matrix.debug }}
+
+      - name: Build & Test (RelWithDebInfo)
+        shell: bash
+        run: |
+          cmake --build --preset ${{ matrix.relwithdebinfo }}
+          ctest --preset ${{ matrix.relwithdebinfo }}
+
+      - name: Build & Test (Release)
+        shell: bash
+        run: |
+          cmake --build --preset ${{ matrix.release }}
+          ctest --preset ${{ matrix.release }}
