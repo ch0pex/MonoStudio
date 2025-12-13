@@ -1,50 +1,85 @@
 #!/bin/bash
 
-# 1. Join arguments into a single string.
-#    We do not wrap them in single quotes individually because we want
-#    Invoke-Expression to parse the spaces as arguments, not as a filename.
 CMD_LINE="$*"
 
 if [ -z "$CMD_LINE" ]; then
-  echo "Usage: $0 <command> [args...]"
-  echo "Example: $0 cmake --preset windows-debug"
-
+  echo "Uso: $0 <comando> [argumentos...]"
+  echo "Ejemplo: $0 cmake --build build/windows/cl"
   exit 1
+
 fi
 
-# 2. Escape single quotes for the PowerShell string wrapper.
-#    Since we are passing this inside a PowerShell string enclosed in ',
-#    we need to replace any ' in the command with '' (PowerShell escape).
-ESCAPED_CMD_LINE="${CMD_LINE//\'/\'\'}"
+WSL_UNC_PATH=$(wslpath -w "$(pwd)")
+TEMP_DRIVE="B:"
+PS_SCRIPT="temp_exec_worker.ps1"
 
-function check_success {
-  if [ $? -ne 0 ]; then
-    echo -e "\033[1;31mCommand failed in Windows environment.\033[0m"
+cat <<EOF >"$PS_SCRIPT"
+\$ErrorActionPreference = "Stop"
+
+# --- CONFIGURACIÓN ---
+\$VsDevCmd_Community = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1"
+\$VsDevCmd_BuildTools = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1"
+
+if (Test-Path \$VsDevCmd_BuildTools) {
+    \$VsDevCmd = \$VsDevCmd_BuildTools
+} elseif (Test-Path \$VsDevCmd_Community) {
+    \$VsDevCmd = \$VsDevCmd_Community
+} else {
+    Write-Error "No se encontró Launch-VsDevShell.ps1"
     exit 1
-  fi
 }
 
-WIN_CWD=$(wslpath -w "$(pwd)")
+# --- MONTAJE DE UNIDAD (SUBST) ---
+\$Drive = "$TEMP_DRIVE"
+\$Target = "$WSL_UNC_PATH"
 
-# Path to the Visual Studio Developer Shell script
-VS_DEV_SHELL="C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1"
-VS_DEV_SHELL_WSL=$(wslpath -u "${VS_DEV_SHELL//\\/\/}")
 
-if [ ! -f "$VS_DEV_SHELL_WSL" ]; then
-  VS_DEV_SHELL="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1"
-fi
+# Limpieza preventiva
+if (Test-Path \$Drive) { cmd /c "subst \$Drive /d" > \$null }
 
-echo -e "\033[1;36m[VS-Exec] Running: $CMD_LINE\033[0m"
 
-# Execute logic:
-# CHANGED: Replaced '&' with 'Invoke-Expression' (iex).
-# This allows PowerShell to interpret the string "cmake -arg" as command + arg,
-# instead of looking for a file named "cmake -arg".
-powershell.exe -ExecutionPolicy Bypass -NoProfile -Command "
-  & '$VS_DEV_SHELL' -Arch amd64 -HostArch amd64 | Out-Null; 
-  cd '$WIN_CWD'; 
-  Invoke-Expression '$ESCAPED_CMD_LINE'; 
-  if (\$LastExitCode -ne 0) { exit \$LastExitCode }
-"
+# Montar unidad
+cmd /c "subst \$Drive ""\$Target"""
 
-check_success
+if (-not (Test-Path \$Drive)) {
+    Write-Host "FATAL: No se pudo montar la unidad \$Drive" -ForegroundColor Red
+
+    exit 1
+}
+
+# --- EJECUCIÓN ---
+try {
+    # Cargar entorno VS (Silencioso para no ensuciar la salida del comando)
+    & \$VsDevCmd -Arch amd64 -HostArch amd64 | Out-Null
+
+    # Cambiar a la unidad virtual
+
+    Set-Location "\$Drive\\"
+
+    Write-Host "[VS-Exec] Running on $TEMP_DRIVE : $CMD_LINE" -ForegroundColor Cyan
+
+    # Ejecutar el comando arbitrario
+    # Invoke-Expression permite pasar argumentos complejos
+    Invoke-Expression "$CMD_LINE"
+
+    if (\$LASTEXITCODE -ne 0) { exit \$LASTEXITCODE }
+
+} catch {
+    Write-Host "Error executing command: \$_.Exception.Message" -ForegroundColor Red
+    exit 1
+} finally {
+    # --- LIMPIEZA (Siempre desmontar) ---
+    # Volvemos a C: para no bloquear el desmontaje
+
+    Set-Location "C:\" 
+
+    cmd /c "subst \$Drive /d" > \$null
+}
+EOF
+
+powershell.exe -ExecutionPolicy Bypass -File "$PS_SCRIPT"
+EXIT_CODE=$?
+
+rm "$PS_SCRIPT"
+
+exit $EXIT_CODE
