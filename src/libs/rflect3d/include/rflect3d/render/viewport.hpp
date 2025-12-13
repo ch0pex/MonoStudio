@@ -4,9 +4,10 @@
 
 namespace vix {
 
-template <typename SurfaceType> struct Viewport {
-  rflect::Window window{};
-  SurfaceType surface{};
+template<typename SurfaceType>
+struct Viewport {
+  rflect::Window window {};
+  SurfaceType surface {};
 };
 
 } // namespace vix

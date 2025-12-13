@@ -1,0 +1,27 @@
+name: Linting
+
+
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - "scripts/**"
+
+jobs:
+  check-format:
+    name: Check Code Style
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: |
+          sudo dnf update -y
+          sudo dnf install -y git clang-format
+
+      - name: Run Clang-Format Check
+        run: git ls-files | grep -E '\.(cpp|h|hpp|c|cc)$' | xargs clang-format -style=file --dry-run --Werror
