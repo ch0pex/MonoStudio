@@ -2,8 +2,11 @@ name: Build and Test
 
 on: [push]
 
-jobs:
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   # -------------------------------------------------------------------
   # JOB 1: LINUX (GCC / CLANG en Fedora Container)
   # -------------------------------------------------------------------
@@ -12,7 +15,6 @@ jobs:
     runs-on: self-hosted
     container:
       image: fedora:latest
-    
     env:
       CONAN_HOME: /root/.conan2
 
@@ -36,13 +38,6 @@ jobs:
             sanitize: Sanitize-linux-clang
 
     steps:
-
-      - name: Clean Workspace (Self-Hosted)
-        run: |
-
-          rm -rf ./*
-          rm -rf *
-
       - name: Checkout code
         uses: actions/checkout@v4
 
