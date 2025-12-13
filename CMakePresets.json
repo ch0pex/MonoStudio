@@ -221,6 +221,12 @@
       "configuration": "RelWithDebInfo",
       "inherits": "base-test",
       "configurePreset": "Ninja-linux-clang"
+    },
+    {
+      "name": "Sanitize-linux-clang",
+      "configuration": "Sanitize",
+      "inherits": "base-test",
+      "configurePreset": "Ninja-linux-clang"
     }
   ],
   "workflowPresets": [
@@ -391,6 +397,23 @@
         {
           "type": "test",
           "name": "RelWithDebInfo-linux-clang"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-linux-clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Ninja-linux-clang"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-linux-clang"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-linux-clang"
         }
       ]
     }
