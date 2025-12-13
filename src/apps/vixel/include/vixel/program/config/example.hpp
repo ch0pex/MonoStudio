@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rflect3d/program/config/config.hpp"
+#include "reflect3d/program/config/config.hpp"
 
 #include <rfl/toml/load.hpp>
 

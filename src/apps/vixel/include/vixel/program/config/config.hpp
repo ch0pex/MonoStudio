@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rflect3d/config/base_config.hpp"
-#include "rflect3d/window/utils/resolution.hpp"
-#include "rflect3d/window/window_config.hpp"
-#include "rflect3d/window/window_types.hpp"
+#include "reflect3d/window/window_config.hpp"
+
+//
+#include <mono-core/config/base_config.hpp>
 
 #include <rfl/toml/load.hpp>
 

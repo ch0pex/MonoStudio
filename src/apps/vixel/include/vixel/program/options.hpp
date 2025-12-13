@@ -1,9 +1,10 @@
 #pragma once
 
-#include "rflect3d/config/parser.hpp"
-#include "rflect3d/core/error/expected.hpp"
-#include "rflect3d/program/options.hpp"
 #include "vixel/program/config/config.hpp"
+
+#include <mono-core/program/options.hpp>
+#include <mono-core/config/parser.hpp>
+#include <mono-core/error/expected.hpp>
 
 namespace vix::po {
 

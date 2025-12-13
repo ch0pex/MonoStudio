@@ -1,10 +1,10 @@
 #pragma once
 
-#include <rflect3d/core/error/expected.hpp>
-#include <rflect3d/core/execution/execution.hpp>
-#include <rflect3d/core/execution/signals.hpp>
-#include <rflect3d/input/input.hpp>
-#include <rflect3d/program/handle_error.hpp>
+#include <mono-core/error/expected.hpp>
+#include <mono-core/execution/execution.hpp>
+#include <mono-core/execution/signals.hpp>
+#include <mono-core/program/handle_error.hpp>
+#include <reflect3d/input/input.hpp>
 
 #include "vixel/program/config/config.hpp"
 #include "vixel/program/main_window.hpp"

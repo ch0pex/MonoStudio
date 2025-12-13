@@ -134,7 +134,6 @@ jobs:
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Configure CMake
-
         shell: bash
         run: cmake --preset ${{ matrix.configure }}
 

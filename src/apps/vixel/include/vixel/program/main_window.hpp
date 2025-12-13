@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rflect3d/core/execution/stop_token.hpp"
-#include "rflect3d/window/window.hpp"
-#include "rflect3d/window/window_builder.hpp"
-#include "rflect3d/window/window_config.hpp"
+#include "mono-core/execution/stop_token.hpp"
+#include "reflect3d/window/window.hpp"
+#include "reflect3d/window/window_builder.hpp"
+#include "reflect3d/window/window_config.hpp"
 
 namespace vix {
 

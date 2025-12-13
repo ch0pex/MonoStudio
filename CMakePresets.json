@@ -39,7 +39,6 @@
       "name": "Ninja-windows-cl",
       "generator": "Ninja Multi-Config",
       "binaryDir": "build/windows/cl",
-      "description": "Configuracion para MSVC (Visual Studio) usando Ninja",
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
