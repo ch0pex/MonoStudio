@@ -46,7 +46,7 @@ inline NativeWindow create_handle(
   NativeWindow const window = glfwCreateWindow(resolution.width, resolution.height, title.c_str(), monitor, share);
 
   if (window == nullptr)
-    throw std::runtime_error("no se pudo crear la ventana nativa");
+    throw std::runtime_error("Couldn't create native window");
 
   return window;
 }
