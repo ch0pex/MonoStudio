@@ -2,8 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
-namespace rflect::input {
+namespace rf3d::input {
 
 inline void poll_events() { glfwPollEvents(); }
 
-} // namespace rflect::input
+} // namespace rf3d::input

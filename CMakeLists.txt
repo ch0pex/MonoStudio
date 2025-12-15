@@ -11,7 +11,7 @@ endif()
 include(dependencies)
 
 # Libs
-add_subdirectory(src/libs/mono-core)
+add_subdirectory(src/libs/mono)
 add_subdirectory(src/libs/reflect3d)
 
 # Apps

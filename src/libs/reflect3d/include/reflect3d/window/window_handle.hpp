@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mono-core/logging/logger.hpp>
-#include <mono-core/misc/passkey.hpp>
+#include <mono/logging/logger.hpp>
+#include <mono/misc/passkey.hpp>
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/context.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
@@ -9,7 +9,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace rflect {
+namespace rf3d {
 
 class WindowBuilder;
 
@@ -17,7 +17,7 @@ class WindowHandle {
 public:
   using native_type = GLFWwindow*;
 
-  WindowHandle(native_type handle, PassKey<WindowBuilder> /*unused*/) : handle(handle) { }
+  WindowHandle(native_type handle, mono::PassKey<WindowBuilder> /*unused*/) : handle(handle) { }
 
   WindowHandle(WindowHandle&& other) noexcept : handle(other.handle) { other.handle = nullptr; }
 
@@ -85,4 +85,4 @@ private:
   native_type handle {};
 };
 
-} // namespace rflect
+} // namespace rf3d

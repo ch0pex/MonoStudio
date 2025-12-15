@@ -1,13 +1,13 @@
 #pragma once
 
-#include <mono-core/misc/passkey.hpp>
+#include <mono/misc/passkey.hpp>
 
 //
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
-namespace rflect {
+namespace rf3d {
 
 class WindowBuilder;
 
@@ -22,11 +22,11 @@ struct GlfwContext {
   GlfwContext& operator=(GlfwContext const&) = delete;
   ~GlfwContext() { glfwTerminate(); }
 
-  GlfwContext(PassKey<WindowBuilder> key [[maybe_unused]]) {
+  GlfwContext(mono::PassKey<WindowBuilder> key [[maybe_unused]]) {
     if (glfwInit() == 0) {
       throw std::runtime_error("Couldn't initilize glfw");
     };
   }
 };
 
-} // namespace rflect
+} // namespace rf3d

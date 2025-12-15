@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace rflect {
+namespace rf3d {
 
 using WindowHint      = int;
 using WindowHintValue = int;
@@ -19,4 +19,4 @@ enum class WindowMode : std::uint8_t {
   windowed,
 };
 
-} // namespace rflect
+} // namespace rf3d

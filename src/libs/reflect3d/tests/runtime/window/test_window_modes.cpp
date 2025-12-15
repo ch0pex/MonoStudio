@@ -13,7 +13,7 @@
 
 TEST_SUITE_BEGIN("Window");
 
-using namespace rflect;
+using namespace rf3d;
 
 constexpr Resolution resolution {
   .width  = 800,
@@ -29,12 +29,12 @@ auto constexpr window_config = [](WindowMode const mode) {
 };
 
 TEST_CASE("Full screen") {
-  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
+  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
   CHECK(window.native_handle() != nullptr);
 }
 
 TEST_CASE("Full screen borderless") {
-  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
+  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
   auto monitor        = Monitor::primary();
 
   CHECK(window.native_handle() != nullptr);
@@ -44,14 +44,14 @@ TEST_CASE("Full screen borderless") {
 }
 
 TEST_CASE("Windowed borderless") {
-  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
+  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
 
   CHECK(window.native_handle() != nullptr);
   CHECK(window.size() == resolution);
 }
 
 TEST_CASE("Windowed normal") {
-  WindowHandle window = rflect::WindowBuilder(window_config(WindowMode::windowed)).build();
+  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::windowed)).build();
 
   CHECK(window.size() == resolution);
   CHECK(window.native_handle() != nullptr);

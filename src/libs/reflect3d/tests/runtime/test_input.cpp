@@ -5,6 +5,6 @@
 
 TEST_SUITE_BEGIN("Input");
 
-TEST_CASE("Poll events") { rflect::input::poll_events(); }
+TEST_CASE("Poll events") { rf3d::input::poll_events(); }
 
 TEST_SUITE_END();

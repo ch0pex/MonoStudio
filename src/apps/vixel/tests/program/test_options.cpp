@@ -14,7 +14,7 @@ TEST_CASE("No Program options") {
   std::array<char*, 1> argv = {program.data()};
 
   CHECK_FALSE(vix::po::parse_options(argv));
-  CHECK_FALSE(rflect::po::parse_options<vix::config::Vixel>(argv));
+  CHECK_FALSE(mono::program::parse_options<vix::config::Vixel>(argv));
 }
 
 TEST_SUITE_END();

@@ -5,12 +5,12 @@
 #include "reflect3d/window/window_handle.hpp"
 #include "reflect3d/window/window_modes.hpp"
 
-#include <mono-core/logging/logger.hpp>
-#include <mono-core/misc/passkey.hpp>
+#include <mono/logging/logger.hpp>
+#include <mono/misc/passkey.hpp>
 
 #include <GLFW/glfw3.h>
 
-namespace rflect {
+namespace rf3d {
 
 /**
  * @brief Builder class to create platform windows
@@ -28,7 +28,7 @@ public:
   using native_type = GLFWwindow*;
 
   explicit WindowBuilder(config::Window const& config = {}) {
-    static GlfwContext context {PassKey<WindowBuilder> {}};
+    static GlfwContext context {mono::PassKey<WindowBuilder> {}};
 
     // Handle must be created after GLFW context
     handle = detail::native_window(config); // NOLINT
@@ -154,7 +154,7 @@ public:
   }
 
   WindowHandle build() {
-    WindowHandle window_handle {handle, PassKey<WindowBuilder> {}};
+    WindowHandle window_handle {handle, mono::PassKey<WindowBuilder> {}};
     handle = nullptr;
     return window_handle;
   }
@@ -163,4 +163,4 @@ private:
   native_type handle {};
 };
 
-} // namespace rflect
+} // namespace rf3d

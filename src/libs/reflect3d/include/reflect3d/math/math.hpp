@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 
-namespace rflect::math {
+namespace rf3d::math {
 
 using namespace ::glm;
 

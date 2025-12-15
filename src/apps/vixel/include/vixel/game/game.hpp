@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace rflect {
+namespace rf3d {
 
 
 class Game {
@@ -10,4 +10,4 @@ private:
   // a lot of things
 };
 
-} // namespace rflect
+} // namespace rf3d

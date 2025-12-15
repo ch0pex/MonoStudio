@@ -1,17 +1,17 @@
 #pragma once
 
-#include <mono-core/misc/passkey.hpp>
+#include <mono/misc/passkey.hpp>
 #include <reflect3d/window/context.hpp>
 #include <reflect3d/window/resolution.hpp>
 
 
 #include <string>
 
-namespace rflect {
+namespace rf3d {
 
 class Renderer {
 
 private:
 };
 
-} // namespace rflect
+} // namespace rf3d

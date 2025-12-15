@@ -9,7 +9,7 @@ int main() try { //
     throw std::runtime_error("Couldn't initilize glfw");
   };
 
-  auto monitors = rflect::get_monitors();
+  auto monitors = rf3d::get_monitors();
   LOG_INFO("Monitors count: {}", monitors.size());
 
   for (auto monitor: monitors) {

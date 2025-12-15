@@ -11,8 +11,8 @@ TEST_SUITE("WindowBuilder") {
   TEST_CASE("Create siemple window") {
     REQUIRE(glfwInit() == GLFW_TRUE);
 
-    rflect::WindowBuilder builder(
-        rflect::config::Window {
+    rf3d::WindowBuilder builder(
+        rf3d::config::Window {
           .title      = "TestWindow",
           .resolution = {.width = 800, .height = 600},
         }
@@ -38,7 +38,7 @@ TEST_SUITE("WindowBuilder") {
     static bool focus_called = false;
     auto focus_callback      = [](GLFWwindow* /*w*/, int /*f*/) { focus_called = true; };
 
-    rflect::WindowBuilder builder;
+    rf3d::WindowBuilder builder;
     builder.on_focus(focus_callback).on_close([](GLFWwindow*) { }).on_size([](GLFWwindow*, int, int) { });
 
     auto window = builder.build();
@@ -57,7 +57,7 @@ TEST_SUITE("WindowBuilder") {
   TEST_CASE("Registrar default callbacks") {
     REQUIRE(glfwInit() == GLFW_TRUE);
 
-    rflect::WindowBuilder builder;
+    rf3d::WindowBuilder builder;
     builder.default_callbacks();
     auto window = builder.build();
 

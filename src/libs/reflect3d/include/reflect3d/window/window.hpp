@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 
-namespace rflect {
+namespace rf3d {
 
 /**
  * @brief This window class destroys gflw window handle when destructor is invoked
@@ -37,4 +37,4 @@ public:
   ~Window() { glfwDestroyWindow(native_handle()); }
 };
 
-} // namespace rflect
+} // namespace rf3d

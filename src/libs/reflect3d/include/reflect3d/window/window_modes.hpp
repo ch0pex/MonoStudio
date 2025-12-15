@@ -12,7 +12,7 @@
 #include <utility>
 
 
-namespace rflect::detail {
+namespace rf3d::detail {
 
 inline void center_window_on_monitor(GLFWwindow* window, GLFWmonitor* monitor, int width, int height) {
   if (monitor == nullptr)
@@ -136,4 +136,4 @@ inline NativeWindow native_window(config::Window const& config) {
   std::unreachable();
 }
 
-} // namespace rflect::detail
+} // namespace rf3d::detail

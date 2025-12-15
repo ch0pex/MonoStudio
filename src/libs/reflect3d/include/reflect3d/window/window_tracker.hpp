@@ -10,7 +10,7 @@
 #include <initializer_list>
 #include <vector>
 
-namespace rflect {
+namespace rf3d {
 
 /**
  * TODO Actually, this should be a tree structure
@@ -46,4 +46,4 @@ private:
 };
 
 
-} // namespace rflect
+} // namespace rf3d

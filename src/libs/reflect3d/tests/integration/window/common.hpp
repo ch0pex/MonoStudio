@@ -7,18 +7,18 @@
 #include "reflect3d/window/window_config.hpp"
 #include "reflect3d/window/window_types.hpp"
 
-#include <mono-core/execution/signals.hpp>
-#include <mono-core/execution/stop_token.hpp>
+#include <mono/execution/signals.hpp>
+#include <mono/execution/stop_token.hpp>
 
-inline void test_window(rflect::WindowMode const mode, std::uint8_t const monitor_id) {
-  rflect::config::Window window_spec {.mode = mode, .monitor = monitor_id};
+inline void test_window(rf3d::WindowMode const mode, std::uint8_t const monitor_id) {
+  rf3d::config::Window window_spec {.mode = mode, .monitor = monitor_id};
 
-  rflect::Window window {rflect::WindowBuilder(window_spec).build()};
+  rf3d::Window window {rf3d::WindowBuilder(window_spec).build()};
 
-  rflect::ex::setup_signals();
+  mono::ex::setup_signals();
 
-  while (rflect::ex::should_run()) {
-    rflect::input::poll_events();
+  while (mono::ex::should_run()) {
+    rf3d::input::poll_events();
     glfwSwapBuffers(window.native_handle());
   }
 }

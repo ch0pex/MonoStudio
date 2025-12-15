@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <format>
 
-namespace rflect {
+namespace rf3d {
 
 struct Resolution {
   std::uint16_t width {1920};
@@ -13,14 +13,14 @@ struct Resolution {
 };
 
 
-} // namespace rflect
+} // namespace rf3d
 //
 
 template<>
-struct std::formatter<rflect::Resolution> {
+struct std::formatter<rf3d::Resolution> {
   static constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
 
-  static auto format(rflect::Resolution const& r, std::format_context& ctx) {
+  static auto format(rf3d::Resolution const& r, std::format_context& ctx) {
     return std::format_to(ctx.out(), "{}x{}", r.width, r.height);
   }
 };

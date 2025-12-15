@@ -12,7 +12,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace rflect::config {
+namespace rf3d::config {
 
 // --- Window Types  ---
 
@@ -27,4 +27,4 @@ struct Window {
   }};
 };
 
-} // namespace rflect::config
+} // namespace rf3d::config

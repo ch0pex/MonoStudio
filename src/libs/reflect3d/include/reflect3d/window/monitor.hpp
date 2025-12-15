@@ -4,7 +4,7 @@
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window_types.hpp"
 
-#include <mono-core/logging/logger.hpp>
+#include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
 #include <optional>
@@ -12,7 +12,7 @@
 #include <span>
 #include <stdexcept>
 
-namespace rflect {
+namespace rf3d {
 
 namespace detail {
 
@@ -85,4 +85,4 @@ inline std::vector<Monitor> get_monitors() {
 }
 
 
-} // namespace rflect
+} // namespace rf3d

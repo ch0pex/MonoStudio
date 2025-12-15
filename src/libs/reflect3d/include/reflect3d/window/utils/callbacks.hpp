@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mono-core/execution/stop_token.hpp"
-#include "mono-core/logging/logger.hpp"
+#include "mono/execution/stop_token.hpp"
+#include "mono/logging/logger.hpp"
 
 //
 #include <GLFW/glfw3.h>
@@ -9,7 +9,7 @@
 //
 #include <chrono>
 
-namespace rflect::callbacks {
+namespace rf3d::callbacks {
 
 // Window event callback typedefs
 using WindowClose        = GLFWwindowclosefun;
@@ -40,7 +40,7 @@ namespace defaults {
 // --- Window callbacks ---
 
 inline constexpr WindowClose window_close = [](GLFWwindow* handle [[maybe_unused]]) {
-  ex::request_stop();
+  mono::ex::request_stop();
   LOG_INFO("Window '{}' is closing (close requested).", glfwGetWindowTitle(handle));
 };
 
@@ -136,4 +136,4 @@ inline constexpr Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, 
 
 } // namespace defaults
 //
-} // namespace rflect::callbacks
+} // namespace rf3d::callbacks

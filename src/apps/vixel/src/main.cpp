@@ -3,16 +3,16 @@
 #include "vixel/program/dispatcher.hpp"
 #include "vixel/program/options.hpp"
 
-#include <mono-core/config/parser.hpp>
-#include <mono-core/error/log_error.hpp>
+#include <mono/config/parser.hpp>
+#include <mono/error/log_error.hpp>
 
 int main(int argc, char** argv) {
   using namespace vix;
 
   auto result = vix::po::parse_options(std::span(argv, argc)) //
-                    .and_then(rflect::config::init_logger<config::Vixel>)
+                    .and_then(mono::config::init_logger<config::Vixel>)
                     .and_then(program::run)
-                    .or_else(rflect::err::log<config::Vixel>);
+                    .or_else(mono::err::log<config::Vixel>);
 
   return result ? EXIT_SUCCESS : EXIT_FAILURE;
 }
