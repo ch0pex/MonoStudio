@@ -43,4 +43,4 @@ target_link_libraries(
     reflectcpp::reflectcpp
 )
 
-add_library(mono::core-lib ALIAS mono-lib)
+add_library(mono::mono-lib ALIAS mono-lib)

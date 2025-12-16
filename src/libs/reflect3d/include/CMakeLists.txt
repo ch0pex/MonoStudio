@@ -36,7 +36,7 @@ target_link_libraries(
     glfw
     Vulkan::Loader
     glm::glm
-    mono::core-lib
+    mono::mono-lib
 )
 
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)

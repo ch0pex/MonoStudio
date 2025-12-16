@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mono/execution/inspect.hpp"
+
 #include <exec/single_thread_context.hpp>
 #include <exec/static_thread_pool.hpp>
 #include <exec/timed_thread_scheduler.hpp>
@@ -26,13 +28,13 @@ using stdexec::let_error;
 using stdexec::let_stopped;
 using stdexec::sender;
 using stdexec::receiver;
+using stdexec::split;
 
 // exec 
 using exec::static_thread_pool;
 using exec::timed_thread_scheduler;
 using exec::timed_thread_context;
 using exec::single_thread_context;
-
 
 } // namespace mono::ex
 

@@ -9,3 +9,6 @@ create_test(signals test_signals.cpp)
 
 # Error
 create_test(expected test_expected.cpp)
+
+# Execution
+create_test(execution_inspect test_execution_inspect.cpp)
