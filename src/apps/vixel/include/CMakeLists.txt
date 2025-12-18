@@ -16,6 +16,6 @@ target_sources(
     vixel/game/game.hpp
 )
 
-target_link_libraries(vixel-lib INTERFACE reflect3d-lib)
+target_link_libraries(vixel-lib INTERFACE mono::reflect3d-lib)
 
-add_library(vixel::vixel-lib ALIAS vixel-lib)
+add_library(mono::vixel-lib ALIAS vixel-lib)

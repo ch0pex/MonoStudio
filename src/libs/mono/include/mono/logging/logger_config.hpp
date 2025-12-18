@@ -1,14 +1,17 @@
 #pragma once
 
-#include <filesystem>
-#define QUILL_DISABLE_NON_PREFIXED_MACROS
+#include <mono/config/base_config.hpp>
 
+#define QUILL_DISABLE_NON_PREFIXED_MACROS
 #include <quill/Backend.h>
 #include <quill/Frontend.h>
 #include <quill/LogMacros.h>
 #include <quill/Logger.h>
 #include <quill/sinks/ConsoleSink.h>
 #include <quill/sinks/FileSink.h>
+
+//
+#include <filesystem>
 
 namespace mono::config {
 

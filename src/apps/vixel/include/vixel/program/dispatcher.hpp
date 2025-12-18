@@ -11,7 +11,7 @@
 
 namespace vix::program {
 
-constexpr auto run = [](config::Vixel&& config) -> mono::err::expected<config::Vixel> {
+void run(config::Vixel const& config) {
   namespace exec = mono::ex;
   exec::static_thread_pool main_pool {std::thread::hardware_concurrency() >= 4U ? 3U : 1U};
   auto sched = main_pool.get_scheduler();
@@ -32,8 +32,6 @@ constexpr auto run = [](config::Vixel&& config) -> mono::err::expected<config::V
 
     exec::sync_wait(frame_work);
   }
-
-  return {std::move(config)};
 };
 
 } // namespace vix::program

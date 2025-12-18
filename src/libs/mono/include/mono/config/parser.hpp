@@ -10,6 +10,16 @@
 
 namespace mono::config {
 
+namespace detail {
+
+template<typename T>
+concept HasLogger = requires(T config) {
+  { config.logger };
+};
+
+
+} // namespace detail
+
 
 /**
  * @brief Parses toml file to config structure
@@ -27,10 +37,10 @@ err::expected<ProgramConfig> parse_file(std::filesystem::path const& path) {
 /**
  * @brief Initializes logger from game config
  */
-template<Program ProgamConfig>
-inline auto init_logger(ProgamConfig&& config) -> err::expected<ProgamConfig> {
-  GlobalLogger::configure(config.engine.logger);
-  return {std::forward<ProgamConfig>(config)};
+template<Program ProgramConfig>
+  requires(detail::HasLogger<ProgramConfig>)
+inline void init_logger(ProgramConfig const& config) {
+  GlobalLogger::configure(config.logger);
 };
 
 } // namespace mono::config

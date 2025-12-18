@@ -1,20 +1,14 @@
 #pragma once
 
-#include "mono/logging/logger_config.hpp"
-
+#include <concepts>
 #include <type_traits>
 
 namespace mono::config {
 
-/*
- * Base config for game builded with the rf3d
- * engine
- */
-struct Engine {
-  config::Logger logger {};
-};
+struct Tag { };
 
 template<typename T>
+  requires(std::same_as<typename T::config_concept, Tag>)
 T example() {
   return {};
 }
@@ -24,9 +18,8 @@ T example() {
  * and provide an example configuration
  */
 template<typename T>
-concept Program = requires(T t) {
+concept Program = std::same_as<typename T::config_concept, Tag> and requires(T t) {
   { example<T>() } -> std::same_as<T>;
-  { t.engine } -> std::same_as<Engine&>;
 };
 
 } // namespace mono::config

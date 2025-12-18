@@ -9,7 +9,8 @@
 #include <fstream>
 
 struct SampleConfig {
-  mono::config::Engine engine;
+  using config_concept = mono::config::Tag;
+  mono::config::Logger logger;
 };
 
 static std::filesystem::path create_temp_toml(std::string const& content) {
@@ -60,8 +61,8 @@ TEST_CASE("Valid TOML") {
 
   auto result = mono::program::parse_options<SampleConfig>(argv);
   CHECK(result.has_value());
-  CHECK(result->engine.logger.name == "reflect3d");
-  CHECK(result->engine.logger.path == std::filesystem::temp_directory_path());
+  CHECK(result->logger.name == "reflect3d");
+  CHECK(result->logger.path == std::filesystem::temp_directory_path());
 }
 
 TEST_CASE("Invalid TOML") {

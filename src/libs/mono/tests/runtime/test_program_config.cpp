@@ -1,7 +1,9 @@
 
 #include <source_location>
 
+#include <mono/config/base_config.hpp>
 #include <mono/config/parser.hpp>
+#include <mono/logging/logger_config.hpp>
 #include <mono/platform/platform.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -10,7 +12,8 @@
 #include <filesystem>
 
 struct ConfigExample {
-  mono::config::Engine engine; // TODO
+  using config_concept = mono::config::Tag;
+  mono::config::Logger logger;
 };
 
 inline bool check_file(std::filesystem::path const& path) {

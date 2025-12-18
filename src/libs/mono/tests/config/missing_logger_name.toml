@@ -1,2 +1,2 @@
-[engine.logger]
+[logger]
 pathh = "/tmp"
