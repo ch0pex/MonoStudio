@@ -17,6 +17,10 @@ target_sources(
       mono/containers/stable_vector.hpp
       mono/containers/static_vector.hpp
 
+      # Meta 
+      mono/meta/concepts.hpp
+      mono/meta/detail/specialization_of.hpp
+
       # Misc
       mono/misc/passkey.hpp
       mono/misc/defaults.hpp
