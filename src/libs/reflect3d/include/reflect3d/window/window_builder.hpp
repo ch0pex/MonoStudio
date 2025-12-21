@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/window/utils/callbacks.hpp"
+#include "reflect3d/window/utils/window_error.hpp"
 #include "reflect3d/window/window_config.hpp"
 #include "reflect3d/window/window_handle.hpp"
 #include "reflect3d/window/window_modes.hpp"
@@ -34,8 +35,9 @@ public:
     handle = detail::native_window(config); // NOLINT
 
     if (handle == nullptr) {
-      LOG_ERROR("Failed to create GLFW window with title '{}'", config.title);
-      throw std::runtime_error("Failed to create GLFW window");
+      std::string error_message = "Failed to create window: " + get_window_error();
+      LOG_ERROR("{}", error_message);
+      throw WindowException {error_message};
     }
   }
 

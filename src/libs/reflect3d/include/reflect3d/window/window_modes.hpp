@@ -2,6 +2,7 @@
 
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
+#include "reflect3d/window/utils/window_error.hpp"
 #include "reflect3d/window/window_config.hpp"
 #include "reflect3d/window/window_types.hpp"
 
@@ -45,8 +46,9 @@ inline NativeWindow create_handle(
 ) {
   NativeWindow const window = glfwCreateWindow(resolution.width, resolution.height, title.c_str(), monitor, share);
 
-  if (window == nullptr)
-    throw std::runtime_error("Couldn't create native window");
+  if (window == nullptr) {
+    throw WindowException("Failed to create window: " + get_window_error());
+  }
 
   return window;
 }
