@@ -4,6 +4,7 @@ create_test(input test_input.cpp)
 # Graphics
 create_test(vk_instance graphics/vk/test_vk_instance.cpp LABELS "graphics")
 create_test(vk_extensions graphics/vk/test_vk_extensions.cpp LABELS "graphics")
+create_test(vk_validation_layers graphics/vk/test_vk_validation_layers.cpp LABELS "graphics")
 
 
 # Window

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <expected>
 #include <mono/logging/logger.hpp>
 
 #include <ranges>
@@ -8,56 +9,84 @@
 
 #include <cstdint>
 #include <vector>
+#include "mono/error/expected.hpp"
+#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
+#include "reflect3d/graphics/vk/utils/vk_exception.hpp"
 
 namespace rf3d::hri::vk {
 
+/**
+ * Checks if all required extensions are supported.
+ *
+ * @return true if all required extensions are supported, false otherwise.
+ */
+template<std::ranges::range SupportedExtensions, std::ranges::range RequiredExtensions>
+  requires(
+      std::same_as<std::ranges::range_value_t<SupportedExtensions>, VkExtensionProperties> and
+      std::same_as<std::ranges::range_value_t<RequiredExtensions>, std::string_view>
+  )
+inline bool check_extensions_support(
+    SupportedExtensions const& supported_extensions, //
+    RequiredExtensions const& required_extensions
+) {
+  auto const transform_name  = [](auto const& ext) { return std::string {&ext.extensionName[0]}; };
+  auto const supported_names = supported_extensions | std::views::transform(transform_name);
+
+  return std::ranges::all_of(required_extensions, [&](auto const& required_ext) {
+    auto const match_name = [&](std::string const& name) { return required_ext == name; };
+    if (not std::ranges::any_of(supported_names, match_name)) {
+      LOG_ERROR("Required Vulkan extension not supported: {}", required_ext);
+      return false;
+    }
+
+    return true;
+  });
+}
+
+/*
+ * @return A vector of supported Vulkan instance extensions.
+ */
 inline std::vector<VkExtensionProperties> get_supported_extensions() {
   std::uint32_t extension_count = 0;
-  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
+  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr) >> check::error;
 
   std::vector<VkExtensionProperties> extensions(extension_count);
-  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
+  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data()) >> check::error;
 
   for (auto const& ext: extensions) {
-    LOG_INFO("Vulkan Instance Extension: {} (version {})", ext.extensionName, ext.specVersion);
+    LOG_INFO("Supported vulkan extension: {} (version {})", ext.extensionName, ext.specVersion);
   }
 
   return extensions;
 }
 
-inline std::vector<char const*> get_required_extensions() {
+/**
+ * @return A vector of required Vulkan instance extensions.
+ */
+inline std::vector<std::string_view> get_required_extensions() {
   std::uint32_t glfw_extension_count = 0;
+  auto const* glfw_extensions_ptr    = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-  auto* glfw_extensions_ptr = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-  std::span glfw_extensions(glfw_extensions_ptr, glfw_extension_count);
-
-  return glfw_extensions | std::ranges::to<std::vector>();
+  return std::span {glfw_extensions_ptr, glfw_extension_count} //
+         | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
+         | std::ranges::to<std::vector>();
 }
 
-inline bool verify_extensions_support(
-    std::ranges::range auto&& supported_extensions, std::ranges::range auto&& required_extensions
-) {
-  auto supported_names = supported_extensions | std::views::transform([](auto const& ext) { //
-                           return std::string {ext.extensionName};
-                         });
+/**
+ * Ensures that all required extensions by glfw are supported by vulkan,
+ * otherwise, throws an exception.
+ */
+inline mono::err::expected<std::vector<char const*>> get_extensions() {
+  auto const required_extensions = get_required_extensions();
 
-  return std::ranges::all_of(required_extensions, [&](auto const* required_ext) {
-    bool found = std::ranges::any_of(supported_names, [required_ext](std::string const& name) {
-      return std::strcmp(required_ext, name.c_str()) == 0;
-    });
-
-    if (!found) {
-      LOG_ERROR("Required Vulkan extension not supported: {}", required_ext);
-    }
-    return found;
-  });
-}
-
-inline void ensure_extensions_support() {
-  if (verify_extensions_support(get_supported_extensions(), get_required_extensions())) {
-    LOG_INFO("All required Vulkan extensions are supported.");
+  if (not check_extensions_support(get_supported_extensions(), required_extensions)) {
+    return mono::err::unexpected("Not all required Vulkan extensions are supported.");
   }
-  throw std::runtime_error("Not all required Vulkan extensions are supported.");
+
+  LOG_INFO("All required validation layers are supported");
+  return required_extensions //
+         | std::views::transform([](auto const& ext) { return ext.data(); }) //
+         | std::ranges::to<std::vector>();
 }
 
 } // namespace rf3d::hri::vk
