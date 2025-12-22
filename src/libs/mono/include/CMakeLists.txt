@@ -17,7 +17,7 @@ target_sources(
       mono/containers/stable_vector.hpp
       mono/containers/static_vector.hpp
 
-      # Meta 
+      # Meta
       mono/meta/concepts.hpp
       mono/meta/detail/specialization_of.hpp
 
@@ -32,6 +32,9 @@ target_sources(
       # Execution
       mono/execution/signals.hpp
       mono/execution/stop_token.hpp
+      mono/execution/expect.hpp
+      mono/execution/execution.hpp
+      mono/execution/expect.hpp
 
       # Program
       mono/program/options.hpp

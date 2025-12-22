@@ -17,7 +17,7 @@ TEST_CASE("Tap algorithm returned value ignored") {
   constexpr int initial_value = 42;
 
   auto sender = mono::ex::just(initial_value) //
-                | mono::ex::tap(function) // Returned value will be ignored, tap only inspects
+                | mono::ex::inpsect(function) // Returned value will be ignored, tap only inspects
                 | mono::ex::then(function);
 
   auto [value] = mono::ex::sync_wait(sender).value();
@@ -29,7 +29,7 @@ TEST_CASE("Tap algorithm inspecting") {
   constexpr int initial_value = 42;
 
   auto sender = mono::ex::just(initial_value) //
-                | mono::ex::tap([](int const value) { std::println("Inspecting value {}", value); }) // Inspecting
+                | mono::ex::inpsect([](int const value) { std::println("Inspecting value {}", value); }) // Inspecting
                 | mono::ex::then(function);
 
   auto [value] = mono::ex::sync_wait(sender).value();

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "mono/meta/concepts.hpp"
-
 #include <stdexec/execution.hpp>
 
 #include <exception>
@@ -82,6 +80,6 @@ struct Inspect {
 
 } // namespace detail
 
-inline constexpr detail::Inspect tap {};
+inline constexpr detail::Inspect inpsect {};
 
 } // namespace mono::ex
