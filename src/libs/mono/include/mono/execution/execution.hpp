@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/execution/expect.hpp"
 #include "mono/execution/inspect.hpp"
 
 #include <exec/single_thread_context.hpp>
