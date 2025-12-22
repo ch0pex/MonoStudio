@@ -5,6 +5,17 @@ on:
     branches:
       - '**'
     paths-ignore:
+      # --- Documentación y Archivos de Texto ---
+      - '**.md'          # Ignora README.md, docs/*.md, etc.
+      - '**.txt'         # Ignora CMakeLists.txt NO (ese no acaba en .txt suele ser .txt pero CMakeLists es especial) -> OJO: CMakeLists.txt es detectado, los .txt planos no.
+      - 'LICENSE'
+      
+      # --- Configuración de git/editor ---
+      - '.gitignore'
+      - '.gitattributes'
+      - '.vscode/**'
+      
+      # --- Scripts auxiliares que no afectan al binario ---
       - "scripts/**"
 
 
@@ -14,7 +25,7 @@ concurrency:
 
 jobs:
   # -------------------------------------------------------------------
-  # JOB 1: LINUX (GCC / CLANG en Fedora Container)
+  # JOB 1: LINUX (GCC / CLANG Fedora)
   # -------------------------------------------------------------------
   linux-builds:
     name: Linux - ${{ matrix.compiler }}
@@ -90,7 +101,6 @@ jobs:
           xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }}
 
       - name: Valgrind Memcheck
-
         run: |
           xvfb-run -a --server-args="-screen 0 1280x1024x24" \
           ctest --test-dir build/linux/${{ matrix.compiler }} \
@@ -106,7 +116,7 @@ jobs:
             echo "Valgrind check passed. No definite leaks found."
           fi
   # -------------------------------------------------------------------
-  # JOB 2: WINDOWS (MSVC Nativo)
+  # JOB 2: WINDOWS (MSVC)
   # -------------------------------------------------------------------
   windows-builds:
     name: Windows - ${{ matrix.toolchain }}
