@@ -16,7 +16,7 @@
 namespace mono::config {
 
 struct Logger {
-  std::string name {"reflect3d"};
+  std::string name {"mono"};
   std::filesystem::path path {std::filesystem::temp_directory_path()};
 };
 

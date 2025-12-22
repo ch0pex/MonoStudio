@@ -1,6 +1,7 @@
 
 #include <mono/config/base_config.hpp>
 #include <mono/program/options.hpp>
+#include "mono/config/config_tags.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
@@ -30,7 +31,7 @@ struct TempFile {
 };
 
 
-TEST_CASE("parse_options devuelve error si no se pasa ningún argumento") {
+TEST_CASE("parse_options error if no arguments") {
   std::string program {"program"};
   std::array<char*, 1> argv = {program.data()};
   auto result               = mono::program::parse_options<SampleConfig>(argv);
@@ -39,7 +40,7 @@ TEST_CASE("parse_options devuelve error si no se pasa ningún argumento") {
   CHECK(std::string {result.error().what()}.find("TOML config") != std::string::npos);
 }
 
-TEST_CASE("help_message contiene las opciones y el ejemplo TOML") {
+TEST_CASE("help_message") {
   namespace po = boost::program_options;
   po::options_description desc("Allowed options");
   desc.add_options()("help,h", "Show help message")("config,c", po::value<std::string>(), "Path to configuration file");
@@ -61,7 +62,7 @@ TEST_CASE("Valid TOML") {
 
   auto result = mono::program::parse_options<SampleConfig>(argv);
   CHECK(result.has_value());
-  CHECK(result->logger.name == "reflect3d");
+  CHECK(result->logger.name == "mono");
   CHECK(result->logger.path == std::filesystem::temp_directory_path());
 }
 
@@ -88,4 +89,16 @@ TEST_CASE("Invalid options") {
   auto result = mono::program::parse_options<SampleConfig>(argv);
   CHECK_FALSE(result.has_value());
   CHECK(std::string {result.error().what()}.find("Error parsing command line") != std::string::npos);
+}
+
+TEST_CASE("No options default config") {
+  std::string program {"program"};
+  std::array<char*, 1> argv = {program.data()};
+
+  auto result = mono::program::parse_options<SampleConfig, mono::config::tag::Default>(argv);
+  CHECK(result.has_value());
+  CHECK(result->logger.name == "mono");
+
+  auto result2 = mono::program::parse_options<SampleConfig, mono::config::tag::Mandatory>(argv);
+  CHECK(not result2.has_value());
 }

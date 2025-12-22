@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mono/config/base_config.hpp"
+#include "mono/config/config_tags.hpp"
 #include "mono/config/parser.hpp"
 #include "mono/error/expected.hpp"
 
@@ -31,7 +32,7 @@ inline std::string help_message(boost::program_options::options_description cons
 
 } // namespace detail
 
-template<config::Program T>
+template<config::Program T, config::OptionTag ConfigTag = config::tag::Mandatory>
 err::expected<T> parse_options(std::span<char*> const args) try {
   namespace po = boost::program_options;
   po::options_description desc("Allowed options");
@@ -49,8 +50,14 @@ err::expected<T> parse_options(std::span<char*> const args) try {
   }
 
   if (not vm.contains("config")) {
-    std::println("No program options were provided");
-    return err::unexpected(detail::help_message<T>(desc));
+    if constexpr (std::is_same_v<ConfigTag, config::tag::Default>) {
+      std::println("No config file provided, using default configuration");
+      return config::example<T>();
+    }
+    else {
+      std::println("No program options were provided");
+      return err::unexpected(detail::help_message<T>(desc));
+    }
   }
 
   std::filesystem::path const config_file = vm["config"].as<std::string>();
