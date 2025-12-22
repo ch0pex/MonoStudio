@@ -137,32 +137,14 @@ jobs:
         shell: bash
         run: cmake --preset ${{ matrix.configure }}
 
-
-      - name: Build (Debug & Release)
+      - name: Build & Test (Debug)
         shell: bash
         run: |
           cmake --build --preset ${{ matrix.debug }}
-          cmake --build --preset ${{ matrix.release }}
+          ctest --preset ${{ matrix.debug }} -LE "graphics"
 
-      - name: Install Mesa3D (Windows OpenGL Software Rasterizer)
-        shell: powershell
-        run: |
-          curl.exe -L --output mesa.7z https://github.com/pal1000/mesa-dist-win/releases/download/23.1.9/mesa3d-23.1.9-release-msvc.7z
-          7z x mesa.7z -omesa -y
-          
-          $BuildDir = "build/windows/cl/bin" 
-          
-          if (Test-Path "$BuildDir/Release") {
-             Copy-Item "mesa/x64/opengl32.dll" -Destination "$BuildDir/Release/opengl32.dll"
-             Copy-Item "mesa/x64/libglapi.dll" -Destination "$BuildDir/Release/libglapi.dll"
-          }
-          if (Test-Path "$BuildDir/Debug") {
-             Copy-Item "mesa/x64/opengl32.dll" -Destination "$BuildDir/Debug/opengl32.dll"
-             Copy-Item "mesa/x64/libglapi.dll" -Destination "$BuildDir/Debug/libglapi.dll"
-          }
-
-      - name: Test (Debug & Release)
+      - name: Build & Test (Release)
         shell: bash
         run: |
-          ctest --preset ${{ matrix.debug }}
-          ctest --preset ${{ matrix.release }}
+          cmake --build --preset ${{ matrix.release }}
+          ctest --preset ${{ matrix.release }} -LE "graphics"

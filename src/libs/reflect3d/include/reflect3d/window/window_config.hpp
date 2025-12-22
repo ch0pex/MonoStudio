@@ -23,7 +23,7 @@ struct Window {
   std::uint8_t monitor {};
   std::unordered_map<WindowHint, WindowHintValue> hints {{
     // {GLFW_RESIZABLE, GLFW_FALSE},
-    // {GLFW_CLIENT_API, GLFW_NO_API},
+    {GLFW_CLIENT_API, GLFW_NO_API},
   }};
 };
 
