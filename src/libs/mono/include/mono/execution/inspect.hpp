@@ -80,6 +80,6 @@ struct Inspect {
 
 } // namespace detail
 
-inline constexpr detail::Inspect inpsect {};
+inline constexpr detail::Inspect inspect {};
 
 } // namespace mono::ex
