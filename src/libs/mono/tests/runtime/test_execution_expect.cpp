@@ -33,6 +33,10 @@ template<typename F>
 int test_function(F func, int const number) {
   auto sender = mono::ex::just(number) //
                 | mono::ex::expect(std::move(func)) //
+                | mono::ex::then([](int const value) {
+                    std::println("Received value: {}", value);
+                    return value;
+                  }) //
                 | mono::ex::let_error(handle_error); //
 
   auto [value] = mono::ex::sync_wait(sender).value();

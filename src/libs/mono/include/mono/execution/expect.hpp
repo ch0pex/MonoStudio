@@ -70,7 +70,8 @@ struct ExpectSender {
   using sender_concept = stdexec::sender_t;
 
   template<class... Args>
-  using set_value_t    = stdexec::completion_signatures<stdexec::set_value_t(Args...)>;
+  using set_value_t =
+      stdexec::completion_signatures<stdexec::set_value_t(typename std::invoke_result_t<F, Args...>::value_type)>;
   using except_ptr_sig = stdexec::completion_signatures<stdexec::set_error_t(std::exception_ptr)>;
 
   template<class Env>
