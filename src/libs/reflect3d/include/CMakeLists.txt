@@ -11,6 +11,7 @@ target_sources(
       reflect3d/graphics/vk/utils/vk_result.hpp
       reflect3d/graphics/vk/vk_instance.hpp
       reflect3d/graphics/vk/vk_instance_detail.hpp
+      reflect3d/graphics/vk/vk_extensions.hpp
 
       # Input
       reflect3d/input/input.hpp
