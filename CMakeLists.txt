@@ -13,5 +13,6 @@ add_subdirectory(src/libs/reflect3d)
 
 # Apps
 add_subdirectory(src/apps/vixel)
+add_subdirectory(src/apps/feed-viewer)
 # add_subdirectory(src/apps/ezTrade)
 

@@ -1,10 +1,11 @@
 #pragma once
 
+#include "feed-viewer/program/config.hpp"
 
-#include "feed-viewer/feed-viewer.hpp"
+#include <print>
 
 namespace feed {
 
-inline void run_viewer(Config const& config) { std::println("{}", config.feeds); }
+inline void run_viewer(ProgramConfig const& config) { std::println("{}", config.feeds); }
 
 } // namespace feed
