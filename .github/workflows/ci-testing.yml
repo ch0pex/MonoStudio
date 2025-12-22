@@ -89,9 +89,22 @@ jobs:
           cmake --build --preset ${{ matrix.sanitize }}
           xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }}
 
-      - name: Valgrind
-        run: valgrind --leak-check=full xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }}
+      - name: Valgrind Memcheck
 
+        run: |
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" \
+          ctest --test-dir build/linux/${{ matrix.compiler }} \
+                -T MemCheck \
+                -C Debug \
+                --output-on-failure
+          LOG_DIR="build/linux/${{ matrix.compiler }}/Testing/Temporary"
+          echo "Checking for leaks in $LOG_DIR..."
+          if grep -rn "Definitely lost" "$LOG_DIR"/MemoryChecker.*.log; then
+            echo "::error::Critical memory leaks detected by Valgrind!"
+            exit 1
+          else
+            echo "Valgrind check passed. No definite leaks found."
+          fi
   # -------------------------------------------------------------------
   # JOB 2: WINDOWS (MSVC Nativo)
   # -------------------------------------------------------------------
