@@ -10,7 +10,7 @@
 namespace rf3d {
 
 class Renderer {
-
+public:
 private:
 };
 

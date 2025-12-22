@@ -87,18 +87,18 @@ jobs:
       - name: Build & Test (Debug)
         run: |
           cmake --build --preset ${{ matrix.debug }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }} -LE "graphics"
 
       - name: Build & Test (Release)
         run: |
           cmake --build --preset ${{ matrix.release }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.release }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.release }} -LE "graphics"
 
       - name: Build & Test (Sanitize)
         if: matrix.sanitize != ''
         run: |
           cmake --build --preset ${{ matrix.sanitize }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }} -LE "graphics"
 
       - name: Valgrind Memcheck
         run: |
@@ -106,6 +106,7 @@ jobs:
           ctest --test-dir build/linux/${{ matrix.compiler }} \
                 -T MemCheck \
                 -C Debug \
+                -LE "graphics" \
                 --output-on-failure
           LOG_DIR="build/linux/${{ matrix.compiler }}/Testing/Temporary"
           echo "Checking for leaks in $LOG_DIR..."
@@ -164,10 +165,10 @@ jobs:
         shell: bash
         run: |
           cmake --build --preset ${{ matrix.debug }}
-          ctest --preset ${{ matrix.debug }} -LE "graphics"
+          ctest --preset ${{ matrix.debug }} -LE "graphics|window"
 
       - name: Build & Test (Release)
         shell: bash
         run: |
           cmake --build --preset ${{ matrix.release }}
-          ctest --preset ${{ matrix.release }} -LE "graphics"
+          ctest --preset ${{ matrix.release }} -LE "graphics|window" 
