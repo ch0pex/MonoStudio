@@ -6,6 +6,12 @@ target_sources(
     FILE_SET HEADERS
     FILES
 
+      # Grapchis
+      reflect3d/graphics/vk/utils/vk_exception.hpp
+      reflect3d/graphics/vk/utils/vk_result.hpp
+      reflect3d/graphics/vk/vk_instance.hpp
+      reflect3d/graphics/vk/vk_instance_detail.hpp
+
       # Input
       reflect3d/input/input.hpp
 
