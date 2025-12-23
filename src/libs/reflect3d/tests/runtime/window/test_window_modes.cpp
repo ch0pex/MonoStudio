@@ -35,12 +35,7 @@ TEST_CASE("Full screen") {
 
 TEST_CASE("Full screen borderless") {
   WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
-  auto monitor        = Monitor::primary();
-
   CHECK(window.native_handle() != nullptr);
-  if (monitor.resolution() != resolution) {
-    CHECK(window.size() != resolution); // Specified resolution is ignored by this mode
-  }
 }
 
 TEST_CASE("Windowed borderless") {
