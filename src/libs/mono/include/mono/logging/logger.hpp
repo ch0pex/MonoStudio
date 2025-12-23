@@ -23,6 +23,8 @@
 
 namespace mono {
 
+using LogLevel = quill::LogLevel;
+
 class GlobalLogger {
   GlobalLogger()  = default;
   ~GlobalLogger() = default;
@@ -49,7 +51,7 @@ private:
 };
 
 // clang-format off
-
+#define LOG_DYNAMIC(level, fmt, ...)      QUILL_LOG_DYNAMIC(mono::GlobalLogger::instance(), level, fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...)                QUILL_LOG_INFO(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
 #define LOG_WARNING(fmt, ...)             QUILL_LOG_WARNING(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
 #define LOG_ERROR(fmt, ...)               QUILL_LOG_ERROR(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
