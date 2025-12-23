@@ -6,12 +6,18 @@ target_sources(
     FILE_SET HEADERS
     FILES
 
-      # Grapchis
+      # Graphics
+      reflect3d/graphics/hri.hpp
+      reflect3d/graphics/instance_config.hpp
       reflect3d/graphics/vk/utils/vk_exception.hpp
       reflect3d/graphics/vk/utils/vk_result.hpp
+      reflect3d/graphics/vk/utils/vk_checker.hpp
+      reflect3d/graphics/vk/utils/vk_debug_callback.hpp
+      reflect3d/graphics/vk/vk_debug_messenger.hpp
       reflect3d/graphics/vk/vk_instance.hpp
       reflect3d/graphics/vk/vk_instance_detail.hpp
       reflect3d/graphics/vk/vk_extensions.hpp
+      reflect3d/graphics/vk/vk_validation_layers.hpp
 
       # Input
       reflect3d/input/input.hpp
@@ -21,10 +27,14 @@ target_sources(
 
       # Window
       reflect3d/window/window_tracker.hpp
+      reflect3d/window/monitor.hpp
+      reflect3d/window/window_modes.hpp
+      reflect3d/window/window_types.hpp
       reflect3d/window/utils/callbacks.hpp
       reflect3d/window/utils/resolution.hpp
       reflect3d/window/utils/context.hpp
       reflect3d/window/utils/defaults.hpp
+      reflect3d/window/utils/window_error.hpp
       reflect3d/window/window_builder.hpp
       reflect3d/window/window_config.hpp
       reflect3d/window/window.hpp

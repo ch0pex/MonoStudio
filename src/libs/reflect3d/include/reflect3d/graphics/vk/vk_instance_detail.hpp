@@ -4,6 +4,7 @@
 #include "mono/logging/logger.hpp"
 #include "reflect3d/graphics/instance_config.hpp"
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
+#include "reflect3d/graphics/vk/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/vk_extensions.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 
@@ -27,8 +28,27 @@ inline VkApplicationInfo create_instance_info(std::string_view const name, std::
 }
 
 /**
+ * Setups validation layers and debug utils info
+ */
+void setup_validation_layers(VkInstanceCreateInfo& create_info) {
+  if constexpr (enable_validation_layers) {
+    auto constexpr layers_fallback = [](std::runtime_error const& error) {
+      LOG_WARNING("{}", error.what());
+      return mono::err::expected<std::vector<char const*>> {};
+    };
+
+    // This needs to survive until vkCreateInstance is invoked thats why it has static storage
+    static auto const validation_layers = get_validation_layers().or_else(layers_fallback).value();
+    create_info.enabledLayerCount       = validation_layers.size();
+    create_info.ppEnabledLayerNames     = not validation_layers.empty() ? validation_layers.data() : nullptr;
+    create_info.pNext                   = &debug_utils_create_info;
+  }
+}
+
+/**
  * Creates a native Vulkan instance based on the provided configuration.
  *
+ * @note may throw if mandatory extensions are not supported
  * @return A VkInstance handle representing the created Vulkan instance.
  */
 VkInstance create_instance(InstanceConfig const& config) {
@@ -41,22 +61,11 @@ VkInstance create_instance(InstanceConfig const& config) {
   create_info.pApplicationInfo = &app_info;
 
   // Extensions
-
   auto const extensions               = get_extensions().value(); // Will throw if not supported
   create_info.enabledExtensionCount   = extensions.size();
   create_info.ppEnabledExtensionNames = not extensions.empty() ? extensions.data() : nullptr;
 
-  // Validation layers
-  auto const layers_fallback = [](std::runtime_error const& error) {
-    LOG_WARNING("{}", error.what());
-    return mono::err::expected<std::vector<char const*>> {};
-  };
-
-  auto const validation_layers    = get_validation_layers().or_else(layers_fallback).value();
-  create_info.enabledLayerCount   = validation_layers.size();
-  create_info.ppEnabledLayerNames = not validation_layers.empty() ? validation_layers.data() : nullptr;
-
-  // Instance creation
+  setup_validation_layers(create_info);
   vkCreateInstance(&create_info, nullptr, &instance) >> check::error;
 
   return instance;

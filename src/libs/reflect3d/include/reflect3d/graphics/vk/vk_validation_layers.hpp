@@ -95,7 +95,9 @@ inline mono::err::expected<std::vector<char const*>> get_validation_layers() {
   };
 
   if (not check_validation_layer_support(get_supported_validation_layers(), validation_layers)) {
-    return mono::err::unexpected("Validation layers requested, but not all are available.");
+    return mono::err::unexpected(
+        "Validation layers were requested, but not all are available. Program execution will continue without them"
+    );
   }
 
   return validation_layers //

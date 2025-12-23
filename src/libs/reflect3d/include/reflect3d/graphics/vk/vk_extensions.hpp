@@ -1,17 +1,17 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include <expected>
+#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
+#include "reflect3d/graphics/vk/vk_validation_layers.hpp"
+
+#include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
-#include <ranges>
+#include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
 #include <cstdint>
+#include <ranges>
 #include <vector>
-#include "mono/error/expected.hpp"
-#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
-#include "reflect3d/graphics/vk/utils/vk_exception.hpp"
 
 namespace rf3d::hri::vk {
 
@@ -67,9 +67,16 @@ inline std::vector<std::string_view> get_required_extensions() {
   std::uint32_t glfw_extension_count = 0;
   auto const* glfw_extensions_ptr    = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-  return std::span {glfw_extensions_ptr, glfw_extension_count} //
-         | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
-         | std::ranges::to<std::vector>();
+  auto extensions = std::span {glfw_extensions_ptr, glfw_extension_count} //
+                    | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
+                    | std::ranges::to<std::vector>();
+
+  if constexpr (enable_validation_layers) {
+    LOG_INFO("Validation layers enabled, adding VK_EXT_debug_utils extension");
+    extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+  }
+
+  return extensions;
 }
 
 /**
