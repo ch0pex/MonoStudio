@@ -81,8 +81,6 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
   NativeWindow const window = create_handle(config.resolution, config.title, nullptr);
-
-  // Logic fix: Center the window instead of putting it at 0,0
   center_window_on_monitor(window, monitor.native_handle(), config.resolution.width, config.resolution.height);
 
   return window;
@@ -91,10 +89,18 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
 NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor const monitor) {
   apply_hints(config.hints);
 
+  // 1. Quitar decoraciones (bordes y barra de título)
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-  auto* window = create_handle(monitor.resolution(), config.title);
-  glfwSetWindowPos(window, monitor.position().x, monitor.position().y);
+  // 2. Usar la resolución lógica para la creación inicial (evita errores de validación)
+  auto log_res = monitor.physical_resolution();
+  auto* window = create_handle({.width = log_res.width, .height = log_res.height}, config.title);
+
+
+  std::string error {};
+
+  // glfwMaximizeWindow(window);
+
   return window;
 }
 

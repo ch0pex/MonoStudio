@@ -63,8 +63,8 @@ public:
     auto monitor = opt_monitor.value();
 
     glfwSetWindowMonitor(
-        handle, monitor.native_handle(), 0, 0, monitor.resolution().width, monitor.resolution().height,
-        monitor.refreshRate()
+        handle, monitor.native_handle(), 0, 0, monitor.physical_resolution().width,
+        monitor.physical_resolution().height, monitor.refreshRate()
     );
     glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
     glfwSetWindowAttrib(handle, GLFW_RED_BITS, monitor.redBits());

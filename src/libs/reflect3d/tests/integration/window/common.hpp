@@ -13,7 +13,7 @@
 inline void test_window(rf3d::WindowMode const mode, std::uint8_t const monitor_id) {
   rf3d::config::Window window_spec {.mode = mode, .monitor = monitor_id};
 
-  rf3d::Window window {rf3d::WindowBuilder(window_spec).build()};
+  rf3d::Window window {rf3d::WindowBuilder(window_spec).default_callbacks().build()};
 
   mono::ex::setup_signals();
 

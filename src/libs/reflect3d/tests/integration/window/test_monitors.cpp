@@ -13,9 +13,21 @@ int main() try { //
   LOG_INFO("Monitors count: {}", monitors.size());
 
   for (auto monitor: monitors) {
-    LOG_INFO("Width: {}, Height: {}", monitor.resolution().width, monitor.resolution().height)
-    auto pos = monitor.position();
-    LOG_INFO("Montior pos: {}, {}", pos.x, pos.y);
+    LOG_INFO(
+        "Logical resolution: Width: {}, Height: {}", //
+        monitor.logical_resolution().width, //
+        monitor.logical_resolution().height //
+    )
+    LOG_INFO("Scale: X: {}, Y: {}", monitor.content_scale().x, monitor.content_scale().y)
+
+    LOG_INFO(
+        "Physical resolution: Width: {}, Height: {}", //
+        monitor.physical_resolution().width, //
+        monitor.physical_resolution().height
+    )
+
+    auto const pos = monitor.position();
+    LOG_INFO("Monitior pos: {}, {}", pos.x, pos.y);
   }
 }
 catch (...) {
