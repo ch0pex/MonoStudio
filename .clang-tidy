@@ -15,6 +15,7 @@ readability-*,
 -*-avoid-c-arrays
 -readability-redundant-access-specifiers,
 -readability-braces-around-statements,
+-cppcoreguidelines-pro-type-union-access,
 -readability-identifier-length'
 
 
