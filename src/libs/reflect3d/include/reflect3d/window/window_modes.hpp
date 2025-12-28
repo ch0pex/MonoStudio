@@ -65,7 +65,7 @@ inline NativeWindow create_windowed(config::Window const& config, Monitor monito
 
   NativeWindow const window = create_handle(config.resolution, config.title);
 
-  center_window_on_monitor(window, monitor.native_handle(), config.resolution.width, config.resolution.height);
+  center_window_on_monitor(window, monitor, config.resolution.width, config.resolution.height);
 
   return window;
 }
@@ -82,7 +82,19 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
   return window;
 }
 
-NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor const monitor) {
+inline NativeWindow create_exclusive_fullscreen(config::Window const& config, Monitor const monitor) {
+  apply_hints(config.hints);
+
+  NativeWindow window = create_handle(config.resolution, config.title, monitor.native_handle());
+  return window;
+}
+
+inline NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor const monitor) {
+  if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+    LOG_INFO("Wayland backend detected, borderless fullscreen fallbacks to exclusive full screen mode");
+    return create_exclusive_fullscreen(config, monitor);
+  }
+
   apply_hints(config.hints);
 
   // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -95,13 +107,6 @@ NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor 
   NativeWindow window =
       create_handle({.width = log_res.width, .height = log_res.height}, config.title, monitor.native_handle());
 
-  return window;
-}
-
-NativeWindow create_exclusive_fullscreen(config::Window const& config, Monitor const monitor) {
-  apply_hints(config.hints);
-
-  NativeWindow window = create_handle(config.resolution, config.title, monitor.native_handle());
   return window;
 }
 

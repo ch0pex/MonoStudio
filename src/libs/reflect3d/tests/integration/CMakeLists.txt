@@ -1,3 +1,4 @@
 
 integration_test(test_window_modes window/test_window_modes.cpp)
 integration_test(test_monitors window/test_monitors.cpp)
+integration_test(test_window_changes window/test_window_changes.cpp)

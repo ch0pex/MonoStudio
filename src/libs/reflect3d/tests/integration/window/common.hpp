@@ -19,9 +19,9 @@ inline void test_window(rf3d::WindowMode const mode, std::uint8_t const monitor_
   mono::ex::setup_signals();
   rf3d::log_monitors();
 
-  glfwMakeContextCurrent(window.native_handle());
+  glfwMakeContextCurrent(window);
   while (mono::ex::should_run()) {
     rf3d::input::poll_events();
-    glfwSwapBuffers(window.native_handle());
+    glfwSwapBuffers(window);
   }
 }

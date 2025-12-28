@@ -121,6 +121,8 @@ public:
     return mode->refreshRate;
   }
 
+  [[nodiscard]] operator native_type() const { return handle; }
+
   [[nodiscard]] native_type native_handle() const { return handle; }
 
 private:

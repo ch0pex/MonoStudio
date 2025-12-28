@@ -35,7 +35,7 @@ public:
 
   ~WindowHandle() = default;
 
-  bool should_close() { return glfwWindowShouldClose(handle) != 0; }
+  [[nodiscard]] bool should_close() const { return glfwWindowShouldClose(handle) != 0; }
 
   [[nodiscard]] std::string_view title() const { return {glfwGetWindowTitle(handle)}; }
 
@@ -46,15 +46,13 @@ public:
     return {.width = static_cast<std::uint16_t>(width), .height = static_cast<std::uint16_t>(height)};
   }
 
-  [[nodiscard]] native_type native_handle() const { return handle; }
+  void show() const { glfwShowWindow(handle); }
 
-  void show() { glfwShowWindow(handle); }
+  void hide() const { glfwHideWindow(handle); }
 
-  void hide() { glfwHideWindow(handle); }
+  void swap_buffers() const { glfwSwapBuffers(handle); }
 
-  void swap_buffers() { glfwSwapBuffers(handle); }
-
-  void full_screen(MonitorId const monitor_id) {
+  void set_full_screen(MonitorId const monitor_id = 0) const {
     auto opt_monitor = Monitor::from_id(monitor_id);
     if (not opt_monitor) {
       LOG_WARNING("Couldn't set window in full screen mode, monitor with id {} doesn't exist", monitor_id);
@@ -64,23 +62,42 @@ public:
     auto monitor = opt_monitor.value();
 
     glfwSetWindowMonitor(
-        handle, monitor.native_handle(), 0, 0, monitor.physical_resolution().width,
-        monitor.physical_resolution().height, monitor.refreshRate()
+        handle, monitor, 0, 0, monitor.physical_resolution().width, monitor.physical_resolution().height,
+        monitor.refreshRate()
     );
-    glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
-    glfwSetWindowAttrib(handle, GLFW_RED_BITS, monitor.redBits());
-    glfwSetWindowAttrib(handle, GLFW_GREEN_BITS, monitor.greenBits());
-    glfwSetWindowAttrib(handle, GLFW_BLUE_BITS, monitor.blueBits());
-    glfwSetWindowAttrib(handle, GLFW_REFRESH_RATE, monitor.refreshRate());
   }
 
-  void windowed() {
+  void windowed() const {
     auto res = size();
     glfwSetWindowMonitor(handle, nullptr, 0, 0, res.width, res.height, 0);
     glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_TRUE);
   }
 
+  void borderless_full_screen(MonitorId const monitor_id = 0) const {
+    auto opt_monitor = Monitor::from_id(monitor_id);
+    if (not opt_monitor) {
+      LOG_WARNING("Couldn't set window in borderless full screen mode, monitor with id {} doesn't exist", monitor_id);
+      return;
+    }
+
+    auto monitor = opt_monitor.value();
+
+    glfwSetWindowMonitor(
+        handle, monitor, 0, 0, monitor.physical_resolution().width, monitor.physical_resolution().height,
+        monitor.refreshRate()
+    );
+    glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
+  }
+
+  void hide_decorations() const { glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE); }
+
+  void show_decorations() const { glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_TRUE); }
+
   [[nodiscard]] bool is_full_screen() const { return glfwGetWindowMonitor(handle) != nullptr; }
+
+  [[nodiscard]] operator native_type() const { return handle; }
+
+  [[nodiscard]] native_type native_handle() const { return handle; }
 
 private:
   native_type handle {};
