@@ -3,7 +3,7 @@ local overseer = require("overseer")
 overseer.setup({
 	task_list = {
 		direction = "bottom", -- Opciones: "left", "right", "bottom"
-		min_height = 50,
+		min_height = 30,
 		-- max_width = { 100, 0.2 },
 		-- default_detail = 1,
 	},

@@ -54,6 +54,7 @@ target_link_libraries(
     Vulkan::Loader
     glm::glm
     mono::mono-lib
+    glad::glad
 )
 
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/math/math.hpp"
+#include "reflect3d/window/utils/context.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window_types.hpp"
 
@@ -30,25 +31,39 @@ inline std::span<NativeMonitor> get_native_monitors() {
 
 
 class Monitor {
+  explicit Monitor(NativeMonitor const monitor) : handle(monitor) { }
+
 public:
   // --- Type traits ---
+
   using native_type  = NativeMonitor;
   using vidmode_type = GLFWvidmode const*;
 
-  // --- Constructors ---
-  Monitor(NativeMonitor const monitor) : handle(monitor) { }
+  // --- Factory methods ---
 
   static std::optional<Monitor> from_id(MonitorId const monitor_id) {
+    GlfwContext::init();
     auto const monitors = detail::get_native_monitors();
 
     if (monitor_id >= monitors.size()) {
       LOG_WARNING("Specified monitor doesn't exist")
       return std::nullopt;
     }
-    return monitors[monitor_id];
+    return {Monitor {monitors[monitor_id]}};
   }
 
-  static Monitor primary() { return glfwGetPrimaryMonitor(); }
+  static Monitor primary() {
+    GlfwContext::init();
+    auto* monitor = glfwGetPrimaryMonitor();
+    return Monitor {monitor};
+  }
+
+  static std::vector<Monitor> get_all() {
+    GlfwContext::init();
+    return detail::get_native_monitors() //
+           | std::views::transform([](NativeMonitor monitor) { return Monitor {monitor}; }) //
+           | std::ranges::to<std::vector<Monitor>>();
+  }
 
   // --- Member functions ---
 
@@ -69,12 +84,14 @@ public:
   [[nodiscard]] Resolution logical_resolution() const {
     auto const phys  = physical_resolution();
     auto const scale = content_scale();
+
     if (scale.x == 0 or scale.y == 0)
       return phys;
 
-    return {
-      .width = static_cast<uint16_t>(phys.width / scale.x), .height = static_cast<uint16_t>(phys.height / scale.y)
-    };
+    auto const width  = static_cast<std::uint16_t>(static_cast<float>(phys.width) / scale.x);
+    auto const height = static_cast<std::uint16_t>(static_cast<float>(phys.height) / scale.y);
+
+    return {.width = width, .height = height};
   }
 
   [[nodiscard]] math::vec<2, int> position() const {
@@ -111,11 +128,28 @@ private:
 };
 
 
-inline std::vector<Monitor> get_monitors() {
-  return detail::get_native_monitors() //
-         | std::views::transform([](NativeMonitor monitor) { return Monitor {monitor}; }) //
-         | std::ranges::to<std::vector<Monitor>>();
-}
+inline void log_monitors() {
+  auto monitors = Monitor::get_all();
+  LOG_INFO("Monitors count: {}", monitors.size());
 
+  for (auto monitor: monitors) {
+    LOG_INFO("Selected Monitor: {}", monitor.name());
+    LOG_INFO(
+        "Logical resolution: Width: {}, Height: {}", //
+        monitor.logical_resolution().width, //
+        monitor.logical_resolution().height //
+    )
+    LOG_INFO("Scale: X: {}, Y: {}", monitor.content_scale().x, monitor.content_scale().y)
+
+    LOG_INFO(
+        "Physical resolution: Width: {}, Height: {}", //
+        monitor.physical_resolution().width, //
+        monitor.physical_resolution().height
+    )
+
+    auto const pos = monitor.position();
+    LOG_INFO("Monitior pos: {}, {}", pos.x, pos.y);
+  }
+}
 
 } // namespace rf3d

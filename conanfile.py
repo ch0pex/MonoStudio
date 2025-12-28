@@ -21,7 +21,10 @@ class MonoGameRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     default_options = {
-        "reflect-cpp/*:with_toml": True
+        "reflect-cpp/*:with_toml": True,
+        "glfw/*:with_wayland": True,
+        "glad/*:gl_version": "4.5",
+        "glad/*:gl_profile": "core",
     }
 
     def layout(self):
@@ -51,6 +54,7 @@ class MonoGameRecipe(ConanFile):
         self.requires("reflect-cpp/[>=0]")
         self.requires("quill/[>=10]")
         self.requires("glm/[>=1]")
+        self.requires("glad/[>=2]")
 
     def build_requirements(self):
         self.test_requires("doctest/2.4.11")

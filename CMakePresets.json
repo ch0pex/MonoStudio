@@ -28,6 +28,7 @@
         "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
         "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CONAN_INSTALL_ARGS": "--build=missing;-u",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
         "CONAN_BUILD_PROFILE": "default;${sourceDir}/cmake/conan_profile",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",

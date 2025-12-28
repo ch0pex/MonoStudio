@@ -24,4 +24,7 @@ inline std::string get_window_error() {
   return "No error";
 }
 
+// TOOD error wrapper >> check::error
+
+
 } // namespace rf3d

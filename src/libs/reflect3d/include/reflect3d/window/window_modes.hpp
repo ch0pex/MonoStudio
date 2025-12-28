@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/logging/logger.hpp"
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/utils/window_error.hpp"
@@ -57,10 +58,7 @@ inline NativeWindow create_handle(
  *       Window Modes     *
  **************************/
 inline NativeWindow create_windowed(config::Window const& config, Monitor monitor) {
-  glfwDefaultWindowHints();
-
-  for (auto const& [hint, value]: config.hints)
-    glfwWindowHint(hint, value);
+  apply_hints(config.hints);
 
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -76,8 +74,6 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
   apply_hints(config.hints);
 
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-
-  // Often desirable for generic windowed borderless to be resizable, change if needed
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
   NativeWindow const window = create_handle(config.resolution, config.title, nullptr);
@@ -89,17 +85,15 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
 NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor const monitor) {
   apply_hints(config.hints);
 
-  // 1. Quitar decoraciones (bordes y barra de título)
-  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  glfwWindowHint(GLFW_RED_BITS, monitor.redBits());
+  glfwWindowHint(GLFW_GREEN_BITS, monitor.greenBits());
+  glfwWindowHint(GLFW_BLUE_BITS, monitor.blueBits());
+  glfwWindowHint(GLFW_REFRESH_RATE, monitor.refreshRate());
 
-  // 2. Usar la resolución lógica para la creación inicial (evita errores de validación)
-  auto log_res = monitor.physical_resolution();
-  auto* window = create_handle({.width = log_res.width, .height = log_res.height}, config.title);
-
-
-  std::string error {};
-
-  // glfwMaximizeWindow(window);
+  Resolution const log_res = monitor.physical_resolution();
+  NativeWindow window =
+      create_handle({.width = log_res.width, .height = log_res.height}, config.title, monitor.native_handle());
 
   return window;
 }
@@ -107,13 +101,8 @@ NativeWindow create_borderless_fullscreen(config::Window const& config, Monitor 
 NativeWindow create_exclusive_fullscreen(config::Window const& config, Monitor const monitor) {
   apply_hints(config.hints);
 
-  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-  glfwWindowHint(GLFW_RED_BITS, monitor.redBits());
-  glfwWindowHint(GLFW_GREEN_BITS, monitor.greenBits());
-  glfwWindowHint(GLFW_BLUE_BITS, monitor.blueBits());
-  glfwWindowHint(GLFW_REFRESH_RATE, monitor.refreshRate());
-
-  return create_handle(config.resolution, config.title, monitor.native_handle());
+  NativeWindow window = create_handle(config.resolution, config.title, monitor.native_handle());
+  return window;
 }
 
 /************************************
@@ -123,13 +112,13 @@ inline NativeWindow native_window(config::Window const& config) {
   glfwDefaultWindowHints();
 
   // clang-format off
-  Monitor monitor = Monitor::from_id(config.monitor).or_else([]() -> std::optional<Monitor> { 
+  Monitor const monitor = Monitor::from_id(config.monitor).or_else([]() -> std::optional<Monitor> { 
     LOG_WARNING("Selected monitor doesn't exist, primary monitor will be used instead")
     return Monitor::primary();
   }).value(); // clang-format on
-  //
 
   LOG_INFO("Selected monitor name: {}", monitor.name());
+
   switch (config.mode) {
     case WindowMode::exclusive_full_screen:
       return create_exclusive_fullscreen(config, monitor);
@@ -141,7 +130,7 @@ inline NativeWindow native_window(config::Window const& config) {
       return create_windowed(config, monitor);
   }
 
-  std::unreachable();
+  throw std::invalid_argument("Specified invalid window mode");
 }
 
 } // namespace rf3d::detail

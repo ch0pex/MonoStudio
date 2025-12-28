@@ -9,24 +9,45 @@
 
 namespace rf3d {
 
-class WindowBuilder;
+class GlfwContext;
+
+namespace detail {
+
+struct ContextInstance {
+  ContextInstance(ContextInstance&&)                 = delete;
+  ContextInstance& operator=(ContextInstance&&)      = delete;
+  ContextInstance(ContextInstance const&)            = delete;
+  ContextInstance& operator=(ContextInstance const&) = delete;
+  ~ContextInstance() { glfwTerminate(); }
+
+  ContextInstance(mono::PassKey<GlfwContext> key [[maybe_unused]]) {
+    if (glfwInit() == GLFW_FALSE) {
+      throw std::runtime_error("Couldn't initilize glfw");
+    };
+  }
+};
+
+} // namespace detail
 
 /**
  * Lazy glfw's context initilizer
  * This can only be instantiated by window class
  */
-struct GlfwContext {
-  GlfwContext(GlfwContext&&)                 = delete;
-  GlfwContext& operator=(GlfwContext&&)      = delete;
-  GlfwContext(GlfwContext const&)            = delete;
-  GlfwContext& operator=(GlfwContext const&) = delete;
-  ~GlfwContext() { glfwTerminate(); }
+class GlfwContext {
+  GlfwContext() = default;
 
-  GlfwContext(mono::PassKey<WindowBuilder> key [[maybe_unused]]) {
-    if (glfwInit() == 0) {
-      throw std::runtime_error("Couldn't initilize glfw");
-    };
-  }
+  ~GlfwContext() = default;
+
+public:
+  GlfwContext(GlfwContext&&) = delete;
+
+  GlfwContext& operator=(GlfwContext&&) = delete;
+
+  explicit GlfwContext(GlfwContext const&) = delete;
+
+  GlfwContext& operator=(GlfwContext const&) = delete;
+
+  static void init() { static detail::ContextInstance instance {mono::PassKey<GlfwContext> {}}; }
 };
 
 } // namespace rf3d

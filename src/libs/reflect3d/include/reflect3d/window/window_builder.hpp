@@ -29,11 +29,12 @@ public:
   using native_type = GLFWwindow*;
 
   explicit WindowBuilder(config::Window const& config = {}) {
-    static GlfwContext context {mono::PassKey<WindowBuilder> {}};
+    GlfwContext::init();
 
     // Handle must be created after GLFW context
     handle = detail::native_window(config); // NOLINT
 
+    // TODO improve this error handling
     if (handle == nullptr) {
       std::string error_message = "Failed to create window: " + get_window_error();
       LOG_ERROR("{}", error_message);
