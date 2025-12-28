@@ -63,7 +63,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           dnf -y update
-          dnf -y install git xorg-x11-server-Xvfb
+          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel
           git clone https://github.com/ch0pex/dotfiles
           cd dotfiles
           ./setup.sh install_packages
