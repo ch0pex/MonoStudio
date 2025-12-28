@@ -29,6 +29,10 @@ inline std::span<NativeMonitor> get_native_monitors() {
 
 } // namespace detail
 
+struct MonitorWorkingArea {
+  math::u16vec2 position {};
+  Resolution size {};
+};
 
 class Monitor {
   explicit Monitor(NativeMonitor const monitor) : handle(monitor) { }
@@ -36,8 +40,9 @@ class Monitor {
 public:
   // --- Type traits ---
 
-  using native_type  = NativeMonitor;
-  using vidmode_type = GLFWvidmode const*;
+  using native_type       = NativeMonitor;
+  using vidmode_type      = GLFWvidmode const*;
+  using working_area_type = MonitorWorkingArea;
 
   // --- Factory methods ---
 
@@ -68,6 +73,12 @@ public:
   // --- Member functions ---
 
   [[nodiscard]] std::string name() const { return glfwGetMonitorName(handle); }
+
+  void attach_window(NativeWindow const window) const {
+    glfwSetWindowMonitor(
+        window, handle, 0, 0, physical_resolution().width, physical_resolution().height, refresh_rate()
+    );
+  }
 
   [[nodiscard]] Resolution physical_resolution() const {
     auto const* mode = glfwGetVideoMode(handle);
@@ -116,12 +127,23 @@ public:
     return mode->blueBits;
   }
 
-  [[nodiscard]] std::uint8_t refreshRate() const {
+  [[nodiscard]] std::uint8_t refresh_rate() const {
     auto const* mode = glfwGetVideoMode(handle);
     return mode->refreshRate;
   }
 
-  [[nodiscard]] operator native_type() const { return handle; }
+  [[nodiscard]] working_area_type working_area() const {
+    int x {};
+    int y {};
+    int width {};
+    int height {};
+    glfwGetMonitorWorkarea(handle, &x, &y, &width, &height);
+
+    return {
+      {static_cast<std::uint16_t>(x), static_cast<std::uint16_t>(y)},
+      {.width = static_cast<std::uint16_t>(width), .height = static_cast<std::uint16_t>(height)}
+    };
+  }
 
   [[nodiscard]] native_type native_handle() const { return handle; }
 

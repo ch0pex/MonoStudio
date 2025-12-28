@@ -6,8 +6,8 @@
 #include <doctest/doctest.h>
 
 #include <reflect3d/window/utils/resolution.hpp>
+#include <reflect3d/window/window.hpp>
 #include <reflect3d/window/window_builder.hpp>
-#include <reflect3d/window/window_handle.hpp>
 #include <reflect3d/window/window_modes.hpp>
 #include <reflect3d/window/window_types.hpp>
 
@@ -29,27 +29,32 @@ auto constexpr window_config = [](WindowMode const mode) {
 };
 
 TEST_CASE("Full screen") {
-  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
-  CHECK(window.native_handle() != nullptr);
+  Window window = rf3d::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
+  CHECK(window.is_full_screen() == true);
 }
 
 TEST_CASE("Full screen borderless") {
-  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
-  CHECK(window.native_handle() != nullptr);
+  Window window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
+  if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+    CHECK(window.is_full_screen() == true);
+  }
+  else {
+    CHECK(window.is_full_screen() == false);
+  }
 }
 
 TEST_CASE("Windowed borderless") {
-  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
-
-  CHECK(window.native_handle() != nullptr);
+  Window window = rf3d::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
+  CHECK(window.is_full_screen() == false);
   CHECK(window.size() == resolution);
 }
 
 TEST_CASE("Windowed normal") {
-  WindowHandle window = rf3d::WindowBuilder(window_config(WindowMode::windowed)).build();
+  Window window = rf3d::WindowBuilder(window_config(WindowMode::windowed)).build();
 
+  CHECK(window.is_full_screen() == false);
   CHECK(window.size() == resolution);
-  CHECK(window.native_handle() != nullptr);
+  // CHECK(window.native_handle() != nullptr);
 }
 
 TEST_SUITE_END();

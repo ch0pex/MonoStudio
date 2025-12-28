@@ -2,8 +2,8 @@
 
 #include "reflect3d/window/utils/callbacks.hpp"
 #include "reflect3d/window/utils/window_error.hpp"
+#include "reflect3d/window/window.hpp"
 #include "reflect3d/window/window_config.hpp"
-#include "reflect3d/window/window_handle.hpp"
 #include "reflect3d/window/window_modes.hpp"
 
 #include <mono/logging/logger.hpp>
@@ -156,8 +156,8 @@ public:
         .on_drop(drop);
   }
 
-  WindowHandle build() {
-    WindowHandle window_handle {handle, mono::PassKey<WindowBuilder> {}};
+  Window build() {
+    Window window_handle {handle, mono::PassKey<WindowBuilder> {}};
     handle = nullptr;
     return window_handle;
   }

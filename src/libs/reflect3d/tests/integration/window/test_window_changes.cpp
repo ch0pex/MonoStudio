@@ -10,12 +10,11 @@ int main(int argc, char** argv) { //
   mono::ex::setup_signals();
   rf3d::log_monitors();
 
-  glfwMakeContextCurrent(window);
-
+  window.make_context_current();
 
   // -------- Initial State --------
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -24,7 +23,7 @@ int main(int argc, char** argv) { //
   window.set_full_screen(0);
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -33,7 +32,7 @@ int main(int argc, char** argv) { //
   window.windowed();
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -42,7 +41,7 @@ int main(int argc, char** argv) { //
   window.hide_decorations();
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -51,7 +50,7 @@ int main(int argc, char** argv) { //
   window.show_decorations();
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -60,7 +59,7 @@ int main(int argc, char** argv) { //
   window.hide();
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -68,7 +67,7 @@ int main(int argc, char** argv) { //
   window.show();
 
   rf3d::input::poll_events();
-  glfwSwapBuffers(window);
+  window.swap_buffers();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }

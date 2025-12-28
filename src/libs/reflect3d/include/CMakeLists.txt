@@ -13,9 +13,12 @@ target_sources(
       reflect3d/graphics/vk/utils/vk_result.hpp
       reflect3d/graphics/vk/utils/vk_checker.hpp
       reflect3d/graphics/vk/utils/vk_debug_callback.hpp
+      reflect3d/graphics/vk/vk_base_instance.hpp
+      reflect3d/graphics/vk/vk_debug_instance.hpp
       reflect3d/graphics/vk/vk_debug_messenger.hpp
       reflect3d/graphics/vk/vk_instance.hpp
       reflect3d/graphics/vk/vk_instance_detail.hpp
+      reflect3d/graphics/vk/vk_traits.hpp
       reflect3d/graphics/vk/vk_extensions.hpp
       reflect3d/graphics/vk/vk_validation_layers.hpp
 
@@ -38,7 +41,6 @@ target_sources(
       reflect3d/window/window_builder.hpp
       reflect3d/window/window_config.hpp
       reflect3d/window/window.hpp
-      reflect3d/window/window_handle.hpp
 
       # Render
       reflect3d/render/viewport.hpp
