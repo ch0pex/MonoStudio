@@ -1,6 +1,9 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/utils/vk_exception.hpp"
 #include "reflect3d/graphics/vk/utils/vk_result.hpp"
+
+#include <source_location>
 
 namespace rf3d::hri::vk {
 
