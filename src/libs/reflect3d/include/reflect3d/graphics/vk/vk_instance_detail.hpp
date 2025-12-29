@@ -30,13 +30,8 @@ inline VkApplicationInfo create_instance_info() {
  */
 void setup_validation_layers(VkInstanceCreateInfo& create_info) {
   if constexpr (enable_validation_layers) {
-    auto constexpr layers_fallback = [](std::runtime_error const& error) {
-      LOG_WARNING("{}", error.what());
-      return mono::err::expected<std::vector<char const*>> {};
-    };
-
     // This needs to survive until vkCreateInstance is invoked thats why it has static storage
-    static auto const validation_layers = get_validation_layers().or_else(layers_fallback).value();
+    static auto const validation_layers = get_validation_layers();
     create_info.enabledLayerCount       = validation_layers.size();
     create_info.ppEnabledLayerNames     = not validation_layers.empty() ? validation_layers.data() : nullptr;
     create_info.pNext                   = &debug_utils_create_info;

@@ -1,11 +1,14 @@
 #pragma once
 
-
-#include <vulkan/vulkan_core.h>
+#include "mono/misc/passkey.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device_detail.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
 
+#include <vulkan/vulkan_core.h>
+
 namespace rf3d::hri::vk {
+
+class Instance;
 
 class Gpu {
 public:
@@ -13,7 +16,8 @@ public:
   using logical_type        = VkDevice;
   using graphics_queue_type = VkQueue;
 
-  explicit Gpu(VkInstance instance) : physical_handle(detail::pick_physical_device(instance)) {
+  explicit Gpu(VkInstance const instance, mono::PassKey<Instance> key [[maybe_unused]]) :
+    physical_handle(detail::pick_physical_device(instance)) {
     auto indices = detail::find_queue_families(physical_handle);
 
     logical_handle = detail::create_logical_device(physical_handle, indices);
@@ -45,7 +49,7 @@ public:
         vkDestroyDevice(logical_handle, nullptr);
       }
 
-      physical_handle = std::exchange(other.physical_handle, nullptr);
+      physical_handle = std::exchange(other.physical_handle, VK_NULL_HANDLE);
       logical_handle  = std::exchange(other.logical_handle, VK_NULL_HANDLE);
       graphics_queue  = std::exchange(other.graphics_queue, VK_NULL_HANDLE);
     }

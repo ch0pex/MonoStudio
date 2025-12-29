@@ -80,12 +80,13 @@ inline std::vector<LayerProperties> get_supported_validation_layers() {
  * and if they are not enabled, returns an empty vector.
  *
  * @return expected ValidationLayers if validation layers are enabled and supported.
- * by the current system.
+ * by the current system. Empty vector otherwise.
+ *
  */
-inline mono::err::expected<std::vector<char const*>> get_validation_layers() {
+inline std::vector<char const*> get_validation_layers() {
   if constexpr (not enable_validation_layers) {
     LOG_INFO("Validation layers are disabled");
-    return std::vector<char const*> {};
+    return {};
   }
 
   LOG_INFO("Validation layers are enabled");
@@ -95,9 +96,10 @@ inline mono::err::expected<std::vector<char const*>> get_validation_layers() {
   };
 
   if (not check_validation_layer_support(get_supported_validation_layers(), validation_layers)) {
-    return mono::err::unexpected(
-        "Validation layers were requested, but not all are available. Program execution will continue without them"
+    LOG_WARNING(
+        "Validation layers were requested, but not all are available. Program execution may continue without them"
     );
+    return {};
   }
 
   return validation_layers //

@@ -1,18 +1,15 @@
 #include <reflect3d/graphics/vk/vk_instance.hpp>
+#include "reflect3d/graphics/vk/vk_gpu.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
 TEST_SUITE_BEGIN("Vulkan");
 
-TEST_CASE("Create instance") {
-  CHECK_NOTHROW({ rf3d::hri::vk::Instance instance {}; });
-}
-
-TEST_CASE("Create two instances") {
+TEST_CASE("Create instance and gpu") {
   CHECK_NOTHROW({
     rf3d::hri::vk::Instance instance {};
-    rf3d::hri::vk::Instance instance2 {};
+    rf3d::hri::vk::Gpu gpu = instance.get_gpu();
   });
 }
 

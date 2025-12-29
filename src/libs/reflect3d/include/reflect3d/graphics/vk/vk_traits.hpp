@@ -15,6 +15,7 @@ namespace rf3d::hri::vk {
 
 struct Traits {
   using instance_type = Instance;
+  using gpu_type      = Gpu;
 };
 
 } // namespace rf3d::hri::vk

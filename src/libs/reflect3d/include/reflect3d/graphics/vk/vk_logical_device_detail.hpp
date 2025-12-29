@@ -2,6 +2,7 @@
 
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
+#include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 
 //
 #include <vulkan/vulkan_core.h>
@@ -10,6 +11,7 @@ namespace rf3d::hri::vk::detail {
 
 inline VkDevice create_logical_device(VkPhysicalDevice const physical_device, QueueFamilyIndices const& indices) {
   VkDevice device {nullptr};
+  auto const validation_layers = get_validation_layers();
 
   VkDeviceQueueCreateInfo queueCreateInfo {};
   queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -27,13 +29,10 @@ inline VkDevice create_logical_device(VkPhysicalDevice const physical_device, Qu
 
   create_info.enabledExtensionCount = 0;
 
-  // if (enableValidationLayers) {
-  //   createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
-  //   createInfo.ppEnabledLayerNames = validationLayers.data();
-  // }
-  // else {
-  //   createInfo.enabledLayerCount = 0;
-  // }
+  create_info.enabledLayerCount = validation_layers.size();
+  if constexpr (enable_validation_layers) {
+    create_info.ppEnabledLayerNames = not validation_layers.empty() ? validation_layers.data() : nullptr;
+  }
 
   vkCreateDevice(physical_device, &create_info, nullptr, &device) >> check::error;
 
