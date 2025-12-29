@@ -2,26 +2,24 @@
 
 #include "mono/error/expected.hpp"
 #include "mono/logging/logger.hpp"
-#include "reflect3d/graphics/instance_config.hpp"
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/vk_extensions.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 
 #include <GLFW/glfw3.h>
-#include <expected>
 #include <stdexcept>
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
 
 namespace rf3d::hri::vk::detail {
 
-inline VkApplicationInfo create_instance_info(std::string_view const name, std::string_view const engine_name) {
+inline VkApplicationInfo create_instance_info() {
   VkApplicationInfo app_info {};
   app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  app_info.pApplicationName   = name.data();
+  app_info.pApplicationName   = "Reflect3D Application";
   app_info.applicationVersion = VK_MAKE_VERSION(1, 4, 0);
-  app_info.pEngineName        = engine_name.data();
+  app_info.pEngineName        = "Reflect3D Engine";
   app_info.engineVersion      = VK_MAKE_VERSION(1, 4, 0);
   app_info.apiVersion         = VK_API_VERSION_1_4;
   return app_info;
@@ -51,12 +49,12 @@ void setup_validation_layers(VkInstanceCreateInfo& create_info) {
  * @note may throw if mandatory extensions are not supported
  * @return A VkInstance handle representing the created Vulkan instance.
  */
-VkInstance create_instance(InstanceConfig const& config) {
+VkInstance create_instance() {
   VkInstanceCreateInfo create_info {};
   VkInstance instance {};
 
   // ApplicationInfo creation
-  VkApplicationInfo app_info   = create_instance_info(config.application_name, config.engine_name);
+  VkApplicationInfo app_info   = create_instance_info();
   create_info.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   create_info.pApplicationInfo = &app_info;
 

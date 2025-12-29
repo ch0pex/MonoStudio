@@ -8,16 +8,17 @@ target_sources(
 
       # Graphics
       reflect3d/graphics/hri.hpp
-      reflect3d/graphics/instance_config.hpp
       reflect3d/graphics/vk/utils/vk_exception.hpp
       reflect3d/graphics/vk/utils/vk_result.hpp
       reflect3d/graphics/vk/utils/vk_checker.hpp
       reflect3d/graphics/vk/utils/vk_debug_callback.hpp
-      reflect3d/graphics/vk/vk_base_instance.hpp
-      reflect3d/graphics/vk/vk_debug_instance.hpp
       reflect3d/graphics/vk/vk_debug_messenger.hpp
       reflect3d/graphics/vk/vk_instance.hpp
       reflect3d/graphics/vk/vk_instance_detail.hpp
+      reflect3d/graphics/vk/vk_instance_types.hpp
+      reflect3d/graphics/vk/vk_gpu.hpp
+      reflect3d/graphics/vk/vk_physical_device_detail.hpp
+      reflect3d/graphics/vk/vk_logical_device_detail.hpp
       reflect3d/graphics/vk/vk_traits.hpp
       reflect3d/graphics/vk/vk_extensions.hpp
       reflect3d/graphics/vk/vk_validation_layers.hpp

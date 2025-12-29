@@ -90,7 +90,7 @@ inline mono::err::expected<std::vector<char const*>> get_extensions() {
     return mono::err::unexpected("Not all required Vulkan extensions are supported.");
   }
 
-  LOG_INFO("All required validation layers are supported");
+  LOG_INFO("All required extensions are supported.");
   return required_extensions //
          | std::views::transform([](auto const& ext) { return ext.data(); }) //
          | std::ranges::to<std::vector>();
