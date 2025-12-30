@@ -8,13 +8,11 @@
 
 namespace rf3d::hri::vk::detail {
 
-inline raii::Device create_logical_device(
-    raii::Context const& context, raii::PhysicalDevice const& physical_device, QueueFamilyIndices const& indices
-) {
+inline raii::Device create_logical_device(raii::Context const& context, PhysicalDevice const& physical_device) {
   auto const validation_layers = get_validation_layers(context);
 
   core::DeviceQueueCreateInfo queueCreateInfo {};
-  queueCreateInfo.queueFamilyIndex = indices.graphics_family.value();
+  queueCreateInfo.queueFamilyIndex = physical_device.queue_indices().graphics_family.value();
   queueCreateInfo.queueCount       = 1;
 
   // Not neeeded for now

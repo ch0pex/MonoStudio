@@ -24,13 +24,20 @@ public:
    *    Member functions    *
    **************************/
 
-  // [[nodiscard]] void create_surface(NativeWindow const window) const { }
+  [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
+    core::SurfaceKHR::NativeType surface = nullptr;
+
+    if (glfwCreateWindowSurface(*instance.handle, window, nullptr, &surface) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create window surface");
+    }
+
+    return surface_type {instance.handle, surface};
+  }
 
   [[nodiscard]] gpu_type pick_gpu(BestGpuCriteria const criteria) const {
     auto physical_device = detail::pick_best_physical_device(instance.handle);
 
-    auto const indices  = detail::find_queue_families(physical_device);
-    auto logical_device = detail::create_logical_device(context, physical_device, indices);
+    auto logical_device = detail::create_logical_device(context, physical_device);
 
     LOG_INFO("Choosing best available GPU");
     return {std::move(physical_device), std::move(logical_device)};

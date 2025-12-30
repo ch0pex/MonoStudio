@@ -9,19 +9,21 @@ class Instance;
 
 class Gpu {
 public:
-  using physical_type       = raii::PhysicalDevice;
+  using physical_type       = PhysicalDevice;
   using logical_type        = raii::Device;
   using graphics_queue_type = raii::Queue;
 
   Gpu(physical_type&& physical, logical_type&& logical) :
-    physical_handle(std::move(physical)), //
-    logical_handle(std::move(logical)) //
+    physical_device(std::move(physical)), //
+    logical_device(std::move(logical)), //
+    graphics_queue(logical_device, physical_device.queue_indices().graphics_family.value(), 0U) //
   { }
 
+
 private:
-  physical_type physical_handle;
-  logical_type logical_handle;
-  // graphics_queue_type graphics_queue;
+  physical_type physical_device;
+  logical_type logical_device;
+  graphics_queue_type graphics_queue;
 };
 
 struct BestGpuCriteria {
