@@ -1,5 +1,4 @@
-#include <reflect3d/graphics/vk/vk_instance.hpp>
-#include <string_view>
+#include <reflect3d/graphics/vk/vk_extensions.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
@@ -8,9 +7,9 @@ TEST_SUITE_BEGIN("Vulkan");
 
 TEST_CASE("Verify extensions support") {
   // Mock supported extensions
-  std::vector<VkExtensionProperties> supported_extensions = {
-    {.extensionName = "VK_KHR_surface", .specVersion = VK_API_VERSION_1_0},
-    {.extensionName = "VK_KHR_win32_surface", .specVersion = VK_API_VERSION_1_0},
+  std::vector<rf3d::hri::vk::core::ExtensionProperties> supported_extensions = {
+    {.extensionName = std::string {"VK_KHR_surface"}, .specVersion = rf3d::hri::vk::core::ApiVersion10},
+    {.extensionName = std::string {"VK_KHR_win32_surface"}, .specVersion = rf3d::hri::vk::core::ApiVersion10},
   };
 
   // Mock required extensions
@@ -23,8 +22,8 @@ TEST_CASE("Verify extensions support") {
 }
 
 TEST_CASE("Verify extensions support - missing extension") {
-  std::vector<VkExtensionProperties> supported_extensions = {
-    {.extensionName = "VK_KHR_surface", .specVersion = VK_API_VERSION_1_0},
+  std::vector<rf3d::hri::vk::core::ExtensionProperties> supported_extensions = {
+    {.extensionName = std::string {"VK_KHR_surface"}, .specVersion = rf3d::hri::vk::core::ApiVersion10},
   };
 
   std::vector<std::string_view> required_extensions = {

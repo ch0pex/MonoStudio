@@ -1,18 +1,14 @@
 #pragma once
 
-#include "mono/error/expected.hpp"
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
 
 // Mono library
 #include <mono/logging/logger.hpp>
 
-// External libraries
-#include <vulkan/vulkan_core.h>
-
 // STD library
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <ranges>
 #include <string_view>
@@ -26,7 +22,6 @@ inline constexpr bool enable_validation_layers = false;
 inline constexpr bool enable_validation_layers = true;
 #endif
 
-using LayerProperties = VkLayerProperties;
 
 /**
  * Given a list of supported validation layers and required validation layers,
@@ -35,7 +30,7 @@ using LayerProperties = VkLayerProperties;
  * @return true if all requested validation layers are supported.
  */
 template <std::ranges::range SupportedLayers, std::ranges::range RequiredLayers>
-  requires(std::same_as<std::ranges::range_value_t<SupportedLayers>, LayerProperties> and
+  requires(std::same_as<std::ranges::range_value_t<SupportedLayers>, core::LayerProperties> and
            std::same_as<std::ranges::range_value_t<RequiredLayers>, std::string_view>)
 inline bool check_validation_layer_support( //
   SupportedLayers const& supported_layers,  
@@ -59,15 +54,12 @@ inline bool check_validation_layer_support( //
 /**
  * @return a vector with all the supported validation layers by the system.
  */
-inline std::vector<LayerProperties> get_supported_validation_layers() {
-  std::uint32_t layer_count {};
-  vkEnumerateInstanceLayerProperties(&layer_count, nullptr) >> check::error;
+inline std::vector<core::LayerProperties> get_supported_validation_layers(raii::Context const& context) {
 
-  std::vector<LayerProperties> availableLayers(layer_count);
-  vkEnumerateInstanceLayerProperties(&layer_count, availableLayers.data()) >> check::error;
+  auto const availableLayers = context.enumerateInstanceLayerProperties();
 
   for (auto const& layer: availableLayers) {
-    LOG_INFO("Vulkan Validation Layer: {} (version {})", layer.layerName, layer.specVersion);
+    LOG_INFO("Vulkan Validation Layer: {} (version {})", layer.layerName.data(), layer.specVersion);
   }
 
   return availableLayers;
@@ -83,7 +75,7 @@ inline std::vector<LayerProperties> get_supported_validation_layers() {
  * by the current system. Empty vector otherwise.
  *
  */
-inline std::vector<char const*> get_validation_layers() {
+inline std::vector<char const*> get_validation_layers(raii::Context const& context) {
   if constexpr (not enable_validation_layers) {
     LOG_INFO("Validation layers are disabled");
     return {};
@@ -95,7 +87,7 @@ inline std::vector<char const*> get_validation_layers() {
     "VK_LAYER_KHRONOS_validation",
   };
 
-  if (not check_validation_layer_support(get_supported_validation_layers(), validation_layers)) {
+  if (not check_validation_layer_support(get_supported_validation_layers(context), validation_layers)) {
     LOG_WARNING(
         "Validation layers were requested, but not all are available. Program execution may continue without them"
     );

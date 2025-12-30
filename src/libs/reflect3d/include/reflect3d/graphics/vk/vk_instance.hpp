@@ -1,13 +1,10 @@
 #pragma once
 
-#include "mono/misc/passkey.hpp"
-#include "reflect3d/graphics/vk/utils/vk_exception.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
-#include "reflect3d/graphics/vk/vk_instance_types.hpp"
+#include "reflect3d/graphics/vk/vk_instance_profiles.hpp"
+#include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 #include "reflect3d/window/window_types.hpp"
-
-#include <vulkan/vulkan_core.h>
 
 
 namespace rf3d::hri::vk {
@@ -19,27 +16,34 @@ public:
    ********************/
 
   using underlying_type = std::conditional_t<enable_validation_layers, detail::DebugInstance, detail::ReleaseInstance>;
-  using surface_type    = VkSurfaceKHR;
-  using layer_properties_type = LayerProperties;
+  using context_type    = raii::Context;
+  using surface_type    = raii::SurfaceKHR;
+  using gpu_type        = Gpu;
 
   /**************************
    *    Member functions    *
    **************************/
 
-  [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
-    surface_type surface {};
-    if (glfwCreateWindowSurface(handle, window, nullptr, &surface) != VK_SUCCESS) {
-      throw Exception("Failed to create window surface!");
-    }
-    return surface;
+  // [[nodiscard]] void create_surface(NativeWindow const window) const { }
+
+  [[nodiscard]] gpu_type pick_gpu(BestGpuCriteria const criteria) const {
+    auto physical_device = detail::pick_best_physical_device(instance.handle);
+
+    auto const indices  = detail::find_queue_families(physical_device);
+    auto logical_device = detail::create_logical_device(context, physical_device, indices);
+
+    LOG_INFO("Choosing best available GPU");
+    return {std::move(physical_device), std::move(logical_device)};
   }
 
-  void destroy_surface(surface_type const surface) const { vkDestroySurfaceKHR(handle, surface, nullptr); }
-
-  [[nodiscard]] Gpu get_gpu() const { return Gpu {handle, mono::PassKey<Instance> {}}; }
+  [[nodiscard]] gpu_type pick_gpu(CompatibleGpuCriteria const criteria) const {
+    LOG_WARNING("CompatibleGpuCriteria not implemented yet, falling back to BestGpuCriteria");
+    return pick_gpu(best_gpu_criteria);
+  }
 
 private:
-  underlying_type handle;
+  context_type context;
+  underlying_type instance {context};
 };
 
 } // namespace rf3d::hri::vk

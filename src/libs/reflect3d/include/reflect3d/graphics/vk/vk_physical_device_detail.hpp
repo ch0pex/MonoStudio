@@ -1,37 +1,35 @@
 #pragma once
 
 //
-#include <vulkan/vulkan_core.h>
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
 //
+#include <algorithm>
 #include <cstdint>
 #include <map>
-#include <ranges>
 #include <vector>
+#include <vulkan/vulkan_enums.hpp>
 
 namespace rf3d::hri::vk::detail {
 
-inline std::vector<VkPhysicalDevice> enumerate_physical_devices(VkInstance const instance) {
-  std::uint32_t device_count = 0;
-  vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
 
-  std::vector<VkPhysicalDevice> devices(device_count);
-  vkEnumeratePhysicalDevices(instance, &device_count, devices.data());
-
-  return devices;
+inline std::vector<std::string> device_extensions() {
+  return {
+    core::KHRSwapchainExtensionName,
+    core::KHRSpirv14ExtensionName,
+    core::KHRSynchronization2ExtensionName,
+    core::KHRCreateRenderpass2ExtensionName,
+  };
 }
 
-inline std::uint64_t rate_device(VkPhysicalDevice const device) {
-  VkPhysicalDeviceProperties device_properties;
-  VkPhysicalDeviceFeatures device_features;
-
-  vkGetPhysicalDeviceProperties(device, &device_properties);
-  vkGetPhysicalDeviceFeatures(device, &device_features);
+inline std::uint64_t rate_device(raii::PhysicalDevice const& device) {
+  auto device_properties = device.getProperties();
+  auto device_features   = device.getFeatures();
 
   std::uint64_t score = 0;
 
   // Discrete GPUs have a significant performance advantage
-  if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+  if (device_properties.deviceType == core::PhysicalDeviceType::eDiscreteGpu) {
     score += 1000;
   }
 
@@ -49,12 +47,11 @@ inline std::uint64_t rate_device(VkPhysicalDevice const device) {
   return score;
 }
 
-inline VkPhysicalDevice pick_physical_device(VkInstance const instance) {
-  std::multimap<std::uint64_t, VkPhysicalDevice, std::greater<>> candidates;
+inline raii::PhysicalDevice pick_best_physical_device(raii::Instance const& instance) {
+  std::multimap<std::uint64_t, raii::PhysicalDevice, std::greater<>> candidates;
 
-  for (auto const& device: enumerate_physical_devices(instance)) {
-    std::uint64_t const score = rate_device(device);
-    candidates.insert({score, device});
+  for (auto const& device: raii::PhysicalDevices {instance}) {
+    candidates.insert({rate_device(device), device});
   }
 
   if (candidates.empty() or candidates.begin()->first == 0) {
@@ -68,20 +65,19 @@ struct QueueFamilyIndices {
   std::optional<std::uint32_t> graphics_family;
 };
 
-QueueFamilyIndices find_queue_families(VkPhysicalDevice const device) {
+inline QueueFamilyIndices find_queue_families(raii::PhysicalDevice const& physicalDevice) {
   QueueFamilyIndices indices;
+  auto queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
 
-  std::uint32_t queue_family_count = 0;
-  vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
+  // get the first index into queueFamilyProperties which supports graphics
+  auto const graphics_queue_family =
+      std::ranges::find_if(queueFamilyProperties, [](core::QueueFamilyProperties const& qfp) {
+        return static_cast<std::uint32_t>(qfp.queueFlags & core::QueueFlagBits::eGraphics) != 0U;
+      });
 
-  std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
-  vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families.data());
-
-  for (int i = 0; auto const& queue_family: queue_families) {
-    if ((queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0U) {
-      indices.graphics_family = i;
-    }
-    ++i;
+  if (graphics_queue_family != queueFamilyProperties.end()) {
+    indices.graphics_family =
+        static_cast<std::uint32_t>(std::distance(queueFamilyProperties.begin(), graphics_queue_family));
   }
 
   return indices;

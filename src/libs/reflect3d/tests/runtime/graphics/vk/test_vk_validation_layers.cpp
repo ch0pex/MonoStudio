@@ -11,19 +11,21 @@ namespace {
 TEST_SUITE_BEGIN("Vulkan");
 
 TEST_CASE("Verify validation layer support") {
+  using namespace std::string_literals;
+
   // Mock supported validation layers
-  std::vector<VkLayerProperties> const supported_layers = {
+  std::vector<rf3d::hri::vk::core::LayerProperties> const supported_layers = {
     {
-      .layerName             = "VK_LAYER_KHRONOS_validation",
-      .specVersion           = VK_API_VERSION_1_0,
+      .layerName             = "VK_LAYER_KHRONOS_validation"s,
+      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
       .implementationVersion = 0,
-      .description           = "",
+      .description           = ""s,
     },
     {
-      .layerName             = "VK_LAYER_LUNARG_standard_validation",
-      .specVersion           = VK_API_VERSION_1_0,
+      .layerName             = "VK_LAYER_LUNARG_standard_validation"s,
+      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
       .implementationVersion = 0,
-      .description           = "",
+      .description           = ""s,
     },
   };
 
@@ -37,12 +39,13 @@ TEST_CASE("Verify validation layer support") {
 }
 
 TEST_CASE("Verify validation layer support - missing layer") {
-  std::vector<VkLayerProperties> const supported_layers = {
+  using namespace std::string_literals;
+  std::vector<rf3d::hri::vk::core::LayerProperties> const supported_layers = {
     {
-      .layerName             = "VK_LAYER_KHRONOS_validation",
-      .specVersion           = VK_API_VERSION_1_0,
+      .layerName             = "VK_LAYER_KHRONOS_validation"s,
+      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
       .implementationVersion = 0,
-      .description           = "",
+      .description           = ""s,
     },
   };
 

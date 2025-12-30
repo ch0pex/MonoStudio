@@ -15,7 +15,7 @@ target_sources(
       reflect3d/graphics/vk/vk_debug_messenger.hpp
       reflect3d/graphics/vk/vk_instance.hpp
       reflect3d/graphics/vk/vk_instance_detail.hpp
-      reflect3d/graphics/vk/vk_instance_types.hpp
+      reflect3d/graphics/vk/vk_instance_profiles.hpp
       reflect3d/graphics/vk/vk_gpu.hpp
       reflect3d/graphics/vk/vk_physical_device_detail.hpp
       reflect3d/graphics/vk/vk_logical_device_detail.hpp
@@ -61,3 +61,8 @@ target_link_libraries(
 )
 
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)
+
+target_compile_definitions(reflect3d-lib INTERFACE
+        VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
+        VULKAN_HPP_NO_STRUCT_CONSTRUCTORS=1
+)

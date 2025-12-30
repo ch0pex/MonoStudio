@@ -1,17 +1,18 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan_core.h>
 
 #include <cstdint>
 #include <ranges>
 #include <vector>
+#include <vulkan/vulkan.hpp>
 
 namespace rf3d::hri::vk {
 
@@ -22,7 +23,7 @@ namespace rf3d::hri::vk {
  */
 template<std::ranges::range SupportedExtensions, std::ranges::range RequiredExtensions>
   requires(
-      std::same_as<std::ranges::range_value_t<SupportedExtensions>, VkExtensionProperties> and
+      std::same_as<std::ranges::range_value_t<SupportedExtensions>, core::ExtensionProperties> and
       std::same_as<std::ranges::range_value_t<RequiredExtensions>, std::string_view>
   )
 inline bool check_extensions_support(
@@ -46,15 +47,11 @@ inline bool check_extensions_support(
 /*
  * @return A vector of supported Vulkan instance extensions.
  */
-inline std::vector<VkExtensionProperties> get_supported_extensions() {
-  std::uint32_t extension_count = 0;
-  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr) >> check::error;
+inline std::vector<core::ExtensionProperties> get_supported_extensions(raii::Context const& context) {
 
-  std::vector<VkExtensionProperties> extensions(extension_count);
-  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data()) >> check::error;
-
+  auto extensions = context.enumerateInstanceExtensionProperties();
   for (auto const& ext: extensions) {
-    LOG_INFO("Supported vulkan extension: {} (version {})", ext.extensionName, ext.specVersion);
+    LOG_INFO("Supported vulkan extension: {} (version {})", ext.extensionName.data(), ext.specVersion);
   }
 
   return extensions;
@@ -73,7 +70,7 @@ inline std::vector<std::string_view> get_required_extensions() {
 
   if constexpr (enable_validation_layers) {
     LOG_INFO("Validation layers enabled, adding VK_EXT_debug_utils extension");
-    extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    extensions.emplace_back(core::EXTDebugUtilsExtensionName);
   }
 
   return extensions;
@@ -83,10 +80,10 @@ inline std::vector<std::string_view> get_required_extensions() {
  * Ensures that all required extensions by glfw are supported by vulkan,
  * otherwise, throws an exception.
  */
-inline mono::err::expected<std::vector<char const*>> get_extensions() {
+inline mono::err::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
   auto const required_extensions = get_required_extensions();
 
-  if (not check_extensions_support(get_supported_extensions(), required_extensions)) {
+  if (not check_extensions_support(get_supported_extensions(context), required_extensions)) {
     return mono::err::unexpected("Not all required Vulkan extensions are supported.");
   }
 
