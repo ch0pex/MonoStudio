@@ -14,7 +14,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 /**
  * Checks if all required extensions are supported.
@@ -103,4 +103,4 @@ inline mono::err::expected<std::vector<char const*>> get_extensions(raii::Contex
          | std::ranges::to<std::vector>();
 }
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

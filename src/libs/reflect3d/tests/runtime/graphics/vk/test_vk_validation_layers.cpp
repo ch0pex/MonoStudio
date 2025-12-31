@@ -14,16 +14,16 @@ TEST_CASE("Verify validation layer support") {
   using namespace std::string_literals;
 
   // Mock supported validation layers
-  std::vector<rf3d::hri::vk::core::LayerProperties> const supported_layers = {
+  std::vector<rf3d::gfx::vk::core::LayerProperties> const supported_layers = {
     {
       .layerName             = "VK_LAYER_KHRONOS_validation"s,
-      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
+      .specVersion           = rf3d::gfx::vk::core::ApiVersion10,
       .implementationVersion = 0,
       .description           = ""s,
     },
     {
       .layerName             = "VK_LAYER_LUNARG_standard_validation"s,
-      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
+      .specVersion           = rf3d::gfx::vk::core::ApiVersion10,
       .implementationVersion = 0,
       .description           = ""s,
     },
@@ -35,15 +35,15 @@ TEST_CASE("Verify validation layer support") {
     "VK_LAYER_LUNARG_standard_validation",
   };
 
-  CHECK(rf3d::hri::vk::check_validation_layer_support(supported_layers, required_layers));
+  CHECK(rf3d::gfx::vk::check_validation_layer_support(supported_layers, required_layers));
 }
 
 TEST_CASE("Verify validation layer support - missing layer") {
   using namespace std::string_literals;
-  std::vector<rf3d::hri::vk::core::LayerProperties> const supported_layers = {
+  std::vector<rf3d::gfx::vk::core::LayerProperties> const supported_layers = {
     {
       .layerName             = "VK_LAYER_KHRONOS_validation"s,
-      .specVersion           = rf3d::hri::vk::core::ApiVersion10,
+      .specVersion           = rf3d::gfx::vk::core::ApiVersion10,
       .implementationVersion = 0,
       .description           = ""s,
     },
@@ -54,7 +54,7 @@ TEST_CASE("Verify validation layer support - missing layer") {
     "VK_LAYER_MISSING",
   };
 
-  CHECK_FALSE(rf3d::hri::vk::check_validation_layer_support(supported_layers, required_layers));
+  CHECK_FALSE(rf3d::gfx::vk::check_validation_layer_support(supported_layers, required_layers));
 }
 
 TEST_SUITE_END();

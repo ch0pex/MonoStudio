@@ -3,7 +3,7 @@
 
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 // class Vulkan {
 // public:
@@ -19,4 +19,4 @@ struct Traits {
   using surface_type  = raii::SurfaceKHR;
 };
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

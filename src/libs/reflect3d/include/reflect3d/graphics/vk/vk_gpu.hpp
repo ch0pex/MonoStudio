@@ -5,7 +5,7 @@
 
 #include <mono/misc/passkey.hpp>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 class Instance;
 
@@ -56,4 +56,4 @@ struct BestGpuCriteria {
 struct CompatibleGpuCriteria {
 } constexpr compatible_gpu_criteria;
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

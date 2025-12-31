@@ -5,7 +5,7 @@
 
 #include <source_location>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 struct Error {
   Error(VkResult result, std::source_location const& location = std::source_location::current()) noexcept :
@@ -46,4 +46,4 @@ inline constexpr WarningGrabber warn;
 
 } // namespace check
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

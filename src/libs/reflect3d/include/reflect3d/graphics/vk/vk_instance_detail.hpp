@@ -6,7 +6,7 @@
 #include "reflect3d/window/utils/context.hpp"
 
 
-namespace rf3d::hri::vk::detail {
+namespace rf3d::gfx::vk::detail {
 
 /**
  * Setups validation layers and debug utils info
@@ -51,4 +51,4 @@ inline raii::Instance create_instance(raii::Context const& context) {
 }
 
 
-} // namespace rf3d::hri::vk::detail
+} // namespace rf3d::gfx::vk::detail

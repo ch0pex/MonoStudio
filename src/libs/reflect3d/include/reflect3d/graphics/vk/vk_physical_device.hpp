@@ -3,7 +3,7 @@
 #include "reflect3d/graphics/vk/vk_graphics_families.hpp"
 
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 class PhysicalDevice : public raii::PhysicalDevice {
 public:
@@ -19,4 +19,4 @@ private:
   indices_type indices;
 };
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

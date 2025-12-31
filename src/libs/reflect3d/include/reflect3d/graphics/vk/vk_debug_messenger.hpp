@@ -9,7 +9,7 @@
 #include <mono/logging/logger.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 
 core::DebugUtilsMessageSeverityFlagsEXT constexpr severity_flags(
@@ -29,4 +29,4 @@ core::DebugUtilsMessengerCreateInfoEXT constexpr debug_utils_messenger_create_in
   .pfnUserCallback = &debug_callback,
 };
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

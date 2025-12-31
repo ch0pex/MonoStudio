@@ -14,7 +14,7 @@
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 
-namespace rf3d::hri::vk::detail {
+namespace rf3d::gfx::vk::detail {
 
 inline std::vector<char const*> device_extensions() {
   return {
@@ -65,4 +65,4 @@ inline PhysicalDevice pick_best_physical_device(raii::Instance const& instance) 
   return PhysicalDevice {candidates.begin()->second};
 }
 
-} // namespace rf3d::hri::vk::detail
+} // namespace rf3d::gfx::vk::detail

@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 #ifdef NDEBUG
 inline constexpr bool enable_validation_layers = false;
@@ -99,4 +99,4 @@ inline std::vector<char const*> get_validation_layers(raii::Context const& conte
          | std::ranges::to<std::vector>();
 }
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

@@ -2,7 +2,7 @@
 
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
 
-namespace rf3d::hri::vk::detail {
+namespace rf3d::gfx::vk::detail {
 
 inline raii::Device create_logical_device(PhysicalDevice const& physical_device) {
   static float constexpr queue_priority = 0.5F;
@@ -40,4 +40,4 @@ inline raii::Device create_logical_device(PhysicalDevice const& physical_device)
   return physical_device.createDevice(create_info);
 }
 
-} // namespace rf3d::hri::vk::detail
+} // namespace rf3d::gfx::vk::detail

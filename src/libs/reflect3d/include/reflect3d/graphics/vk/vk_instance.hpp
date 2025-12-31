@@ -7,7 +7,7 @@
 #include "reflect3d/window/window_types.hpp"
 
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 class Instance {
 public:
@@ -53,4 +53,4 @@ private:
   underlying_type instance {context};
 };
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

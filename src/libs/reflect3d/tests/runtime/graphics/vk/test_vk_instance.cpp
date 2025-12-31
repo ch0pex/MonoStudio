@@ -6,13 +6,13 @@
 TEST_SUITE_BEGIN("Vulkan");
 
 TEST_CASE("Create instance") {
-  CHECK_NOTHROW({ rf3d::hri::vk::Instance instance {}; });
+  CHECK_NOTHROW({ rf3d::gfx::vk::Instance instance {}; });
 }
 
 TEST_CASE("Create two instances") {
   CHECK_NOTHROW({
-    rf3d::hri::vk::Instance instance {};
-    rf3d::hri::vk::Instance instance2 {};
+    rf3d::gfx::vk::Instance instance {};
+    rf3d::gfx::vk::Instance instance2 {};
   });
 }
 

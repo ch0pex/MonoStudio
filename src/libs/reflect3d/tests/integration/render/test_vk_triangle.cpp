@@ -1,19 +1,15 @@
 
-
-#include <mono/execution/stop_token.hpp>
-
-#include "mono/execution/signals.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
-#include "reflect3d/graphics/vk/vk_traits.hpp"
 #include "reflect3d/input/input.hpp"
-#include "reflect3d/render/renderer.hpp"
 #include "reflect3d/window/window_builder.hpp"
 
+#include <mono/execution/signals.hpp>
+#include <mono/execution/stop_token.hpp>
 
 int main() {
   using namespace rf3d;
-  hri::vk::Instance instance {};
-  hri::vk::Gpu gpu = instance.pick_gpu(rf3d::hri::vk::best_gpu_criteria);
+  gfx::vk::Instance instance {};
+  gfx::vk::Gpu gpu = instance.pick_gpu(gfx::vk::best_gpu_criteria);
 
   // gfx::Renderer<hri::vk::Traits> renderer {hri::vk::Instance {}};
 

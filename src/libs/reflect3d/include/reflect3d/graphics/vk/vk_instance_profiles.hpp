@@ -6,7 +6,7 @@
 
 #include <vulkan/vulkan_raii.hpp>
 
-namespace rf3d::hri::vk::detail {
+namespace rf3d::gfx::vk::detail {
 
 struct ReleaseInstance {
   /*********************
@@ -48,4 +48,4 @@ struct DebugInstance {
   messenger_type debug_messenger;
 };
 
-} // namespace rf3d::hri::vk::detail
+} // namespace rf3d::gfx::vk::detail

@@ -8,8 +8,8 @@ TEST_SUITE_BEGIN("Vulkan");
 
 TEST_CASE("Create instance and gpu") {
   CHECK_NOTHROW({
-    rf3d::hri::vk::Instance instance {};
-    rf3d::hri::vk::Gpu gpu = instance.pick_gpu(rf3d::hri::vk::best_gpu_criteria);
+    rf3d::gfx::vk::Instance instance {};
+    rf3d::gfx::vk::Gpu gpu = instance.pick_gpu(rf3d::gfx::vk::best_gpu_criteria);
   });
 }
 

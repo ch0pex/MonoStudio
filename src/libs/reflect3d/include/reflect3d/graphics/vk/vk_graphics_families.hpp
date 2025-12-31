@@ -9,7 +9,7 @@
 #include <vector>
 #include <vulkan/vulkan_enums.hpp>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 struct QueueFamilyIndices {
   std::optional<std::uint32_t> main_family;
@@ -44,4 +44,4 @@ inline QueueFamilyIndices find_queue_families(raii::PhysicalDevice const& physic
 
 } // namespace detail
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

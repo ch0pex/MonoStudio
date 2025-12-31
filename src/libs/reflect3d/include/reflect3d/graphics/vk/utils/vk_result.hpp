@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 using Result = VkResult;
 
@@ -110,4 +110,4 @@ constexpr std::string to_string(Result const result) noexcept {
   }
 } // clang-format on
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk

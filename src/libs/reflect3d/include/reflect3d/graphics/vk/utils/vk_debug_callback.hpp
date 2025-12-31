@@ -8,7 +8,7 @@
 #include <quill/core/LogLevel.h>
 #include <vulkan/vulkan_enums.hpp>
 
-namespace rf3d::hri::vk {
+namespace rf3d::gfx::vk {
 
 inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     core::DebugUtilsMessageSeverityFlagBitsEXT message_severity, //
@@ -41,4 +41,4 @@ inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 }
 
 
-} // namespace rf3d::hri::vk
+} // namespace rf3d::gfx::vk
