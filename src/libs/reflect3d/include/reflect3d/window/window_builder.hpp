@@ -41,6 +41,12 @@ public:
       throw WindowException {error_message};
     }
   }
+  // --- Window Surface ---
+
+  template<typename Renderder>
+  WindowBuilder& attach_surface(Renderder& renderer) const {
+    renderer.create_surface(handle);
+  }
 
   // --- Window Callbacks ---
 

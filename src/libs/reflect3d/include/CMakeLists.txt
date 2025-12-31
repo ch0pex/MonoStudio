@@ -24,7 +24,6 @@ target_sources(
       reflect3d/graphics/vk/vk_extensions.hpp
       reflect3d/graphics/vk/vk_validation_layers.hpp
       reflect3d/graphics/vk/vk_graphics_families.hpp
-      reflect3d/graphics/vk/vk_queues.hpp
 
       # Input
       reflect3d/input/input.hpp

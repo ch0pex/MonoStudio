@@ -1,29 +1,53 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/vk_graphics_families.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device_detail.hpp"
-#include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
+
+#include <mono/misc/passkey.hpp>
 
 namespace rf3d::hri::vk {
 
 class Instance;
 
-class Gpu {
-public:
-  using physical_type       = PhysicalDevice;
-  using logical_type        = raii::Device;
-  using graphics_queue_type = raii::Queue;
+struct GpuDevices {
+  using logical_type  = raii::Device;
+  using physical_type = PhysicalDevice;
 
-  Gpu(physical_type&& physical, logical_type&& logical) :
-    physical_device(std::move(physical)), //
-    logical_device(std::move(logical)), //
-    graphics_queue(logical_device, physical_device.queue_indices().graphics_family.value(), 0U) //
+  explicit GpuDevices(physical_type const& physical) :
+    physical(physical), //
+    logical(detail::create_logical_device(physical)) //
   { }
 
+  physical_type physical;
+  logical_type logical;
+};
+
+struct GpuQueues {
+  using queue_type  = raii::Queue;
+  using device_type = raii::Device;
+
+  GpuQueues(raii::Device& logical, QueueFamilyIndices const& indices) :
+    graphics(logical, indices.main_family.value(), 0), //
+    present(logical, indices.main_family.value(), 1) //
+  { }
+
+  queue_type graphics;
+  queue_type present;
+};
+
+class Gpu {
+public:
+  using queues_type  = GpuQueues;
+  using devices_type = GpuDevices;
+
+  Gpu(devices_type&& gpu_devices, mono::PassKey<Instance> key [[maybe_unused]]) :
+    devices(std::move(gpu_devices)), //
+    queues(devices.logical, devices.physical.queue_indices()) //
+  { }
 
 private:
-  physical_type physical_device;
-  logical_type logical_device;
-  graphics_queue_type graphics_queue;
+  devices_type devices;
+  queues_type queues;
 };
 
 struct BestGpuCriteria {

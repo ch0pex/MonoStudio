@@ -5,15 +5,18 @@
 #include "reflect3d/graphics/vk/vk_physical_device.hpp"
 
 //
+#include <mono/logging/logger.hpp>
+
+//
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_enums.hpp>
 
 namespace rf3d::hri::vk::detail {
 
-
-inline std::vector<std::string> device_extensions() {
+inline std::vector<char const*> device_extensions() {
   return {
     core::KHRSwapchainExtensionName,
     core::KHRSpirv14ExtensionName,
@@ -51,6 +54,7 @@ inline PhysicalDevice pick_best_physical_device(raii::Instance const& instance) 
   std::multimap<std::uint64_t, raii::PhysicalDevice, std::greater<>> candidates;
 
   for (auto const& device: raii::PhysicalDevices {instance}) {
+    LOG_INFO("Found GPU: {}", device.getProperties().deviceName.data());
     candidates.insert({rate_device(device), device});
   }
 

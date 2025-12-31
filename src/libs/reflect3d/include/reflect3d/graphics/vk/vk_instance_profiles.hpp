@@ -1,9 +1,6 @@
 #pragma once
 
 
-#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
-#include "reflect3d/graphics/vk/utils/vk_debug_callback.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/vk_instance_detail.hpp"
 

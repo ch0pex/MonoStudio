@@ -1,34 +1,41 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
-#include "reflect3d/graphics/vk/vk_validation_layers.hpp"
-
-//
-#include <vulkan/vulkan_core.h>
 
 namespace rf3d::hri::vk::detail {
 
-inline raii::Device create_logical_device(raii::Context const& context, PhysicalDevice const& physical_device) {
-  auto const validation_layers = get_validation_layers(context);
+inline raii::Device create_logical_device(PhysicalDevice const& physical_device) {
+  static float constexpr queue_priority = 0.5F;
+  std::vector<float> priorities {queue_priority, queue_priority};
 
-  core::DeviceQueueCreateInfo queueCreateInfo {};
-  queueCreateInfo.queueFamilyIndex = physical_device.queue_indices().graphics_family.value();
-  queueCreateInfo.queueCount       = 1;
+  core::DeviceQueueCreateInfo queue_create_info {
+    .queueFamilyIndex = physical_device.queue_indices().main_family.value(),
+    .queueCount       = 2,
+    .pQueuePriorities = priorities.data(),
+  };
 
-  // Not neeeded for now
-  core::PhysicalDeviceFeatures device_features {};
+  core::PhysicalDeviceExtendedDynamicStateFeaturesEXT extended_dynamic_state_features {
+    .extendedDynamicState = core::True,
+  };
 
-  core::DeviceCreateInfo create_info {};
-  create_info.pQueueCreateInfos    = &queueCreateInfo;
-  create_info.queueCreateInfoCount = 1;
-  create_info.pEnabledFeatures     = &device_features;
+  core::PhysicalDeviceVulkan13Features vulkan13_features {
+    .pNext            = &extended_dynamic_state_features,
+    .dynamicRendering = core::True,
+  };
 
-  create_info.enabledExtensionCount = 0;
+  auto features  = physical_device.getFeatures2();
+  features.pNext = &vulkan13_features;
 
-  create_info.enabledLayerCount = validation_layers.size();
-  if constexpr (enable_validation_layers) {
-    create_info.ppEnabledLayerNames = not validation_layers.empty() ? validation_layers.data() : nullptr;
-  }
+  // Needs static live time
+  static auto const extensions = device_extensions();
+  core::DeviceCreateInfo create_info {
+    .pNext                   = &features,
+    .queueCreateInfoCount    = 1,
+    .pQueueCreateInfos       = &queue_create_info,
+    .enabledExtensionCount   = static_cast<std::uint32_t>(extensions.size()),
+    .ppEnabledExtensionNames = extensions.data(),
+  };
+
 
   return physical_device.createDevice(create_info);
 }

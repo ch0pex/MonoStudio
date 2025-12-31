@@ -100,8 +100,8 @@ public:
   void make_context_current() const { glfwMakeContextCurrent(handle); }
 
   template<typename Renderder> // TODO define better this type with HRI concept
-  void attach_surface(Renderder& renderer) const {
-    renderer.create_surface(handle);
+  auto create_surface(Renderder& renderer) const {
+    return renderer.create_surface(handle);
   }
 
   // void resolution(resolution_type const resolution) const {

@@ -24,6 +24,7 @@ public:
    *    Member functions    *
    **************************/
 
+  // TODO check surface support
   [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
     core::SurfaceKHR::NativeType surface = nullptr;
 
@@ -35,12 +36,11 @@ public:
   }
 
   [[nodiscard]] gpu_type pick_gpu(BestGpuCriteria const criteria) const {
-    auto physical_device = detail::pick_best_physical_device(instance.handle);
-
-    auto logical_device = detail::create_logical_device(context, physical_device);
-
     LOG_INFO("Choosing best available GPU");
-    return {std::move(physical_device), std::move(logical_device)};
+    return {
+      GpuDevices {detail::pick_best_physical_device(instance.handle)},
+      mono::PassKey<Instance> {},
+    };
   }
 
   [[nodiscard]] gpu_type pick_gpu(CompatibleGpuCriteria const criteria) const {

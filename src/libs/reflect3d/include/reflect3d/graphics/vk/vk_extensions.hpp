@@ -68,6 +68,16 @@ inline std::vector<std::string_view> get_required_extensions() {
                     | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
                     | std::ranges::to<std::vector>();
 
+  if (extensions.empty()) {
+    throw std::runtime_error(
+        "GLFW reported no required Vulkan extensions. This is very likely due to an error in glfw initialization."
+    );
+  }
+
+  for (auto const& ext: extensions) {
+    LOG_INFO("GLFW required Vulkan extension: {}", ext);
+  }
+
   if constexpr (enable_validation_layers) {
     LOG_INFO("Validation layers enabled, adding VK_EXT_debug_utils extension");
     extensions.emplace_back(core::EXTDebugUtilsExtensionName);

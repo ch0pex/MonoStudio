@@ -21,7 +21,10 @@ struct Window {
   Resolution resolution {.width = 1920, .height = 1080};
   WindowMode mode {WindowMode::windowed};
   MonitorId monitor {0};
-  std::unordered_map<WindowHint, WindowHintValue> hints {};
+  std::unordered_map<WindowHint, WindowHintValue> hints {
+    {GLFW_RESIZABLE, GLFW_FALSE},
+    {GLFW_CLIENT_API, GLFW_NO_API},
+  };
 };
 
 } // namespace rf3d::config

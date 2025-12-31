@@ -3,6 +3,7 @@
 #include "reflect3d/graphics/vk/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/vk_extensions.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
+#include "reflect3d/window/utils/context.hpp"
 
 
 namespace rf3d::hri::vk::detail {
@@ -27,6 +28,7 @@ inline void setup_validation_layers(raii::Context const& context, core::Instance
  * @return A NativeInstance handle representing the created Vulkan instance.
  */
 inline raii::Instance create_instance(raii::Context const& context) {
+  GlfwContext::init();
   static constexpr core::ApplicationInfo app_info {
     .pApplicationName   = "Reflect3D Application",
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -35,7 +37,7 @@ inline raii::Instance create_instance(raii::Context const& context) {
     .apiVersion         = core::ApiVersion14,
   };
 
-  auto extensions = get_extensions(context).value();
+  static auto extensions = get_extensions(context).value();
 
   core::InstanceCreateInfo create_info {
     .pApplicationInfo        = &app_info,
