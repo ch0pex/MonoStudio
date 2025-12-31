@@ -54,7 +54,7 @@ inline PhysicalDevice pick_best_physical_device(raii::Instance const& instance) 
   std::multimap<std::uint64_t, raii::PhysicalDevice, std::greater<>> candidates;
 
   for (auto const& device: raii::PhysicalDevices {instance}) {
-    LOG_INFO("Found GPU: {}", device.getProperties().deviceName.data());
+    LOG_INFO("Found GPU: {}", std::string_view {device.getProperties().deviceName});
     candidates.insert({rate_device(device), device});
   }
 
