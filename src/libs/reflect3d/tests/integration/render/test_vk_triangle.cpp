@@ -9,7 +9,7 @@
 int main() {
   using namespace rf3d;
   gfx::vk::Instance instance {};
-  gfx::vk::Gpu gpu = instance.pick_gpu(gfx::vk::best_gpu_criteria);
+  gfx::vk::Gpu gpu = instance.create_gpu();
 
   // gfx::Renderer<hri::vk::Traits> renderer {hri::vk::Instance {}};
 

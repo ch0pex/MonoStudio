@@ -16,15 +16,6 @@
 
 namespace rf3d::gfx::vk::detail {
 
-inline std::vector<char const*> device_extensions() {
-  return {
-    core::KHRSwapchainExtensionName,
-    core::KHRSpirv14ExtensionName,
-    core::KHRSynchronization2ExtensionName,
-    core::KHRCreateRenderpass2ExtensionName,
-  };
-}
-
 inline std::uint64_t rate_device(raii::PhysicalDevice const& device) {
   auto device_properties = device.getProperties();
   auto device_features   = device.getFeatures();

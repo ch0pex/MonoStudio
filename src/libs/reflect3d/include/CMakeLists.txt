@@ -19,11 +19,11 @@ target_sources(
       reflect3d/graphics/vk/vk_gpu.hpp
       reflect3d/graphics/vk/vk_physical_device.hpp
       reflect3d/graphics/vk/vk_physical_device_detail.hpp
-      reflect3d/graphics/vk/vk_logical_device_detail.hpp
       reflect3d/graphics/vk/vk_traits.hpp
       reflect3d/graphics/vk/vk_extensions.hpp
       reflect3d/graphics/vk/vk_validation_layers.hpp
-      reflect3d/graphics/vk/vk_graphics_families.hpp
+      reflect3d/graphics/vk/vk_gpu_families.hpp
+      reflect3d/graphics/vk/vk_gpu_families_detail.hpp
 
       # Input
       reflect3d/input/input.hpp
