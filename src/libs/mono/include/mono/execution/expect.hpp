@@ -22,7 +22,7 @@ public:
   ExpectReceiver(R r, F f) : receiver(std::move(r)), func(std::move(f)) { }
 
   template<class... As>
-    requires(std::invocable<F, As...> and meta::SpecializationOf<std::invoke_result_t<F, As...>, std::expected>)
+    requires(std::invocable<F, As...> and meta::specialization_of<std::invoke_result_t<F, As...>, std::expected>)
   void set_value(As&&... as) noexcept try {
     auto result = std::invoke(func, std::forward<As>(as)...);
 
@@ -37,7 +37,7 @@ public:
   }
 
   template<class... As>
-    requires(std::invocable<F, As...> and meta::SpecializationOf<std::invoke_result_t<F, As...>, std::optional>)
+    requires(std::invocable<F, As...> and meta::specialization_of<std::invoke_result_t<F, As...>, std::optional>)
   void set_value(As&&... as) noexcept try {
     auto result = std::invoke(func, std::forward<As>(as)...);
 
