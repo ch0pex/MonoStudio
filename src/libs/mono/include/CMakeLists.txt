@@ -20,6 +20,7 @@ target_sources(
       # Meta
       mono/meta/concepts.hpp
       mono/meta/detail/specialization_of.hpp
+      mono/meta/detail/template_parameter_of.hpp
 
       # Misc
       mono/misc/passkey.hpp
