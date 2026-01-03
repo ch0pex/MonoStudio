@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vulkan/vulkan_raii.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain_detail.hpp"
+
 
 namespace rf3d::gfx::vk {
 
@@ -9,16 +12,20 @@ class Swapchain {
 public:
   using config_type  = core::SwapchainCreateInfoKHR;
   using native_type  = raii::SwapchainKHR;
-  using images_type  = core::Image;
+  using images_type  = Image;
   using surface_type = raii::SurfaceKHR;
+  using format_type  = core::Format;
 
   explicit Swapchain(raii::Device const& device, surface_type&& window_surface, config_type const& config) :
-    surface(std::move(window_surface)), handle(device, config), images(handle.getImages()) { }
+    render_surface(std::move(window_surface)), //
+    native_handle(device, config), //
+    chain_images(detail::get_images(device, native_handle, config.imageFormat)) { }
+
 
 private:
-  surface_type surface;
-  native_type handle;
-  std::vector<images_type> images;
+  surface_type render_surface;
+  native_type native_handle;
+  std::vector<images_type> chain_images;
 };
 
 /**

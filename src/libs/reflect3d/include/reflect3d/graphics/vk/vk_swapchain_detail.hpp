@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
@@ -42,12 +43,44 @@ choose_swap_extent(Resolution const& resolution, core::SurfaceCapabilitiesKHR co
   }
 
   return {
-    .width =
-        std::clamp<uint32_t>(resolution.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-    .height =
-        std::clamp<uint32_t>(resolution.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+    .width = std::clamp<uint32_t>(
+        resolution.width, //
+        capabilities.minImageExtent.width, //
+        capabilities.maxImageExtent.width
+    ),
+    .height = std::clamp<uint32_t>(
+        resolution.height, //
+        capabilities.minImageExtent.height, //
+        capabilities.maxImageExtent.height
+    )
   };
 }
 
+inline std::vector<Image> get_images(
+    raii::Device const& device, //
+    raii::SwapchainKHR const& swapchain, //
+    core::Format const format //
+) {
+  core::ImageViewCreateInfo view_info {
+    .viewType         = core::ImageViewType::e2D,
+    .format           = format,
+    .subresourceRange = {
+      .aspectMask     = core::ImageAspectFlagBits::eColor,
+      .baseMipLevel   = 0,
+      .levelCount     = 1,
+      .baseArrayLayer = 0,
+      .layerCount     = 1
+    }
+  };
+
+  auto build_image = [&](core::Image const& img) { //
+    view_info.image = img;
+    return Image {img, Image::view_type {device, view_info}};
+  };
+
+  return swapchain.getImages() //
+         | std::views::transform(build_image) //
+         | std::ranges::to<std::vector>();
+}
 
 } // namespace rf3d::gfx::vk::detail

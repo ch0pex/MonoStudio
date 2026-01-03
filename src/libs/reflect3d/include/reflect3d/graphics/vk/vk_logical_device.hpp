@@ -6,26 +6,29 @@
 
 namespace rf3d::gfx::vk {
 
-class LogicalDevice : raii::Device {
+class LogicalDevice {
 public:
   using queue_type        = raii::Queue;
   using native_type       = raii::Device;
   using queue_config_type = core::DeviceQueueCreateInfo;
 
-  explicit LogicalDevice(native_type&& device) : raii::Device(std::move(device)) { }
+  explicit LogicalDevice(native_type&& device) : handle(std::move(device)) { }
 
   [[nodiscard]] queue_type create_graphics_queue(queue_config_type const& queue_config) const {
-    return {*this, queue_config.queueFamilyIndex, 0};
+    return {handle, queue_config.queueFamilyIndex, 0};
   }
 
   [[nodiscard]] queue_type create_present_queue(queue_config_type const& queue_config) const {
-    return {*this, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
+    return {handle, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
   }
 
   [[nodiscard]] Swapchain
   create_swap_chain(Swapchain::surface_type&& surface, Swapchain::config_type const& config) const {
-    return Swapchain(*this, std::move(surface), config);
+    return Swapchain(handle, std::move(surface), config);
   }
+
+private:
+  native_type handle;
 };
 
 } // namespace rf3d::gfx::vk
