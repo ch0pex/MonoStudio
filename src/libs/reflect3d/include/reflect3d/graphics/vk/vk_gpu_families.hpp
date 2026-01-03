@@ -41,7 +41,6 @@ public:
 
   explicit GpuQueueFamilies(raii::PhysicalDevice const& physical_device) {
     families[family_type::Main] = detail::find_main_family(physical_device);
-    // TODO find comput and transfer families
   }
 
   [[nodiscard]] auto device_creation_infos() const {

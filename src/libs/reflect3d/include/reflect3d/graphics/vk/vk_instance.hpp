@@ -25,7 +25,6 @@ public:
    *    Member functions    *
    **************************/
 
-  // TODO check surface support
   [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
     core::SurfaceKHR::NativeType surface = nullptr;
 

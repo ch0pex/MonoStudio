@@ -3,7 +3,10 @@
 #include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device.hpp"
+#include "reflect3d/graphics/vk/vk_swapchain.hpp"
+#include "reflect3d/window/utils/resolution.hpp"
 
+#include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
 
 namespace rf3d::gfx::vk {
@@ -49,6 +52,15 @@ public:
   { }
 
   queues_type const& queues() const noexcept { return gpu_queues; }
+
+  Swapchain create_swap_chain(raii::SurfaceKHR&& surface, Resolution const& resolution) const {
+    auto const swapchain_config = create_swapchain_config(
+        surface, //
+        devices.physical.get_surface_info(*surface), //
+        resolution
+    );
+    return devices.logical.create_swap_chain(std::move(surface), swapchain_config);
+  }
 
 private:
   devices_type devices;

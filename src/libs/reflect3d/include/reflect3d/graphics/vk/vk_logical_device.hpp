@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan_raii.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_swapchain.hpp"
 
 namespace rf3d::gfx::vk {
 
@@ -19,6 +20,11 @@ public:
 
   [[nodiscard]] queue_type create_present_queue(queue_config_type const& queue_config) const {
     return {*this, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
+  }
+
+  [[nodiscard]] Swapchain
+  create_swap_chain(Swapchain::surface_type&& surface, Swapchain::config_type const& config) const {
+    return Swapchain(*this, std::move(surface), config);
   }
 };
 

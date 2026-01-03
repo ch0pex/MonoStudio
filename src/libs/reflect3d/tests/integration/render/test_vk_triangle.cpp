@@ -8,6 +8,8 @@
 
 int main() {
   using namespace rf3d;
+  mono::ex::setup_signals();
+
   gfx::vk::Instance instance {};
   gfx::vk::Gpu gpu = instance.create_gpu();
 
@@ -19,8 +21,10 @@ int main() {
                     .build(); //
 
 
-  auto surface = window.create_surface(instance);
-  mono::ex::setup_signals();
+  gfx::vk::Swapchain swapchain = gpu.create_swap_chain(
+      window.create_surface(instance), //
+      window.resolution() //
+  );
 
   while (mono::ex::should_run()) {
     rf3d::input::poll_events();

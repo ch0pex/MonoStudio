@@ -24,6 +24,8 @@ target_sources(
       reflect3d/graphics/vk/vk_validation_layers.hpp
       reflect3d/graphics/vk/vk_gpu_families.hpp
       reflect3d/graphics/vk/vk_gpu_families_detail.hpp
+      reflect3d/graphics/vk/vk_swapchain.hpp
+      reflect3d/graphics/vk/vk_swapchain_detail.hpp
 
       # Input
       reflect3d/input/input.hpp

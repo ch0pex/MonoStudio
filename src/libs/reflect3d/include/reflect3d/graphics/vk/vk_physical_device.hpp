@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/vk_gpu_families.hpp"
+#include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 
 namespace rf3d::gfx::vk {
@@ -55,6 +56,13 @@ public:
 
   [[nodiscard]] queues_info_type const& queue_creation_info() const noexcept { return queues_info; }
 
+  [[nodiscard]] SurfaceInfo get_surface_info(core::SurfaceKHR const& surface) const {
+    return {
+      .capabilities  = native.getSurfaceCapabilitiesKHR(surface),
+      .formats       = native.getSurfaceFormatsKHR(surface),
+      .present_modes = native.getSurfacePresentModesKHR(surface),
+    };
+  }
 
 private:
   native_type native;
