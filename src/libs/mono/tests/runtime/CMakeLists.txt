@@ -13,3 +13,6 @@ create_test(expected test_expected.cpp)
 # Execution
 create_test(execution_inspect test_execution_inspect.cpp)
 create_test(execution_expect test_execution_expect.cpp)
+
+# Misc
+create_test(start_lifetime_as test_start_lifetime_as.cpp)
