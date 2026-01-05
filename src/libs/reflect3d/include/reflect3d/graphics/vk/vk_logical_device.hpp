@@ -1,7 +1,10 @@
 #pragma once
 
+#include <unordered_map>
 #include <vulkan/vulkan_raii.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_pso.hpp"
+#include "reflect3d/graphics/vk/vk_shader.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
 
 namespace rf3d::gfx::vk {
@@ -26,6 +29,10 @@ public:
   create_swap_chain(Swapchain::surface_type&& surface, Swapchain::config_type const& config) const {
     return Swapchain(handle, std::move(surface), config);
   }
+
+  Shader create_shader(Shader::byte_code_type&& bytecode) const { return Shader(handle, std::move(bytecode)); }
+
+  native_type const& operator*() const noexcept { return handle; }
 
 private:
   native_type handle;

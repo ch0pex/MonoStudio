@@ -39,3 +39,4 @@
 
 # debug information files
 *.dwo
+src/libs/reflect3d/assets/shaders/bin

@@ -1,0 +1,9 @@
+#pragma once
+
+#include <string_view>
+
+namespace mono {
+
+inline constexpr std::string_view assets_path = "@ASSETS_ABSOLUTE_PATH@/";
+
+}

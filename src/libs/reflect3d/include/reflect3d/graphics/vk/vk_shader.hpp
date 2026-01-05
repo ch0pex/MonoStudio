@@ -32,15 +32,26 @@ public:
   using byte_code_type = std::vector<char>;
   using module_type    = raii::ShaderModule;
   using device_type    = raii::Device;
+  using stage_type     = core::PipelineShaderStageCreateInfo;
 
-  explicit Shader(device_type const& device, byte_code_type&& code) :
-    code(std::move(code)), handle(device, detail::create_shader_module_create_info(code)) { }
+  explicit Shader(device_type const& device, byte_code_type&& bytecode) :
+    code(std::move(bytecode)), handle(device, detail::create_shader_module_create_info(code)) { }
 
-  [[nodiscard]] module_type const& module() const noexcept { return handle; }
-
-  [[nodiscard]] std::span<std::byte const> bytecode() const noexcept {
-    return std::as_bytes(std::span {code.data(), code.size()});
+  // [[nodiscard]] module_type const& module() const noexcept { return handle; }
+  //
+  // [[nodiscard]] std::span<std::byte const> bytecode() const noexcept {
+  //   return std::as_bytes(std::span {code.data(), code.size()});
+  // }
+  [[nodiscard]] stage_type stage(core::ShaderStageFlagBits stage, std::string const& entry_point) const {
+    return stage_type {
+      .stage  = stage,
+      .module = *handle,
+      .pName  = entry_point.c_str(),
+    };
   }
+
+  [[nodiscard]] module_type const* module() const noexcept { return &handle; }
+
 
 private:
   byte_code_type code;

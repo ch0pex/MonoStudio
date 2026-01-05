@@ -1,4 +1,5 @@
 
+
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/input/input.hpp"
 #include "reflect3d/window/window_builder.hpp"
@@ -6,17 +7,16 @@
 #include <mono/execution/signals.hpp>
 #include <mono/execution/stop_token.hpp>
 
-int main() {
+#include <iostream>
+
+int main() try {
   using namespace rf3d;
   mono::ex::setup_signals();
 
   gfx::vk::Instance instance {};
   gfx::vk::Gpu gpu = instance.create_gpu();
 
-  // gfx::Renderer<hri::vk::Traits> renderer {hri::vk::Instance {}};
-
   auto window = rf3d::WindowBuilder() //
-                                      // .attach_surface(renderer) //
                     .default_callbacks() // //
                     .build(); //
 
@@ -30,4 +30,12 @@ int main() {
     rf3d::input::poll_events();
     window.swap_buffers();
   }
+}
+catch (std::exception const& e) {
+  std::cerr << "Unhandled exception: " << e.what() << '\n';
+  return EXIT_FAILURE;
+}
+catch (...) {
+  std::cerr << "Unhandled unknown exception\n";
+  return EXIT_FAILURE;
 }

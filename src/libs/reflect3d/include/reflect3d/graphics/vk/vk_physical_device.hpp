@@ -20,36 +20,39 @@ public:
   using native_type      = raii::PhysicalDevice;
   using logical_type     = raii::Device;
   using queues_info_type = GpuQueueFamilies;
+  using feature_chain_type = core::StructureChain< //
+      core::PhysicalDeviceFeatures2,  //
+      core::PhysicalDeviceVulkan11Features,  //
+      core::PhysicalDeviceVulkan13Features, //
+      core::PhysicalDeviceExtendedDynamicStateFeaturesEXT //
+  >;
 
   explicit PhysicalDevice(native_type const& handle) : native(handle), queues_info(handle) { }
 
   [[nodiscard]] logical_type create_logical_device() const { return create_logical_device(queues_info); }
 
   [[nodiscard]] logical_type create_logical_device(queues_info_type const& info) const {
-    core::PhysicalDeviceExtendedDynamicStateFeaturesEXT extended_dynamic_state_features {
-      .extendedDynamicState = core::True,
-    };
-
-    core::PhysicalDeviceVulkan13Features vulkan13_features {
-      .pNext            = &extended_dynamic_state_features,
-      .dynamicRendering = core::True,
-    };
-
-    auto features  = native.getFeatures2();
-    features.pNext = &vulkan13_features;
 
     auto const queue_create_infos = info.device_creation_infos();
 
     // Needs static live time
     static auto const extensions = physical_device_extensions();
+
+    feature_chain_type featureChain = {
+      {}, // core::PhysicalDeviceFeatures2
+      {.shaderDrawParameters = core::True}, // core::PhysicalDeviceVulkan11Features
+      {.dynamicRendering = core::True}, // core::PhysicalDeviceVulkan13Features
+      {.extendedDynamicState = core::True} // core::PhysicalDeviceExtendedDynamicStateFeaturesEXT
+    };
+
+    // create a Device
     core::DeviceCreateInfo create_info {
-      .pNext                   = &features,
+      .pNext                   = &featureChain.get<core::PhysicalDeviceFeatures2>(),
       .queueCreateInfoCount    = static_cast<std::uint32_t>(queue_create_infos.size()),
       .pQueueCreateInfos       = queue_create_infos.data(),
       .enabledExtensionCount   = static_cast<std::uint32_t>(extensions.size()),
       .ppEnabledExtensionNames = extensions.data(),
     };
-
 
     return native.createDevice(create_info);
   }
