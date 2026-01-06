@@ -8,9 +8,9 @@
 namespace rf3d::gfx::vk {
 
 struct Error {
-  Error(VkResult result, std::source_location const& location = std::source_location::current()) noexcept :
+  Error(core::Result result, std::source_location const& location = std::source_location::current()) noexcept :
     result(result), location(location) { };
-  VkResult result;
+  core::Result result;
   std::source_location location;
 };
 
@@ -19,7 +19,7 @@ struct ErrorGrabber { };
 struct WarningGrabber { };
 
 inline void operator>>(Error const& grabber, ErrorGrabber const checker) {
-  if (grabber.result != VK_SUCCESS) {
+  if (grabber.result != core::Result::eSuccess) {
     std::string const error = std::format(
         "{}:{}:{}: VkResult failed with error code {} ({})", grabber.location.file_name(), grabber.location.line(),
         grabber.location.column(), to_string(grabber.result), error_message(grabber.result)
@@ -29,7 +29,7 @@ inline void operator>>(Error const& grabber, ErrorGrabber const checker) {
 }
 
 inline void operator>>(Error const& grabber, WarningGrabber const checker) {
-  if (grabber.result != VK_SUCCESS) {
+  if (grabber.result != core::Result::eSuccess) {
     std::string const error = std::format(
         "{}:{}:{}: VkResult failed with error code {} ({})", grabber.location.file_name(), grabber.location.line(),
         grabber.location.column(), to_string(grabber.result), error_message(grabber.result)
