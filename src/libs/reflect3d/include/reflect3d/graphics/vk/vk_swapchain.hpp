@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan_raii.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain_detail.hpp"
@@ -15,16 +14,41 @@ public:
   using images_type  = Image;
   using surface_type = raii::SurfaceKHR;
   using format_type  = core::Format;
+  using extent_type  = core::Extent2D;
 
   explicit Swapchain(raii::Device const& device, surface_type&& window_surface, config_type const& config) :
-    render_surface(std::move(window_surface)), //
-    native_handle(device, config), //
-    chain_images(detail::get_images(device, native_handle, config.imageFormat)) { }
+    present_semaphore_handle(device, core::SemaphoreCreateInfo {}), //
+    render_semaphore_handle(device, core::SemaphoreCreateInfo {}), //
+    render_fence_handle(device, {.flags = core::FenceCreateFlagBits::eSignaled}), //
+    extent_info(config.imageExtent), //
+    surface(std::move(window_surface)), //
+    handle(device, config), //
+    chain_images(detail::get_images(device, handle, config.imageFormat)) { }
 
+  [[nodiscard]] std::tuple<std::uint32_t, Image const&> next_image() const {
+    auto [_, index] =
+        handle.acquireNextImage(std::numeric_limits<std::uint64_t>::max(), present_semaphore_handle, nullptr);
+    return {index, chain_images.at(index)};
+  }
+
+  [[nodiscard]] extent_type const& extent() const noexcept { return extent_info; }
+
+  [[nodiscard]] auto const& present_semaphore() const noexcept { return present_semaphore_handle; }
+
+  [[nodiscard]] auto& render_semaphore() const noexcept { return render_semaphore_handle; }
+
+  [[nodiscard]] auto const& render_fence() const noexcept { return render_fence_handle; }
+
+  native_type const& operator*() const noexcept { return handle; }
 
 private:
-  surface_type render_surface;
-  native_type native_handle;
+  raii::Semaphore present_semaphore_handle;
+  raii::Semaphore render_semaphore_handle;
+  raii::Fence render_fence_handle;
+
+  extent_type extent_info;
+  surface_type surface;
+  native_type handle;
   std::vector<images_type> chain_images;
 };
 

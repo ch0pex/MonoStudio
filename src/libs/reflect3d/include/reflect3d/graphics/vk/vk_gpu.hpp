@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device.hpp"
@@ -11,6 +12,7 @@
 #include <assets_path.hpp>
 #include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
+#include <vulkan/vulkan_raii.hpp>
 
 namespace rf3d::gfx::vk {
 
@@ -51,12 +53,17 @@ public:
       mono::PassKey<Instance> key [[maybe_unused]]
   ) :
     devices(std::move(physical_device)), //
-    gpu_queues(devices.logical, devices.physical.queue_creation_info()) //
-  { }
+    gpu_queues(devices.logical, devices.physical.queue_creation_info()), //
+    command_pool(
+        devices.logical,
+        CommandPool::config_type {
+          .flags = core::CommandPoolCreateFlagBits::eResetCommandBuffer, //
+          .queueFamilyIndex =
+              devices.physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex, //
+        }
+    ) { }
 
-  queues_type const& queues() const noexcept { return gpu_queues; }
-
-  Swapchain create_swap_chain(raii::SurfaceKHR&& surface, Resolution const& resolution) {
+  Swapchain create_swapchain(raii::SurfaceKHR&& surface, Resolution const& resolution) {
     auto const swapchain_config = create_swapchain_config(
         surface, //
         devices.physical.get_surface_info(*surface), //
@@ -69,7 +76,7 @@ public:
     auto const assets_path = std::filesystem::path {mono::assets_path};
     auto const shader_path = assets_path / "shaders" / "bin" / "reflect3d-shaders.spv";
 
-    static auto shader = devices.logical.create_shader(gfx::vk::load_shader_bytecode(shader_path));
+    auto shader = devices.logical.create_shader(gfx::vk::load_shader_bytecode(shader_path));
 
     auto pso = PipelineBuilder({.color_attachment_format = swapchain_config.imageFormat}) //
                    .vertex_stage(shader)
@@ -81,10 +88,27 @@ public:
     return swapchain;
   }
 
+  queues_type const& queues() const noexcept { return gpu_queues; }
+
+  CommandPool::buffer_type const& command_buffer(std::size_t const index) { return command_pool.buffer(index); }
+
+  [[nodiscard]] Pipeline const& pipeline() const { return psos.at(0); }
+
+  void reset_fences(raii::Fence const& fence) { (*devices.logical).resetFences(*fence); }
+
+  void wait_fences(raii::Fence const& fence) {
+    auto result = (*devices.logical).waitForFences(*fence, core::True, UINT64_MAX);
+
+    if (result != core::Result::eSuccess) {
+      throw std::runtime_error("failed to wait for fence!");
+    }
+  }
 
 private:
   devices_type devices;
   queues_type gpu_queues;
+  CommandPool command_pool;
+
   std::unordered_map<std::uint32_t, Pipeline> psos;
 };
 

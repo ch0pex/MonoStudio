@@ -26,17 +26,15 @@ public:
   }
 
   void render_frame() {
-    for (auto& surface: surfaces) {
-      // render_on_surface(surface);
-    }
+    // for (auto& surface: surfaces) {
+    //   // render_on_surface(surface);
+    // }
   }
 
 
 private:
   instance_type backend_instance;
   gpu_type gpu;
-
-  std::vector<surface_type> surfaces;
 };
 
 } // namespace rf3d::gfx

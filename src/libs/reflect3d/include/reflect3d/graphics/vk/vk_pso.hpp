@@ -18,7 +18,7 @@ public:
 
   Pipeline(layout_type&& layout, native_type&& pipeline) : layout(std::move(layout)), handle(std::move(pipeline)) { }
 
-  [[nodiscard]] native_type const& get_handle() const { return handle; }
+  [[nodiscard]] native_type const& operator*() const { return handle; }
 
   [[nodiscard]] layout_type const& get_layout() const { return layout; }
 

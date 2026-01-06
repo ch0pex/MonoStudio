@@ -52,7 +52,6 @@ public:
 
   [[nodiscard]] module_type const* module() const noexcept { return &handle; }
 
-
 private:
   byte_code_type code;
   module_type handle;

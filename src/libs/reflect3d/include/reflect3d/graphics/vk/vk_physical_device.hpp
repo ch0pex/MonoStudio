@@ -41,7 +41,7 @@ public:
     feature_chain_type featureChain = {
       {}, // core::PhysicalDeviceFeatures2
       {.shaderDrawParameters = core::True}, // core::PhysicalDeviceVulkan11Features
-      {.dynamicRendering = core::True}, // core::PhysicalDeviceVulkan13Features
+      {.synchronization2 = core::True, .dynamicRendering = core::True}, // core::PhysicalDeviceVulkan13Features
       {.extendedDynamicState = core::True} // core::PhysicalDeviceExtendedDynamicStateFeaturesEXT
     };
 
