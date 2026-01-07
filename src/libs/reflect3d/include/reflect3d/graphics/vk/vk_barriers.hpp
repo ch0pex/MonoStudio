@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 
 
@@ -34,8 +35,7 @@ inline constexpr ImageLayoutConfig present_layout {
 };
 
 
-inline void
-transition_image_layout(raii::CommandBuffer const& buffer, Image const& image, ImageLayoutConfig const& config) {
+inline void transition_image_layout(CommandBuffer const& buffer, Image const& image, ImageLayoutConfig const& config) {
   Image::barrier_type barrier {
     .srcStageMask        = config.src_stage_mask,
     .srcAccessMask       = config.src_access_mask,
@@ -59,7 +59,7 @@ transition_image_layout(raii::CommandBuffer const& buffer, Image const& image, I
     .imageMemoryBarrierCount = 1,
     .pImageMemoryBarriers    = &barrier,
   };
-  buffer.pipelineBarrier2(dependency_info);
+  buffer.pipeline_barrier2(dependency_info);
 }
 
 

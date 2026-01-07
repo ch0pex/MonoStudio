@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
-#include "reflect3d/graphics/vk/vk_command_buffer.hpp"
+#include "reflect3d/graphics/vk/vk_command_pool.hpp"
 #include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device.hpp"

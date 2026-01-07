@@ -6,6 +6,7 @@
 #include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain_detail.hpp"
+#include "reflect3d/window/utils/resolution.hpp"
 
 
 namespace rf3d::gfx::vk {
@@ -49,7 +50,12 @@ public:
     return {index, chain_images.at(index)};
   }
 
-  [[nodiscard]] extent_type const& extent() const noexcept { return extent_info; }
+  [[nodiscard]] Resolution resolution() const noexcept {
+    return Resolution {
+      .width  = static_cast<std::uint16_t>(extent_info.width),
+      .height = static_cast<std::uint16_t>(extent_info.height),
+    };
+  }
 
   [[nodiscard]] semaphore_type const& present_semaphore(FrameIndex const index) const noexcept {
     return semaphores.at(index).present;
@@ -96,5 +102,6 @@ inline Swapchain::config_type create_swapchain_config(
     .clipped          = core::True,
   };
 }
+
 
 } // namespace rf3d::gfx::vk
