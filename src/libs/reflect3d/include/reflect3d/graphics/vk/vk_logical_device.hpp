@@ -5,7 +5,6 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_pso.hpp"
 #include "reflect3d/graphics/vk/vk_shader.hpp"
-#include "reflect3d/graphics/vk/vk_swapchain.hpp"
 
 namespace rf3d::gfx::vk {
 
@@ -23,11 +22,6 @@ public:
 
   [[nodiscard]] queue_type create_present_queue(queue_config_type const& queue_config) const {
     return {handle, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
-  }
-
-  [[nodiscard]] Swapchain
-  create_swap_chain(Swapchain::surface_type&& surface, Swapchain::config_type const& config) const {
-    return Swapchain(handle, std::move(surface), config);
   }
 
   Shader create_shader(Shader::byte_code_type&& bytecode) const { return Shader(handle, std::move(bytecode)); }

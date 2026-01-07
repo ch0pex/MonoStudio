@@ -76,6 +76,13 @@ public:
     return std::get<transfer_type>(queues);
   }
 
+  template<Queue Q>
+  [[nodiscard]] Q const& get() const noexcept
+    requires(mono::meta::in_pack<Q, Types...>)
+  {
+    return std::get<Q>(queues);
+  }
+
 private:
   std::tuple<Types...> queues;
 };

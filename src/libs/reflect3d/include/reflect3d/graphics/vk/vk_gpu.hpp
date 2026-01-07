@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
@@ -13,11 +14,12 @@
 #include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
 #include <vulkan/vulkan_raii.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk {
 
 class Instance; // forward declaration
-//
+
 struct GpuDevices {
   using logical_type  = LogicalDevice;
   using physical_type = PhysicalDevice;
@@ -30,7 +32,6 @@ struct GpuDevices {
   physical_type physical;
   logical_type logical;
 };
-
 
 /**
  * @brief Represents a GPU device along with its logical device and associated queues.
@@ -70,7 +71,7 @@ public:
         resolution
     );
 
-    auto swapchain = devices.logical.create_swap_chain(std::move(surface), swapchain_config);
+    auto swapchain = Swapchain(*devices.logical, std::move(surface), swapchain_config);
 
     // Provisional pipeline for testing
     auto const assets_path = std::filesystem::path {mono::assets_path};
@@ -88,27 +89,36 @@ public:
     return swapchain;
   }
 
-  queues_type const& queues() const noexcept { return gpu_queues; }
+  // queues_type const& queues() const noexcept { return gpu_queues; }
 
-  CommandPool::buffer_type const& command_buffer(std::size_t const index) { return command_pool.buffer(index); }
+  [[nodiscard]] std::tuple<std::uint32_t, CommandPool::buffer_type const&> command_buffer() {
+    auto const& buffer = command_pool.next_command_buffer();
+    auto const& fence  = command_pool.fence();
+
+    (*devices.logical).waitForFences(*fence, core::True, defaults::wait_timeout) >> check::error;
+    (*devices.logical).resetFences(*fence);
+
+
+    return {command_pool.current_frame_index(), buffer};
+  }
+
+  template<Queue QueueType>
+  void submit_work(core::SubmitInfo const& info) {
+    gpu_queues.template get<QueueType>().submit(info, command_pool.fence());
+  }
+
+  void present(core::PresentInfoKHR const& present_info)
+    requires(mono::meta::in_pack<PresentQueue, Types...>)
+  {
+    gpu_queues.present().presentKHR(present_info) >> check::error;
+  }
 
   [[nodiscard]] Pipeline const& pipeline() const { return psos.at(0); }
-
-  void reset_fences(raii::Fence const& fence) { (*devices.logical).resetFences(*fence); }
-
-  void wait_fences(raii::Fence const& fence) {
-    auto result = (*devices.logical).waitForFences(*fence, core::True, UINT64_MAX);
-
-    if (result != core::Result::eSuccess) {
-      throw std::runtime_error("failed to wait for fence!");
-    }
-  }
 
 private:
   devices_type devices;
   queues_type gpu_queues;
   CommandPool command_pool;
-
   std::unordered_map<std::uint32_t, Pipeline> psos;
 };
 

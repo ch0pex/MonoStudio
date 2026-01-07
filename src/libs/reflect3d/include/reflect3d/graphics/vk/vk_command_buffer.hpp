@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/vk_image.hpp"
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 
 #include <cstdint>
@@ -13,24 +13,35 @@ public:
   using buffer_type = raii::CommandBuffer;
   using native_type = raii::CommandPool;
   using device_type = LogicalDevice;
+  using fence_type  = raii::Fence;
 
   explicit CommandPool(device_type const& device, config_type const& config) : handle(*device, config) {
     core::CommandBufferAllocateInfo alloc_info {
       .commandPool        = handle,
       .level              = core::CommandBufferLevel::ePrimary,
-      .commandBufferCount = 3,
+      .commandBufferCount = defaults::max_frames_in_flight
     };
 
     buffers = vk::raii::CommandBuffers(*device, alloc_info);
+    for (std::size_t i = 0; i < defaults::max_frames_in_flight; ++i) {
+      draw_fences.emplace_back(*device, core::FenceCreateInfo {.flags = core::FenceCreateFlagBits::eSignaled});
+    }
   }
 
-  void transition_image_layout(Image::barrier_type const& barrier) { }
+  [[nodiscard]] buffer_type const& next_command_buffer() {
+    current_frame = (current_frame + 1U) % buffers.size();
+    return buffers.at(current_frame);
+  }
 
-  buffer_type& buffer(std::size_t index) { return buffers.at(index); }
+  [[nodiscard]] FrameIndex current_frame_index() const noexcept { return current_frame; }
+
+  [[nodiscard]] fence_type const& fence() const { return draw_fences.at(current_frame); }
 
 private:
   native_type handle;
   std::vector<buffer_type> buffers;
+  std::vector<raii::Fence> draw_fences;
+  std::uint32_t current_frame {0};
 };
 
 

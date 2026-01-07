@@ -1,8 +1,10 @@
 
 
+#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/vk_barriers.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
+#include "reflect3d/graphics/vk/vk_swapchain.hpp"
 #include "reflect3d/input/input.hpp"
 #include "reflect3d/window/window_builder.hpp"
 
@@ -40,29 +42,24 @@ int main() try {
       window.resolution() //
   );
 
-  auto const& queues = gpu.queues();
-
 
   while (mono::ex::should_run()) {
     rf3d::input::poll_events();
 
-    queues.graphics().waitIdle(); // For simplicity
+    auto [frame_index, command_buffer] = gpu.command_buffer();
+    auto [image_index, image]          = swapchain.next_image(frame_index);
 
-    auto [index, image]        = swapchain.next_image();
-    auto const& command_buffer = gpu.command_buffer(0);
-
-    // --- Begin Record commands ---
+    command_buffer.begin({}); // --- Begin Record commands --- TODO use lambda instead of begin/end
     {
-      command_buffer.begin({});
       transition_image_layout(command_buffer, image, gfx::vk::rendering_layout);
 
-      gfx::vk::core::ClearValue clearColor                   = gfx::vk::core::ClearColorValue(0.0F, 0.0F, 0.0F, 1.0F);
-      gfx::vk::core::RenderingAttachmentInfo attachment_info = {
+      gfx::vk::core::ClearValue const clear_color = gfx::vk::core::ClearColorValue {0.0F, 0.0F, 0.0F, 1.0F};
+      gfx::vk::core::RenderingAttachmentInfo const attachment_info = {
         .imageView   = image.view(),
         .imageLayout = gfx::vk::core::ImageLayout::eColorAttachmentOptimal,
         .loadOp      = gfx::vk::core::AttachmentLoadOp::eClear,
         .storeOp     = gfx::vk::core::AttachmentStoreOp::eStore,
-        .clearValue  = clearColor
+        .clearValue  = clear_color
       };
       auto extent                                 = swapchain.extent();
       gfx::vk::core::RenderingInfo rendering_info = {
@@ -72,7 +69,7 @@ int main() try {
         .pColorAttachments    = &attachment_info
       };
 
-      command_buffer.beginRendering(rendering_info);
+      command_buffer.beginRendering(rendering_info); //  TODO use lambda instead of begin/end
 
       command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *gpu.pipeline());
       command_buffer.setViewport(
@@ -87,47 +84,32 @@ int main() try {
 
       command_buffer.endRendering();
       transition_image_layout(command_buffer, image, gfx::vk::present_layout);
-      command_buffer.end();
     }
-    // --- End Record commands ---
+    command_buffer.end(); // --- End Record commands ---
 
-    gpu.reset_fences(swapchain.render_fence());
-
-    vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
+    vk::PipelineStageFlags wait_destination_stage_mask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
     vk::SubmitInfo const submitInfo {
       .waitSemaphoreCount   = 1,
-      .pWaitSemaphores      = &*swapchain.present_semaphore(),
-      .pWaitDstStageMask    = &waitDestinationStageMask,
+      .pWaitSemaphores      = &*swapchain.present_semaphore(frame_index),
+      .pWaitDstStageMask    = &wait_destination_stage_mask,
       .commandBufferCount   = 1,
       .pCommandBuffers      = &*command_buffer,
       .signalSemaphoreCount = 1,
-      .pSignalSemaphores    = &*swapchain.render_semaphore()
+      .pSignalSemaphores    = &*swapchain.render_semaphore(image_index)
     };
 
-    queues.graphics().submit(submitInfo, *swapchain.render_fence());
-    gpu.wait_fences(swapchain.render_fence());
+    gpu.submit_work<gfx::vk::GraphicQueue>(submitInfo);
 
-    vk::PresentInfoKHR const presentInfoKHR {
+    gfx::vk::core::PresentInfoKHR const present_info {
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores    = &*swapchain.render_semaphore(),
+      .pWaitSemaphores    = &*swapchain.render_semaphore(image_index),
       .swapchainCount     = 1,
       .pSwapchains        = &**swapchain,
-      .pImageIndices      = &index
+      .pImageIndices      = &image_index
     };
 
-    auto result = queues.graphics().presentKHR(presentInfoKHR);
-    switch (result) {
-      case vk::Result::eSuccess:
-        break;
-      case vk::Result::eSuboptimalKHR:
-        std::cout << "vk::Queue::presentKHR returned vk::Result::eSuboptimalKHR !\n";
-        break;
-      default:
-        break; // an unexpected result is returned!
-    }
+    gpu.present(present_info);
   }
-
-  gpu.queues().graphics().waitIdle();
 }
 catch (std::exception const& e) {
   std::cerr << "Unhandled exception: " << e.what() << '\n';

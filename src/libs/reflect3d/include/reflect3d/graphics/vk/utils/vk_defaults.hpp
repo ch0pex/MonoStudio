@@ -2,7 +2,12 @@
 
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
+#include <limits>
+
 namespace rf3d::gfx::vk::defaults {
+
+inline constexpr std::size_t max_frames_in_flight = 2U;
+inline constexpr std::uint64_t wait_timeout       = std::numeric_limits<std::uint64_t>::max();
 
 inline constexpr core::PipelineVertexInputStateCreateInfo vertex_input_info {};
 
