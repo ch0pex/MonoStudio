@@ -4,10 +4,15 @@
 #include "reflect3d/graphics/vk/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 
+#include <mono/containers/stable_vector.hpp>
+
 #include <cstdint>
-#include <vulkan/vulkan_raii.hpp>
+#include <ranges>
 
 namespace rf3d::gfx::vk {
+
+namespace details { } // namespace details
+//
 
 class CommandPool {
 public:
@@ -18,17 +23,23 @@ public:
   using fence_type  = raii::Fence;
 
   explicit CommandPool(device_type const& device, config_type const& config) : handle(*device, config) {
+    allocate_command_buffers(device, defaults::max_frames_in_flight);
+  }
+
+  [[nodiscard]] buffer_type const& next_command_buffer() {
+    current_buffer = (current_buffer + 1U) % buffers.size();
+    return buffers.at(current_buffer);
+  }
+
+  void allocate_command_buffers(device_type const& device, std::uint32_t const count) {
     core::CommandBufferAllocateInfo alloc_info {
       .commandPool        = handle,
       .level              = core::CommandBufferLevel::ePrimary,
-      .commandBufferCount = defaults::max_frames_in_flight
+      .commandBufferCount = count,
     };
 
-    auto native_buffers = vk::raii::CommandBuffers(*device, alloc_info);
-    // | std::views::transform([](raii::CommandBuffer& buffer) { return CommandBuffer {std::move(buffer)}; }) //
-    // | std::views::to<std::vector<buffer_type>>(); //
-    for (auto& native_buffer: native_buffers) {
-      buffers.emplace_back(std::move(native_buffer));
+    for (auto& buffer: raii::CommandBuffers(*device, alloc_info)) {
+      buffers.emplace_back(CommandBuffer {std::move(buffer)});
     }
 
     for (std::size_t i = 0; i < defaults::max_frames_in_flight; ++i) {
@@ -36,20 +47,22 @@ public:
     }
   }
 
-  [[nodiscard]] buffer_type const& next_command_buffer() {
-    current_frame = (current_frame + 1U) % buffers.size();
-    return buffers.at(current_frame);
+  void deallocate_command_buffers(std::uint32_t const count) {
+    std::uint32_t const dealloc_count = std::min<std::uint32_t>(count, buffers.size());
+    if (dealloc_count > 0) {
+      buffers.erase(buffers.end() - dealloc_count, buffers.end());
+    }
   }
 
-  [[nodiscard]] FrameIndex current_frame_index() const noexcept { return current_frame; }
+  [[nodiscard]] fence_type const& fence() const { return draw_fences.at(current_buffer); }
 
-  [[nodiscard]] fence_type const& fence() const { return draw_fences.at(current_frame); }
+  [[nodiscard]] FrameIndex current_frame_index() const noexcept { return current_buffer; }
 
 private:
   native_type handle;
-  std::vector<buffer_type> buffers;
-  std::vector<raii::Fence> draw_fences;
-  std::uint32_t current_frame {0};
+  mono::stable_vector<buffer_type> buffers;
+  mono::stable_vector<raii::Fence> draw_fences;
+  std::uint32_t current_buffer {0};
 };
 
 

@@ -11,6 +11,7 @@ namespace rf3d::gfx::vk::defaults {
 
 inline constexpr std::size_t max_frames_in_flight = 2U;
 inline constexpr std::uint64_t wait_timeout       = std::numeric_limits<std::uint64_t>::max();
+// inline constexpr std::uint64_t wait_timeout = 1000000000ULL; // 1 second in nanoseconds
 inline constexpr gfx::vk::core::ClearColorValue clear_color {0.0F, 0.0F, 0.0F, 1.0F};
 
 inline constexpr core::PipelineVertexInputStateCreateInfo vertex_input_info {};

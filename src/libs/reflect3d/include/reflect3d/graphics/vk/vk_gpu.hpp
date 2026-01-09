@@ -64,6 +64,13 @@ public:
         }
     ) { }
 
+  ~Gpu() {
+    LOG_INFO("Destroying Gpu");
+    wait_idle();
+  }
+
+  void wait_idle() { devices.logical.wait_idle(); }
+
   Swapchain create_swapchain(raii::SurfaceKHR&& surface, Resolution const& resolution) {
     auto const swapchain_config = create_swapchain_config(
         surface, //
@@ -86,10 +93,11 @@ public:
 
 
     psos.insert({0, std::move(pso)});
+
+    // Allocate new command buffers for each swapchain
+    // command_pool.allocate_command_buffers(devices.logical, defaults::max_frames_in_flight);
     return swapchain;
   }
-
-  // queues_type const& queues() const noexcept { return gpu_queues; }
 
   [[nodiscard]] std::tuple<std::uint32_t, CommandPool::buffer_type const&> command_buffer() {
     auto const& buffer = command_pool.next_command_buffer();
@@ -110,7 +118,7 @@ public:
   void present(core::PresentInfoKHR const& present_info)
     requires(mono::meta::in_pack<PresentQueue, Types...>)
   {
-    gpu_queues.present().presentKHR(present_info) >> check::error;
+    gpu_queues.graphics().presentKHR(present_info) >> check::error;
   }
 
   [[nodiscard]] Pipeline const& pipeline() const { return psos.at(0); }

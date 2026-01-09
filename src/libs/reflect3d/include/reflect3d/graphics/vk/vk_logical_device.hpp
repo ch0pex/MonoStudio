@@ -24,6 +24,8 @@ public:
     return {handle, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
   }
 
+  void wait_idle() const { handle.waitIdle(); }
+
   Shader create_shader(Shader::byte_code_type&& bytecode) const { return Shader(handle, std::move(bytecode)); }
 
   native_type const& operator*() const noexcept { return handle; }

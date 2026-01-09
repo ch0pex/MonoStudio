@@ -20,6 +20,7 @@ public:
       begin_info const& begin_info, //
       std::function<void(CommandBuffer const&)> const& record_function //
   ) const {
+    cmd_buffer.reset();
     cmd_buffer.begin(begin_info);
     record_function(*this);
     cmd_buffer.end();
