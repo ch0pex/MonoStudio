@@ -118,7 +118,7 @@ public:
   void present(core::PresentInfoKHR const& present_info)
     requires(mono::meta::in_pack<PresentQueue, Types...>)
   {
-    gpu_queues.graphics().presentKHR(present_info) >> check::error;
+    gpu_queues.present().presentKHR(present_info) >> check::error;
   }
 
   [[nodiscard]] Pipeline const& pipeline() const { return psos.at(0); }

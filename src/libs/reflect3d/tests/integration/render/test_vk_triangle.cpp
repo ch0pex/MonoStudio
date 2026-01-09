@@ -21,7 +21,7 @@ int main() try {
   gfx::vk::Gpu gpu = instance.create_gpu();
 
   std::vector<Window> windows;
-  gfx::vk::SwapchainsManager swapchains;
+  std::vector<gfx::vk::Swapchain> swapchains;
 
   for (std::size_t i = 0; i < 3; ++i) {
     auto window_config = config::Window {
@@ -42,10 +42,12 @@ int main() try {
   while (mono::ex::should_run()) {
     rf3d::input::poll_events();
 
-    auto const [frame_index, command_buffer] = gpu.command_buffer();
 
-    command_buffer.record({}, [&swapchains, &gpu, frame_index](gfx::vk::CommandBuffer const& cmd) {
-      for (auto& swapchain: swapchains) {
+    for (auto& swapchain: swapchains) {
+
+      auto const [frame_index, command_buffer] = gpu.command_buffer();
+
+      command_buffer.record({}, [&swapchain, &gpu, frame_index](gfx::vk::CommandBuffer const& cmd) {
         auto const& image = swapchain.next_image(frame_index);
 
         std::vector const attachment_info = {
@@ -68,36 +70,33 @@ int main() try {
         });
 
         transition_image_layout(cmd, image, gfx::vk::present_layout);
-      }
-    });
+      });
 
-    auto const present_semaphores = swapchains.present_semaphores(frame_index);
-    auto const render_semaphores  = swapchains.render_semaphores();
-    auto const swapchain_handles  = swapchains.swapchain_handles();
-    auto const masks              = swapchains.wait_destination_stage_masks();
-    auto const indices            = swapchains.image_indices();
 
-    vk::SubmitInfo const submit_info {
-      .waitSemaphoreCount   = static_cast<std::uint32_t>(present_semaphores.size()),
-      .pWaitSemaphores      = present_semaphores.data(),
-      .pWaitDstStageMask    = masks.data(),
-      .commandBufferCount   = 1,
-      .pCommandBuffers      = &**command_buffer,
-      .signalSemaphoreCount = static_cast<std::uint32_t>(render_semaphores.size()),
-      .pSignalSemaphores    = render_semaphores.data()
-    };
+      vk::PipelineStageFlags mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+      vk::SubmitInfo const submit_info {
+        .waitSemaphoreCount   = 1,
+        .pWaitSemaphores      = std::addressof(*swapchain.present_semaphore(frame_index)),
+        .pWaitDstStageMask    = std::addressof(mask),
+        .commandBufferCount   = 1,
+        .pCommandBuffers      = std::addressof(**command_buffer),
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores    = std::addressof(*swapchain.render_semaphore()),
+      };
 
-    gpu.submit_work<gfx::vk::GraphicQueue>(submit_info);
+      gpu.submit_work<gfx::vk::GraphicQueue>(submit_info);
 
-    gfx::vk::core::PresentInfoKHR const present_info {
-      .waitSemaphoreCount = static_cast<std::uint32_t>(render_semaphores.size()),
-      .pWaitSemaphores    = render_semaphores.data(),
-      .swapchainCount     = static_cast<std::uint32_t>(swapchain_handles.size()),
-      .pSwapchains        = swapchain_handles.data(),
-      .pImageIndices      = indices.data(),
-    };
+      auto image_index = swapchain.current_image_index();
+      gfx::vk::core::PresentInfoKHR const present_info {
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores    = std::addressof(*swapchain.render_semaphore()),
+        .swapchainCount     = 1,
+        .pSwapchains        = std::addressof(**swapchain),
+        .pImageIndices      = std::addressof(image_index),
+      };
 
-    gpu.present(present_info);
+      gpu.present(present_info);
+    }
   }
   gpu.wait_idle();
 }

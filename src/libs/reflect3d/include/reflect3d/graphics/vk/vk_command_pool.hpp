@@ -23,7 +23,7 @@ public:
   using fence_type  = raii::Fence;
 
   explicit CommandPool(device_type const& device, config_type const& config) : handle(*device, config) {
-    allocate_command_buffers(device, defaults::max_frames_in_flight);
+    allocate_command_buffers(device, 1);
   }
 
   [[nodiscard]] buffer_type const& next_command_buffer() {
