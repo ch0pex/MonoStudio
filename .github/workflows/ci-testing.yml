@@ -19,7 +19,7 @@ on:
       - "scripts/**"
 
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -41,7 +41,7 @@ jobs:
             configure: Ninja-linux-gcc
             debug: Debug-linux-gcc
             release: Release-linux-gcc
-            
+
           - compiler: clang
             configure: Ninja-linux-clang
             debug: Debug-linux-clang
@@ -122,7 +122,7 @@ jobs:
   # -------------------------------------------------------------------
   windows-builds:
     name: Windows - ${{ matrix.toolchain }}
-    runs-on: windows-latest
+    runs-on: windows-2025
     
     strategy:
       fail-fast: false
@@ -143,23 +143,23 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Setup Vulkan SDK
-        uses: humbletim/install-vulkan-sdk@v2
-        with:
-          version: '1.4.313.0'
-
-      - name: Verify Vulkan & Slang
-        run: |
-          echo "Vulkan SDK Path: $env:VULKAN_SDK"
-          vulkaninfo --summary
-          slangc -v
-          
       - name: Install Conan Package
         shell: bash
         run: pip install conan
 
       - name: Setup MSVC Environment
         uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Slang Compiler
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }} # Necesario para usar 'gh release download'
+        run: |
+          gh release download --repo shader-slang/slang --pattern "*windows-x86_64.zip" --output slang.zip --clobber 
+          unzip -q slang.zip -d slang_dist
+          
+          echo "$PWD/slang_dist/bin" >> $GITHUB_PATH
+          echo "Slang installation prepared. Will be available in next steps."
 
       - name: Configure Conan Remote
         shell: bash
@@ -183,4 +183,4 @@ jobs:
         shell: bash
         run: |
           cmake --build --preset ${{ matrix.release }}
-          ctest --preset ${{ matrix.release }} -LE "graphics|window" 
+          ctest --preset ${{ matrix.release }} -LE "graphics|window"
