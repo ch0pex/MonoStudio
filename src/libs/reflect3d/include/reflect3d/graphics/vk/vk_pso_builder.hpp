@@ -8,8 +8,8 @@
 
 namespace rf3d::gfx::vk {
 
-inline constexpr std::string vertex_entry_point_name   = "vertMain";
-inline constexpr std::string fragment_entry_point_name = "fragMain";
+inline std::string const vertex_entry_point_name   = "vertMain";
+inline std::string const fragment_entry_point_name = "fragMain";
 
 
 struct FixedFunctionsConfig {
@@ -92,8 +92,7 @@ public:
         .layout              = *pipeline_layout,
       },
       {
-        .colorAttachmentCount    = 1,
-        .pColorAttachmentFormats = &color_format,
+        .colorAttachmentCount = 1, .pColorAttachmentFormats = &color_format,
         // .depthAttachmentFormat   = depth_format,
       }
     };

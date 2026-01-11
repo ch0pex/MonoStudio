@@ -11,7 +11,6 @@
 #include <mono/execution/stop_token.hpp>
 
 #include <iostream>
-#include <vulkan/vulkan_structs.hpp>
 
 int main() try {
   using namespace rf3d;
@@ -25,10 +24,11 @@ int main() try {
 
   for (std::size_t i = 0; i < 3; ++i) {
     auto window_config = config::Window {
-      .title = std::format("Window {}", i), .mode = WindowMode::windowed, .monitor = static_cast<MonitorId>(i)
+      .title = std::format("Window {}", i),
+      .mode  = WindowMode::windowed,
     };
 
-    auto win = rf3d::WindowBuilder(window_config).default_callbacks().build(); //
+    auto win = WindowBuilder(window_config).default_callbacks().build(); //
 
     gfx::vk::Swapchain sc = gpu.create_swapchain(
         win.create_surface(instance), //
@@ -40,11 +40,9 @@ int main() try {
   }
 
   while (mono::ex::should_run()) {
-    rf3d::input::poll_events();
-
+    input::poll_events();
 
     for (auto& swapchain: swapchains) {
-
       auto const [frame_index, command_buffer] = gpu.command_buffer();
 
       command_buffer.record({}, [&swapchain, &gpu, frame_index](gfx::vk::CommandBuffer const& cmd) {
