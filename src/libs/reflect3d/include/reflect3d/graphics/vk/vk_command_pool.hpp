@@ -6,8 +6,12 @@
 
 #include <mono/containers/stable_vector.hpp>
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <cstdint>
 #include <ranges>
+#endif
 
 namespace rf3d::gfx::vk {
 

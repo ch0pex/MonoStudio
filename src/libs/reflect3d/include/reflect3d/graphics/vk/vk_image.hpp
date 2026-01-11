@@ -2,7 +2,6 @@
 
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
-#include <ranges>
 
 namespace rf3d::gfx::vk {
 

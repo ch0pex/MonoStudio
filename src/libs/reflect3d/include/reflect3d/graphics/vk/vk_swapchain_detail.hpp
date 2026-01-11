@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
-#include "reflect3d/graphics/vk/vk_surface_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 namespace rf3d::gfx::vk::detail {
@@ -62,15 +60,14 @@ inline std::vector<Image> get_images(
     core::Format const format //
 ) {
   core::ImageViewCreateInfo view_info {
-    .viewType         = core::ImageViewType::e2D,
-    .format           = format,
-    .subresourceRange = {
-      .aspectMask     = core::ImageAspectFlagBits::eColor,
-      .baseMipLevel   = 0,
-      .levelCount     = 1,
-      .baseArrayLayer = 0,
-      .layerCount     = 1
-    }
+    .viewType = core::ImageViewType::e2D,
+    .format   = format,
+    .subresourceRange =
+        {.aspectMask     = core::ImageAspectFlagBits::eColor,
+         .baseMipLevel   = 0,
+         .levelCount     = 1,
+         .baseArrayLayer = 0,
+         .layerCount     = 1}
   };
 
   auto build_image = [&](core::Image const& img) { //

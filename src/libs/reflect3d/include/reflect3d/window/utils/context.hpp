@@ -2,10 +2,13 @@
 
 #include <mono/misc/passkey.hpp>
 
-//
-#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+
+#ifdef MONO_USE_CPP_MODULES
+#else
 #include <stdexcept>
+#endif
+
 
 namespace rf3d {
 

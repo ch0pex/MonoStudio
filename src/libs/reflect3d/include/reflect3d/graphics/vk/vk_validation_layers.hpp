@@ -8,11 +8,15 @@
 #include <mono/logging/logger.hpp>
 
 // STD library
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <algorithm>
 #include <cstdint>
 #include <ranges>
 #include <string_view>
 #include <vector>
+#endif
 
 namespace rf3d::gfx::vk {
 

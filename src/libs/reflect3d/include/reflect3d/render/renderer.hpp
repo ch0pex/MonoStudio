@@ -3,9 +3,7 @@
 #include <mono/misc/passkey.hpp>
 
 
-#include <string>
 #include <vector>
-#include "reflect3d/window/window_types.hpp"
 
 namespace rf3d::gfx {
 

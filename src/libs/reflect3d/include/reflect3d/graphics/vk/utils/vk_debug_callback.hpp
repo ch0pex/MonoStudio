@@ -6,11 +6,10 @@
 #include <mono/logging/logger.hpp>
 
 #include <quill/core/LogLevel.h>
-#include <vulkan/vulkan_enums.hpp>
 
 namespace rf3d::gfx::vk {
 
-inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
+inline core::Bool32 debug_callback(
     core::DebugUtilsMessageSeverityFlagBitsEXT message_severity, //
     core::DebugUtilsMessageTypeFlagsEXT message_type, //
     core::DebugUtilsMessengerCallbackDataEXT const* callback_data, //

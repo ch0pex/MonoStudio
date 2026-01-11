@@ -1,7 +1,12 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.30)
+
+message("---------------- ${CMAKE_CXX_COMPILER_IMPORT_STD} ------------------")
+
+add_compile_definitions(MONO_USE_CPP_MODULES=1)
+
 project(MonoGames LANGUAGES CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 include(dependencies)

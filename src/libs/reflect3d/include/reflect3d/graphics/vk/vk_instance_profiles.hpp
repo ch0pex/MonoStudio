@@ -1,10 +1,7 @@
 #pragma once
 
-
 #include "reflect3d/graphics/vk/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/vk_instance_detail.hpp"
-
-#include <vulkan/vulkan_raii.hpp>
 
 namespace rf3d::gfx::vk::detail {
 

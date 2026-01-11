@@ -1,10 +1,8 @@
 #pragma once
 
-#include <unordered_map>
-#include <vulkan/vulkan_raii.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_pso.hpp"
 #include "reflect3d/graphics/vk/vk_shader.hpp"
+
 
 namespace rf3d::gfx::vk {
 

@@ -3,8 +3,12 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_logical_device.hpp"
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <cstdint>
 #include <functional>
+#endif
 
 namespace rf3d::gfx::vk {
 

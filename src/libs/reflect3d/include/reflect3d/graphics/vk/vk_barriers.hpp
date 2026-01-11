@@ -4,7 +4,6 @@
 #include "reflect3d/graphics/vk/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 
-
 namespace rf3d::gfx::vk {
 
 struct ImageLayoutConfig {
@@ -43,16 +42,15 @@ inline void transition_image_layout(CommandBuffer const& buffer, Image const& im
     .dstAccessMask       = config.dst_access_mask,
     .oldLayout           = config.old_layout,
     .newLayout           = config.new_layout,
-    .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-    .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+    .srcQueueFamilyIndex = core::QueueFamilyIgnored,
+    .dstQueueFamilyIndex = core::QueueFamilyIgnored,
     .image               = *image,
-    .subresourceRange    = {
-         .aspectMask     = core::ImageAspectFlagBits::eColor,
+    .subresourceRange =
+        {.aspectMask     = core::ImageAspectFlagBits::eColor,
          .baseMipLevel   = 0,
          .levelCount     = 1,
          .baseArrayLayer = 0,
-         .layerCount     = 1
-    }
+         .layerCount     = 1}
   };
   core::DependencyInfo dependency_info = {
     .dependencyFlags         = {},
@@ -61,6 +59,5 @@ inline void transition_image_layout(CommandBuffer const& buffer, Image const& im
   };
   buffer.pipeline_barrier2(dependency_info);
 }
-
 
 } // namespace rf3d::gfx::vk

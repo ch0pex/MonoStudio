@@ -8,11 +8,12 @@
 #include <mono/logging/logger.hpp>
 
 //
-#include <cstdint>
-#include <map>
-#include <vector>
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan_enums.hpp>
+
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
+#endif
+
 
 namespace rf3d::gfx::vk::detail {
 
@@ -34,7 +35,7 @@ inline std::uint64_t rate_device(raii::PhysicalDevice const& device) {
   score += device_properties.limits.maxComputeSharedMemorySize;
 
   // Application can't function without geometry shaders
-  if (device_features.geometryShader == VK_FALSE) {
+  if (device_features.geometryShader == core::False) {
     return 0;
   }
 

@@ -11,9 +11,13 @@
 #include <rfl/toml/write.hpp>
 
 //
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <filesystem>
 #include <print>
 #include <sstream>
+#endif
 
 namespace mono::program {
 

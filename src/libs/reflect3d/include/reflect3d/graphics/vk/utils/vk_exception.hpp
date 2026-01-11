@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <stdexcept>
+#endif
 
 namespace rf3d::gfx::vk {
 

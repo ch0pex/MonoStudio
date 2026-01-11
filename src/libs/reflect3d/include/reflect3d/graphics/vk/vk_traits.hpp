@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 
 namespace rf3d::gfx::vk {

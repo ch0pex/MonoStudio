@@ -1,16 +1,19 @@
 #pragma once
 
-#include <chrono>
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_command_buffer.hpp"
-#include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain_detail.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <mono/containers/stable_vector.hpp>
+
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
+#include <chrono>
+#endif
 
 namespace rf3d::gfx::vk {
 
@@ -47,7 +50,7 @@ public:
   }
 
   ~Swapchain() { //
-    if (handle != nullptr) {
+    if (*handle != nullptr) {
       LOG_INFO("Destroying Swapchain");
     }
   }

@@ -1,7 +1,11 @@
 #pragma once
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <cstddef>
 #include <new>
+#endif
 
 namespace mono {
 

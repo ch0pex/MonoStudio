@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <string_view>
+#endif
 
 namespace mono::os {
 

@@ -1,7 +1,11 @@
 #pragma once
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <cstdint>
 #include <format>
+#endif
 
 namespace rf3d {
 

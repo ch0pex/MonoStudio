@@ -2,8 +2,12 @@
 
 #include "mono/error/expected.hpp"
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <print>
 #include <stdexcept>
+#endif
 
 namespace mono::err {
 

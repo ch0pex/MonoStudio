@@ -1,13 +1,14 @@
 #pragma once
 
-#include <glm/fwd.hpp>
-#include <mono/logging/logger.hpp>
-#include <mono/misc/passkey.hpp>
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window_types.hpp"
 
+#include <mono/logging/logger.hpp>
+#include <mono/misc/passkey.hpp>
+
 #include <GLFW/glfw3.h>
+#include <glm/fwd.hpp>
 
 namespace rf3d {
 

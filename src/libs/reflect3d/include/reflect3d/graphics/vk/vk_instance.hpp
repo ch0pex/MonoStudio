@@ -1,13 +1,14 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
-#include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_instance_profiles.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"
 #include "reflect3d/window/window_types.hpp"
 
 #include <mono/meta/concepts.hpp>
+
+#include <GLFW/glfw3.h>
 
 namespace rf3d::gfx::vk {
 
@@ -28,7 +29,7 @@ public:
   [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
     core::SurfaceKHR::NativeType surface = nullptr;
 
-    if (glfwCreateWindowSurface(*instance.handle, window, nullptr, &surface) != VK_SUCCESS) {
+    if (glfwCreateWindowSurface(*instance.handle, window, nullptr, &surface) != 0) {
       throw std::runtime_error("Failed to create window surface");
     }
 

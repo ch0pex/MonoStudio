@@ -4,7 +4,11 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
 //
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <array>
+#endif
 
 namespace rf3d::gfx::vk::detail {
 

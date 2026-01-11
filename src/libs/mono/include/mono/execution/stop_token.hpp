@@ -1,7 +1,13 @@
 #pragma once
-#include <csignal>
-#include <stop_token>
+
 #include "mono/logging/logger.hpp"
+
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
+#include <stop_token>
+#endif
+
 
 namespace mono::ex {
 

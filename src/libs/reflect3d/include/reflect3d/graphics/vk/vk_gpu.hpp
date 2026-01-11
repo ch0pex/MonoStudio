@@ -13,8 +13,6 @@
 #include <assets_path.hpp>
 #include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
-#include <vulkan/vulkan_raii.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk {
 

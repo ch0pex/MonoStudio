@@ -10,9 +10,12 @@
 
 #include <GLFW/glfw3.h>
 
+#ifdef MONO_USE_CPP_MODULES
+#else
 #include <cstdint>
 #include <optional>
 #include <stdexcept>
+#endif
 
 
 namespace rf3d::detail {

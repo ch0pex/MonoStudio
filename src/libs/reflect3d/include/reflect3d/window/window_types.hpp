@@ -2,8 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <cstdint>
-
 namespace rf3d {
 
 using WindowHint      = int;

@@ -1,7 +1,6 @@
 #include <reflect3d/graphics/vk/vk_validation_layers.hpp>
 #include <string_view>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>

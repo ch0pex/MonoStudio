@@ -3,8 +3,12 @@
 #include "mono/meta/detail/specialization_of.hpp"
 #include "mono/meta/detail/template_parameter_of.hpp"
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <concepts>
 #include <type_traits>
+#endif
 
 namespace mono::meta {
 

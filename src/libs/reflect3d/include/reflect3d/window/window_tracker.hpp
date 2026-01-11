@@ -1,14 +1,16 @@
 #pragma once
 
-
 #include "reflect3d/window/window.hpp"
 
 //
 #include <GLFW/glfw3.h>
 
 //
+#ifdef MONO_USE_CPP_MODULES
+#else
 #include <initializer_list>
 #include <vector>
+#endif
 
 namespace rf3d {
 

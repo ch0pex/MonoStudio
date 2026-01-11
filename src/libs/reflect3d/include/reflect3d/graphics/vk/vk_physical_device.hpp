@@ -3,7 +3,6 @@
 #include "reflect3d/graphics/vk/vk_gpu_families.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
-
 namespace rf3d::gfx::vk {
 
 inline std::vector<char const*> physical_device_extensions() {

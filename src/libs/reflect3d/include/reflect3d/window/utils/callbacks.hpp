@@ -7,9 +7,12 @@
 #include <GLFW/glfw3.h>
 
 //
+#ifdef MONO_USE_CPP_MODULES
+#else
 #include <chrono>
 #include <span>
-#include <string_view> // Added for std::string_view
+#include <string_view>
+#endif
 
 namespace rf3d::callbacks {
 

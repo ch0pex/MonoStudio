@@ -8,9 +8,11 @@
 #include <GLFW/glfw3.h>
 
 //
-#include <cstdint>
+#ifdef MONO_USE_CPP_MODULES
+#else
 #include <string>
 #include <unordered_map>
+#endif
 
 namespace rf3d::config {
 

@@ -9,10 +9,13 @@
 
 #include <GLFW/glfw3.h>
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <cstdint>
 #include <ranges>
 #include <vector>
-#include <vulkan/vulkan.hpp>
+#endif
 
 namespace rf3d::gfx::vk {
 
@@ -22,10 +25,7 @@ namespace rf3d::gfx::vk {
  * @return true if all required extensions are supported, false otherwise.
  */
 template<std::ranges::range SupportedExtensions, std::ranges::range RequiredExtensions>
-  requires(
-      std::same_as<std::ranges::range_value_t<SupportedExtensions>, core::ExtensionProperties> and
-      std::same_as<std::ranges::range_value_t<RequiredExtensions>, std::string_view>
-  )
+  requires(std::same_as<std::ranges::range_value_t<SupportedExtensions>, core::ExtensionProperties> and std::same_as<std::ranges::range_value_t<RequiredExtensions>, std::string_view>)
 inline bool check_extensions_support(
     SupportedExtensions const& supported_extensions, //
     RequiredExtensions const& required_extensions

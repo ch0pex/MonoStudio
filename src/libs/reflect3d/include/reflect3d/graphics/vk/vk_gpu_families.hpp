@@ -4,9 +4,12 @@
 #include "reflect3d/graphics/vk/vk_gpu_families_detail.hpp"
 
 //
-#include <optional>
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <ranges>
 #include <unordered_map>
+#endif
 
 
 namespace rf3d::gfx::vk {

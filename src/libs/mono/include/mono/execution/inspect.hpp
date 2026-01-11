@@ -2,8 +2,12 @@
 
 #include <stdexec/execution.hpp>
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <exception>
 #include <utility>
+#endif
 
 namespace mono::ex {
 

@@ -2,7 +2,7 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 26
+    "minor": 31
   },
   "configurePresets": [
     {
@@ -15,7 +15,9 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "26",
+        "CMAKE_EXPERIMENTAL_CXX_IMPORT_STD": "d0edc3af-4c50-42ea-a356-e2862fe7a444",
+        "CMAKE_CXX_MODULE_STD": "ON",
+        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Coverage;Sanitize",
@@ -33,6 +35,11 @@
         "CONAN_BUILD_PROFILE": "default;${sourceDir}/cmake/conan_profile",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
         "BUILD_TESTING": true
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "WSL"
+        }
       }
     },
     {
@@ -40,8 +47,11 @@
       "generator": "Ninja Multi-Config",
       "binaryDir": "build/windows/cl",
       "cacheVariables": {
+        "CMAKE_EXPERIMENTAL_CXX_IMPORT_STD": "a9e1cf81-9932-4810-974b-6eccaf14e457",
+        "CMAKE_CXX_MODULE_STD": "ON",
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
         "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "Debug",
         "CMAKE_C_COMPILER": "cl",
@@ -72,6 +82,7 @@
       "binaryDir": "build/linux/gcc",
       "inherits": "linux-base",
       "cacheVariables": {
+        "CMAKE_CXX_SCAN_FOR_MODULES": "ON",
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++"
       }
@@ -83,7 +94,7 @@
       "inherits": "linux-base",
       "cacheVariables": {
         "CMAKE_CXX_FLAGS": "-stdlib=libc++",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "ON",
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
       }

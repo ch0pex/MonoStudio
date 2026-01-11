@@ -31,9 +31,9 @@ inline raii::Instance create_instance(raii::Context const& context) {
   GlfwContext::init();
   static constexpr core::ApplicationInfo app_info {
     .pApplicationName   = "Reflect3D Application",
-    .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+    .applicationVersion = 0,
     .pEngineName        = "Reflect3D Engine",
-    .engineVersion      = VK_MAKE_VERSION(1, 0, 0),
+    .engineVersion      = 0,
     .apiVersion         = core::ApiVersion14,
   };
 

@@ -4,7 +4,11 @@
 
 #include <mono/logging/logger.hpp>
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <string>
+#endif
 
 namespace rf3d::gfx::vk {
 

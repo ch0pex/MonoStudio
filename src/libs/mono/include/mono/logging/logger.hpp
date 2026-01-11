@@ -19,7 +19,11 @@
 #include <quill/Logger.h>
 
 // STD
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <print>
+#endif
 
 namespace mono {
 
@@ -51,13 +55,13 @@ private:
 };
 
 // clang-format off
-#define LOG_DYNAMIC(level, fmt, ...)      QUILL_LOG_DYNAMIC(mono::GlobalLogger::instance(), level, fmt, ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...)                QUILL_LOG_INFO(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
-#define LOG_WARNING(fmt, ...)             QUILL_LOG_WARNING(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
-#define LOG_ERROR(fmt, ...)               QUILL_LOG_ERROR(mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
-#define LOG_INFO_LIMIT(min,fmt, ...)      QUILL_LOG_INFO_LIMIT(min, mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
-#define LOG_WARNING_LIMIT(min,fmt, ...)   QUILL_LOG_WARNING_LIMIT(min, mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
-#define LOG_ERROR_LIMIT(min, fmt, ...)    QUILL_LOG_ERROR_LIMIT(min, mono::GlobalLogger::instance(), fmt, ##__VA_ARGS__);
+#define LOG_DYNAMIC(level, fmt, ...)      QUILL_LOG_DYNAMIC(mono::GlobalLogger::instance(), level, fmt, ## __VA_ARGS__)
+#define LOG_INFO(fmt, ...)                QUILL_LOG_INFO(mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
+#define LOG_WARNING(fmt, ...)             QUILL_LOG_WARNING(mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
+#define LOG_ERROR(fmt, ...)               QUILL_LOG_ERROR(mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
+#define LOG_INFO_LIMIT(min,fmt, ...)      QUILL_LOG_INFO_LIMIT(min, mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
+#define LOG_WARNING_LIMIT(min,fmt, ...)   QUILL_LOG_WARNING_LIMIT(min, mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
+#define LOG_ERROR_LIMIT(min, fmt, ...)    QUILL_LOG_ERROR_LIMIT(min, mono::GlobalLogger::instance(), fmt, ## __VA_ARGS__);
 
 // clang-format on
 

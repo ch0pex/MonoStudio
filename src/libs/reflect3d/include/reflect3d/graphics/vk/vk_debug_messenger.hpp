@@ -7,7 +7,6 @@
 //
 #include <mono/containers/unordered_flat_map.hpp>
 #include <mono/logging/logger.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk {
 

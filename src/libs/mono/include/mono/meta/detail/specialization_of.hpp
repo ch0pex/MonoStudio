@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <type_traits>
+#endif
 
 namespace mono::meta::detail {
 

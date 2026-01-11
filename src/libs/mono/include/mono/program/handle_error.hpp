@@ -4,8 +4,12 @@
 #include "mono/execution/signals.hpp"
 #include "mono/logging/logger.hpp"
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <exception>
 #include <utility>
+#endif
 
 namespace mono::program {
 

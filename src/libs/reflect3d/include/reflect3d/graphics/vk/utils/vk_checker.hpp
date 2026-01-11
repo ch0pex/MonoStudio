@@ -3,7 +3,11 @@
 #include "reflect3d/graphics/vk/utils/vk_exception.hpp"
 #include "reflect3d/graphics/vk/utils/vk_result.hpp"
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <source_location>
+#endif
 
 namespace rf3d::gfx::vk {
 

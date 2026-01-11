@@ -8,9 +8,12 @@
 #include <mono/misc/passkey.hpp>
 
 //
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
 #include <concepts>
 #include <type_traits>
-
+#endif
 namespace rf3d::gfx::vk {
 
 template<typename T>

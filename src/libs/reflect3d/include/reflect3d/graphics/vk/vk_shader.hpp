@@ -2,14 +2,17 @@
 
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
-#include <cstdint>
 #include <mono/misc/start_lifetime_as.hpp>
 
+#ifdef MONO_USE_CPP_MODULES
+import std;
+#else
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <ranges>
-#include <span>
 #include <vector>
+#endif
 
 namespace rf3d::gfx::vk {
 
