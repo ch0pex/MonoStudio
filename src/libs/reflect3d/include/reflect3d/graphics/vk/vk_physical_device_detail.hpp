@@ -17,8 +17,8 @@
 namespace rf3d::gfx::vk::detail {
 
 inline std::uint64_t rate_device(raii::PhysicalDevice const& device) {
-  auto device_properties = device.getProperties();
-  auto device_features   = device.getFeatures();
+  auto const device_properties = device.getProperties();
+  auto const device_features   = device.getFeatures();
 
   std::uint64_t score = 0;
 

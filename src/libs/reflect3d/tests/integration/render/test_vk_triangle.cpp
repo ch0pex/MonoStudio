@@ -28,13 +28,11 @@ int main() try {
       .mode  = WindowMode::windowed,
     };
 
-    auto win = WindowBuilder(window_config).default_callbacks().build(); //
-
+    auto win              = WindowBuilder(window_config).default_callbacks().build(); //
     gfx::vk::Swapchain sc = gpu.create_swapchain(
         win.create_surface(instance), //
         win.resolution() //
     );
-
     swapchains.emplace_back(std::move(sc));
     windows.emplace_back(std::move(win));
   }
@@ -71,7 +69,7 @@ int main() try {
       });
 
 
-      vk::PipelineStageFlags mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+      static constexpr vk::PipelineStageFlags mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
       vk::SubmitInfo const submit_info {
         .waitSemaphoreCount   = 1,
         .pWaitSemaphores      = std::addressof(*swapchain.present_semaphore(frame_index)),
@@ -84,7 +82,7 @@ int main() try {
 
       gpu.submit_work<gfx::vk::GraphicQueue>(submit_info);
 
-      auto image_index = swapchain.current_image_index();
+      auto const image_index = swapchain.current_image_index();
       gfx::vk::core::PresentInfoKHR const present_info {
         .waitSemaphoreCount = 1,
         .pWaitSemaphores    = std::addressof(*swapchain.render_semaphore()),

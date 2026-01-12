@@ -57,8 +57,7 @@ private:
   module_type handle;
 };
 
-
-Shader::byte_code_type load_shader_bytecode(std::filesystem::path const& file_path) {
+inline Shader::byte_code_type load_shader_bytecode(std::filesystem::path const& file_path) {
   std::ifstream file(file_path, std::ios::binary | std::ios::ate);
 
   if (not file.is_open()) {

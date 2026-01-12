@@ -22,6 +22,7 @@ public:
   /*********************
    *    Type traits    *
    *********************/
+
   using vertex_input_info_type   = core::PipelineVertexInputStateCreateInfo;
   using input_assembly_type      = core::PipelineInputAssemblyStateCreateInfo;
   using rasterizer_info_type     = core::PipelineRasterizationStateCreateInfo;
@@ -33,11 +34,18 @@ public:
   using pipeline_info_type       = core::GraphicsPipelineCreateInfo;
   using rendering_info_type      = core::PipelineRenderingCreateInfo;
 
+  /*********************
+   *    Constructor    *
+   *********************/
 
   explicit PipelineBuilder(FixedFunctionsConfig const& config = {}) :
     color_format(config.color_attachment_format), //
     depth_format(config.depth_attachment_format) //
   { }
+
+  /**************************
+   *    Member functions    *
+   **************************/
 
   PipelineBuilder& vertex_stage(Shader const& shader) {
     shader_stages.emplace_back(shader.stage(core::ShaderStageFlagBits::eVertex, vertex_entry_point_name));
@@ -61,7 +69,7 @@ public:
   Pipeline build(raii::Device const& device) {
     core::PipelineViewportStateCreateInfo viewport_state {.viewportCount = 1, .scissorCount = 1};
 
-    std::vector<core::DynamicState> dynamic_states_list = {
+    std::vector dynamic_states_list = {
       core::DynamicState::eViewport, //
       core::DynamicState::eScissor, //
       core::DynamicState::eCullMode, //
@@ -81,18 +89,18 @@ public:
       {
         .stageCount          = static_cast<std::uint32_t>(shader_stages.size()),
         .pStages             = shader_stages.data(),
-        .pVertexInputState   = &vertex_input_info,
-        .pInputAssemblyState = &input_assembly,
-        .pViewportState      = &viewport_state,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState   = &multisampling,
+        .pVertexInputState   = std::addressof(vertex_input_info),
+        .pInputAssemblyState = std::addressof(input_assembly),
+        .pViewportState      = std::addressof(viewport_state),
+        .pRasterizationState = std::addressof(rasterizer),
+        .pMultisampleState   = std::addressof(multisampling),
         .pDepthStencilState  = nullptr,
-        .pColorBlendState    = &color_blending,
-        .pDynamicState       = &dynamic_state_info,
+        .pColorBlendState    = std::addressof(color_blending),
+        .pDynamicState       = std::addressof(dynamic_state_info),
         .layout              = *pipeline_layout,
       },
       {
-        .colorAttachmentCount = 1, .pColorAttachmentFormats = &color_format,
+        .colorAttachmentCount = 1, .pColorAttachmentFormats = std::addressof(color_format),
         // .depthAttachmentFormat   = depth_format,
       }
     };

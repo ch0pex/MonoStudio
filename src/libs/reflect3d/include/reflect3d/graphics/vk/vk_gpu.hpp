@@ -69,7 +69,7 @@ public:
     wait_idle();
   }
 
-  void wait_idle() { devices.logical.wait_idle(); }
+  void wait_idle() const { devices.logical.wait_idle(); }
 
   Swapchain create_swapchain(raii::SurfaceKHR&& surface, Resolution const& resolution) {
     auto const swapchain_config = create_swapchain_config(
@@ -84,7 +84,7 @@ public:
     auto const assets_path = std::filesystem::path {mono::assets_path};
     auto const shader_path = assets_path / "shaders" / "bin" / "reflect3d-shaders.spv";
 
-    auto shader = devices.logical.create_shader(gfx::vk::load_shader_bytecode(shader_path));
+    auto shader = devices.logical.create_shader(load_shader_bytecode(shader_path));
 
     auto pso = PipelineBuilder({.color_attachment_format = swapchain_config.imageFormat}) //
                    .vertex_stage(shader)
@@ -94,8 +94,6 @@ public:
 
     psos.insert({0, std::move(pso)});
 
-    // Allocate new command buffers for each swapchain
-    // command_pool.allocate_command_buffers(devices.logical, defaults::max_frames_in_flight);
     return swapchain;
   }
 
