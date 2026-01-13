@@ -82,7 +82,7 @@ public:
 
     // Provisional pipeline for testing
     auto const assets_path = std::filesystem::path {mono::assets_path};
-    auto const shader_path = assets_path / "shaders" / "bin" / "reflect3d-shaders.spv";
+    auto const shader_path = assets_path / "shaders" / "shader.slang";
 
     auto shader = devices.logical.create_shader(load_shader_bytecode(shader_path));
 

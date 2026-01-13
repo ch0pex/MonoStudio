@@ -9,6 +9,6 @@ find_package(reflectcpp CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 include(stdexec)
-include(fetch_slang)
+include(slang)
 
 

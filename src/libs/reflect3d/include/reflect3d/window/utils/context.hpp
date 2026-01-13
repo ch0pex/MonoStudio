@@ -20,10 +20,10 @@ struct ContextInstance {
   ContextInstance& operator=(ContextInstance const&) = delete;
   ~ContextInstance() { glfwTerminate(); }
 
-  ContextInstance(mono::PassKey<GlfwContext> key [[maybe_unused]]) {
+  explicit ContextInstance(mono::PassKey<GlfwContext> key [[maybe_unused]]) {
     if (glfwInit() == GLFW_FALSE) {
       throw std::runtime_error("Couldn't initilize glfw");
-    };
+    }
   }
 };
 
