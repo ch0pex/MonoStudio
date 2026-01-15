@@ -38,7 +38,7 @@
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CONAN_INSTALL_ARGS": "--build=missing;-u",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/modules/conan_provider.cmake",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
         "BUILD_TESTING": true
       }
     },
