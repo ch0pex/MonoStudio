@@ -5,19 +5,13 @@ on:
     branches:
       - '**'
     paths-ignore:
-      # --- Documentación y Archivos de Texto ---
-      - '**.md'          # Ignora README.md, docs/*.md, etc.
-      - '**.txt'         # Ignora CMakeLists.txt NO (ese no acaba en .txt suele ser .txt pero CMakeLists es especial) -> OJO: CMakeLists.txt es detectado, los .txt planos no.
+      - '**.md'
+      - '**.txt'
       - 'LICENSE'
-      
-      # --- Configuración de git/editor ---
       - '.gitignore'
       - '.gitattributes'
       - '.vscode/**'
-      
-      # --- Scripts auxiliares que no afectan al binario ---
       - "scripts/**"
-
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -37,16 +31,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # --- GCC Configuration ---
           - compiler: gcc
-            configure: Ninja-linux-gcc
-            debug: Debug-linux-gcc
-            release: Release-linux-gcc
+            # Presets de Configuración
+            conf_debug: gcc-debug
+            conf_release: gcc-release
+            # Presets de Build/Test
+            build_debug: Debug-gcc
+            build_release: Release-gcc
 
+          # --- Clang Configuration ---
           - compiler: clang
-            configure: Ninja-linux-clang
-            debug: Debug-linux-clang
-            release: Release-linux-clang
-            sanitize: Sanitize-linux-clang
+            # Presets de Configuración
+            conf_debug: clang-debug
+            conf_release: clang-release
+            conf_sanitize: clang-sanitize
+            # Presets de Build/Test
+            build_debug: Debug-clang
+            build_release: Release-clang
+            build_sanitize: Sanitize-clang
 
     steps:
       - name: Checkout code
@@ -74,7 +77,6 @@ jobs:
           rm -rf dotfiles
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-
       - name: Configure Conan Remote
         run: |
           conan profile detect --force
@@ -82,34 +84,43 @@ jobs:
           conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
-      - name: Configure CMake
-        run: cmake --preset ${{ matrix.configure }}
-
-      - name: Build & Test (Debug)
+      # --- DEBUG CYCLE ---
+      # En Linux (Single Config), configuramos y construimos por separado
+      - name: Configure & Build (Debug)
         run: |
-          cmake --build --preset ${{ matrix.debug }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.debug }} -LE "graphics"
+          cmake --preset ${{ matrix.conf_debug }}
+          cmake --build --preset ${{ matrix.build_debug }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_debug }} -LE "graphics"
 
-      - name: Build & Test (Release)
+      # --- RELEASE CYCLE ---
+      - name: Configure & Build (Release)
         run: |
-          cmake --build --preset ${{ matrix.release }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.release }} -LE "graphics"
+          cmake --preset ${{ matrix.conf_release }}
+          cmake --build --preset ${{ matrix.build_release }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_release }} -LE "graphics"
 
-      - name: Build & Test (Sanitize)
-        if: matrix.sanitize != ''
+      # --- SANITIZE CYCLE ---
+      - name: Configure & Build (Sanitize)
+        if: matrix.conf_sanitize != ''
         run: |
-          cmake --build --preset ${{ matrix.sanitize }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.sanitize }} -LE "graphics"
+          cmake --preset ${{ matrix.conf_sanitize }}
+          cmake --build --preset ${{ matrix.build_sanitize }}
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_sanitize }} -LE "graphics"
 
+      # --- VALGRIND ---
       - name: Valgrind Memcheck
         run: |
+          # NOTA: La ruta build ahora es build/gcc/debug o build/clang/debug según el preset
+          TEST_DIR="build/${{ matrix.compiler }}/debug"
+          
           xvfb-run -a --server-args="-screen 0 1280x1024x24" \
-          ctest --test-dir build/linux/${{ matrix.compiler }} \
+          ctest --test-dir $TEST_DIR \
                 -T MemCheck \
                 -C Debug \
                 -LE "graphics" \
                 --output-on-failure
-          LOG_DIR="build/linux/${{ matrix.compiler }}/Testing/Temporary"
+          
+          LOG_DIR="$TEST_DIR/Testing/Temporary"
           echo "Checking for leaks in $LOG_DIR..."
           if grep -rn "Definitely lost" "$LOG_DIR"/MemoryChecker.*.log; then
             echo "::error::Critical memory leaks detected by Valgrind!"
@@ -117,22 +128,25 @@ jobs:
           else
             echo "Valgrind check passed. No definite leaks found."
           fi
+
   # -------------------------------------------------------------------
   # JOB 2: WINDOWS (MSVC)
   # -------------------------------------------------------------------
   windows-builds:
     name: Windows - ${{ matrix.toolchain }}
     runs-on: windows-2025
-    
+
     strategy:
       fail-fast: false
       matrix:
         include:
           - toolchain: MSVC
-            configure: Ninja-windows-cl
-            debug: Debug-windows-cl
-            relwithdebinfo: RelWithDebInfo-windows-cl
-            release: Release-windows-cl
+            # En Windows usamos "msvc" que es Multi-Config,
+            # así que podemos configurar una vez y construir varias.
+            configure: msvc
+            debug: Debug-msvc
+            relwithdebinfo: RelWithDebInfo-msvc
+            release: Release-msvc
 
     steps:
       - name: Checkout code
@@ -153,13 +167,12 @@ jobs:
       - name: Install Slang Compiler
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }} # Necesario para usar 'gh release download'
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download --repo shader-slang/slang --pattern "*windows-x86_64.zip" --output slang.zip --clobber 
           unzip -q slang.zip -d slang_dist
-          
           echo "$PWD/slang_dist/bin" >> $GITHUB_PATH
-          echo "Slang installation prepared. Will be available in next steps."
+          echo "Slang installation prepared."
 
       - name: Configure Conan Remote
         shell: bash
@@ -169,6 +182,7 @@ jobs:
           conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
+      # En Windows mantenemos la lógica original porque "msvc" es Ninja Multi-Config
       - name: Configure CMake
         shell: bash
         run: cmake --preset ${{ matrix.configure }}
