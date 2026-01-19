@@ -22,7 +22,8 @@ namespace detail {
 
 template<ShaderTarget Target>
 Slang::ComPtr<slang::ISession> create_session() {
-  std::array search_paths = {mono::assets_path.data()};
+  std::string assets_path {mono::assets_path};
+  std::array search_paths = {assets_path.c_str()};
 
   auto options                         = Target::options;
   slang::SessionDesc const sessionDesc = {
