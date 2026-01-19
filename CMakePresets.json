@@ -81,7 +81,7 @@
       }
     },
     {
-      "name": "gcc-debug",
+      "name": "Debug-gcc",
       "inherits": "unix-base",
       "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
@@ -91,7 +91,7 @@
       }
     },
     {
-      "name": "gcc-release",
+      "name": "Release-gcc",
       "inherits": [
         "unix-base",
         "mixin-flags-release"
@@ -104,7 +104,7 @@
       }
     },
     {
-      "name": "gcc-relwithdebinfo",
+      "name": "RelWithDebInfo-gcc",
       "inherits": [
         "unix-base",
         "mixin-flags-release"
@@ -117,7 +117,7 @@
       }
     },
     {
-      "name": "gcc-sanitize",
+      "name": "Sanitize-gcc",
       "inherits": [
         "unix-base",
         "mixin-flags-sanitize"
@@ -130,7 +130,7 @@
       }
     },
     {
-      "name": "gcc-coverage",
+      "name": "Coverage-gcc",
       "inherits": [
         "unix-base",
         "mixin-flags-coverage"
@@ -143,7 +143,7 @@
       }
     },
     {
-      "name": "clang-debug",
+      "name": "Debug-clang",
       "inherits": "unix-base",
       "binaryDir": "${sourceDir}/build/clang/debug",
       "cacheVariables": {
@@ -155,7 +155,7 @@
       }
     },
     {
-      "name": "clang-release",
+      "name": "Release-clang",
       "inherits": [
         "unix-base",
         "mixin-flags-release"
@@ -170,7 +170,7 @@
       }
     },
     {
-      "name": "clang-relwithdebinfo",
+      "name": "RelWithDebInfo-clang",
       "inherits": [
         "unix-base",
         "mixin-flags-release"
@@ -185,7 +185,7 @@
       }
     },
     {
-      "name": "clang-sanitize",
+      "name": "Sanitize-clang",
       "inherits": [
         "unix-base",
         "mixin-flags-sanitize"
@@ -223,39 +223,39 @@
     },
     {
       "name": "Debug-gcc",
-      "configurePreset": "gcc-debug"
+      "configurePreset": "Debug-gcc"
     },
     {
       "name": "Release-gcc",
-      "configurePreset": "gcc-release"
+      "configurePreset": "Release-gcc"
     },
     {
       "name": "RelWithDebInfo-gcc",
-      "configurePreset": "gcc-relwithdebinfo"
+      "configurePreset": "RelWithDebInfo-gcc"
     },
     {
       "name": "Sanitize-gcc",
-      "configurePreset": "gcc-sanitize"
+      "configurePreset": "Sanitize-gcc"
     },
     {
       "name": "Coverage-gcc",
-      "configurePreset": "gcc-coverage"
+      "configurePreset": "Coverage-gcc"
     },
     {
       "name": "Debug-clang",
-      "configurePreset": "clang-debug"
+      "configurePreset": "Debug-clang"
     },
     {
       "name": "Release-clang",
-      "configurePreset": "clang-release"
+      "configurePreset": "Release-clang"
     },
     {
       "name": "RelWithDebInfo-clang",
-      "configurePreset": "clang-relwithdebinfo"
+      "configurePreset": "RelWithDebInfo-clang"
     },
     {
       "name": "Sanitize-clang",
-      "configurePreset": "clang-sanitize"
+      "configurePreset": "Sanitize-clang"
     }
   ],
   "testPresets": [
@@ -298,42 +298,220 @@
     {
       "name": "Debug-gcc",
       "inherits": "base-test",
-      "configurePreset": "gcc-debug"
+      "configurePreset": "Debug-gcc"
     },
     {
       "name": "Release-gcc",
       "inherits": "base-test",
-      "configurePreset": "gcc-release"
+      "configurePreset": "Release-gcc"
     },
     {
       "name": "RelWithDebInfo-gcc",
       "inherits": "base-test",
-      "configurePreset": "gcc-relwithdebinfo"
+      "configurePreset": "RelWithDebInfo-gcc"
     },
     {
       "name": "Sanitize-gcc",
       "inherits": "base-test",
-      "configurePreset": "gcc-sanitize"
+      "configurePreset": "Sanitize-gcc"
     },
     {
       "name": "Debug-clang",
       "inherits": "base-test",
-      "configurePreset": "clang-debug"
+      "configurePreset": "Debug-clang"
     },
     {
       "name": "Release-clang",
       "inherits": "base-test",
-      "configurePreset": "clang-release"
+      "configurePreset": "Release-clang"
     },
     {
       "name": "RelWithDebInfo-clang",
       "inherits": "base-test",
-      "configurePreset": "clang-relwithdebinfo"
+      "configurePreset": "RelWithDebInfo-clang"
     },
     {
       "name": "Sanitize-clang",
       "inherits": "base-test",
-      "configurePreset": "clang-sanitize"
+      "configurePreset": "Sanitize-clang"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "Debug-msvc",
+      "displayName": "Debug MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "msvc"
+        },
+        {
+          "type": "build",
+          "name": "Debug-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Debug-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Release-msvc",
+      "displayName": "Release MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "msvc"
+        },
+        {
+          "type": "build",
+          "name": "Release-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Release-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-msvc",
+      "displayName": "Sanitize MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "msvc"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Debug-gcc",
+      "displayName": "Debug GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Debug-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Debug-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Debug-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Release-gcc",
+      "displayName": "Release GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Release-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Release-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Release-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-gcc",
+      "displayName": "Sanitize GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Sanitize-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Coverage-gcc",
+      "displayName": "Coverage GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Coverage-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Coverage-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Debug-clang",
+      "displayName": "Debug Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Debug-clang"
+        },
+        {
+          "type": "build",
+          "name": "Debug-clang"
+        },
+        {
+          "type": "test",
+          "name": "Debug-clang"
+        }
+      ]
+    },
+    {
+      "name": "Release-clang",
+      "displayName": "Release Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Release-clang"
+        },
+        {
+          "type": "build",
+          "name": "Release-clang"
+        },
+        {
+          "type": "test",
+          "name": "Release-clang"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-clang",
+      "displayName": "Sanitize Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Sanitize-clang"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-clang"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-clang"
+        }
+      ]
     }
   ]
 }

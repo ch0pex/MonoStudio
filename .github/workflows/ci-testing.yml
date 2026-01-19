@@ -34,8 +34,8 @@ jobs:
           # --- GCC Configuration ---
           - compiler: gcc
             # Presets de Configuración
-            conf_debug: gcc-debug
-            conf_release: gcc-release
+            conf_debug: Debug-gcc
+            conf_release: Release-gcc
             # Presets de Build/Test
             build_debug: Debug-gcc
             build_release: Release-gcc
@@ -43,9 +43,9 @@ jobs:
           # --- Clang Configuration ---
           - compiler: clang
             # Presets de Configuración
-            conf_debug: clang-debug
-            conf_release: clang-release
-            conf_sanitize: clang-sanitize
+            conf_debug: Debug-clang
+            conf_release: Release-clang
+            conf_sanitize: Sanitize-clang
             # Presets de Build/Test
             build_debug: Debug-clang
             build_release: Release-clang
