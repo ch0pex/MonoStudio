@@ -36,7 +36,7 @@ public:
   using stage_type     = core::PipelineShaderStageCreateInfo;
 
   explicit Shader(device_type const& device, byte_code_type const bytecode) :
-    code(std::move(bytecode)), handle(device, detail::create_shader_module_create_info(code)) { }
+    code(bytecode), handle(device, detail::create_shader_module_create_info(code)) { }
 
   [[nodiscard]] stage_type stage(core::ShaderStageFlagBits const stage, std::string const& entry_point) const {
     return stage_type {
