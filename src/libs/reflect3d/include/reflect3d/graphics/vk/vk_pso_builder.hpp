@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan_core.h>
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_pso.hpp"
@@ -8,8 +7,8 @@
 
 namespace rf3d::gfx::vk {
 
-inline std::string const vertex_entry_point_name   = "vertMain";
-inline std::string const fragment_entry_point_name = "fragMain";
+inline std::string const vertex_entry_point_name   = "main"; // NOLINT
+inline std::string const fragment_entry_point_name = "main"; // NOLINT
 
 
 struct FixedFunctionsConfig {
@@ -100,7 +99,8 @@ public:
         .layout              = *pipeline_layout,
       },
       {
-        .colorAttachmentCount = 1, .pColorAttachmentFormats = std::addressof(color_format),
+        .colorAttachmentCount    = 1,
+        .pColorAttachmentFormats = std::addressof(color_format),
         // .depthAttachmentFormat   = depth_format,
       }
     };
