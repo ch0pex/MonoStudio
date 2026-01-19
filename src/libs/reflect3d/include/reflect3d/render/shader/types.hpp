@@ -7,7 +7,7 @@ namespace rf3d::gfx::shader {
 
 using Bytecode = std::span<char const>;
 
-enum class Stage {
+enum class Stage : std::uint8_t {
   vertex = 0,
   fragment,
   compute,
