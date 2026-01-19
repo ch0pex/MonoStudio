@@ -126,7 +126,9 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_BUILD_TYPE": "Sanitize"
+        "CMAKE_BUILD_TYPE": "Sanitize",
+        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release"
       }
     },
     {
@@ -139,7 +141,9 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_BUILD_TYPE": "Coverage"
+        "CMAKE_BUILD_TYPE": "Coverage",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release",
+        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
       }
     },
     {
@@ -196,7 +200,9 @@
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Sanitize",
         "CMAKE_CXX_FLAGS": "-stdlib=libc++",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
+        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
       }
     }
   ],

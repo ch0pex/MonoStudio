@@ -1,4 +1,4 @@
 [settings]
 compiler.cppstd=23
-build_type=Release
+build_type=RelWithDebInfo
 arch=x86_64
