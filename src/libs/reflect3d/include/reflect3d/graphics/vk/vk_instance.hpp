@@ -1,7 +1,6 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
-#include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/vk_instance_profiles.hpp"
 #include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
 #include "reflect3d/graphics/vk/vk_validation_layers.hpp"

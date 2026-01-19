@@ -5,7 +5,6 @@
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <limits>
-#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk::defaults {
 
