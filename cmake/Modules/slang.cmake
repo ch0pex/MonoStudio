@@ -201,13 +201,10 @@ endif (SLANG_EXE_FOUND)
 
 if (SLANG_LIB_FOUND)
 
-    # Get path to .dll/.so/.dylib, for target_copy_slang_binaries
     get_target_property(SLANG_RUNTIME_LIB slang IMPORTED_LOCATION)
     message(STATUS "Using Slang runtime '${SLANG_RUNTIME_LIB}'")
     set(SLANG_RUNTIME_LIB ${SLANG_RUNTIME_LIB} CACHE INTERNAL "Path to the Slang library binary")
 
-    # The application's binary must find the .dll/.so/.dylib at runtime,
-    # so we automatically copy it next to the binary.
     function(target_copy_slang_binaries TargetName)
         add_custom_command(
                 TARGET ${TargetName} POST_BUILD

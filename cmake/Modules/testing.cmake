@@ -1,59 +1,86 @@
 function(create_test test_name test_src)
-  if (NOT TARGET ${PROJECT_NAME}-tests)
-    add_custom_target(${PROJECT_NAME}-tests)
-  endif()
+    if (NOT TARGET ${PROJECT_NAME}-tests)
+        add_custom_target(${PROJECT_NAME}-tests)
+    endif ()
 
-  set(options "")
-  set(oneValueArgs RESOURCE_LOCK)
-  set(multiValueArgs LABELS)
-  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(target_exe "test_${PROJECT_NAME}_${test_name}")
 
-  add_executable(test_${PROJECT_NAME}_${test_name} ${test_src})
-  target_link_libraries(test_${PROJECT_NAME}_${test_name} PRIVATE doctest::doctest ${PROJECT_NAME}-lib)
+    set(options "")
+    set(oneValueArgs RESOURCE_LOCK)
+    set(multiValueArgs LABELS)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  add_test(NAME test_${PROJECT_NAME}_${test_name}
-           COMMAND test_${PROJECT_NAME}_${test_name})
+    add_executable(${target_exe} ${test_src})
+    target_link_libraries(${target_exe} PRIVATE doctest::doctest ${PROJECT_NAME}-lib)
 
-  add_dependencies(${PROJECT_NAME}-tests test_${PROJECT_NAME}_${test_name})
+    # Only copy DLLs on Windows. Linux uses RPATH automatically in the build tree.
+    if (WIN32)
+        add_custom_command(TARGET ${target_exe} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E
+                $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>,copy_if_different,true>
+                $<TARGET_RUNTIME_DLLS:${target_exe}>
+                $<$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>:$<TARGET_FILE_DIR:${target_exe}>>
+                COMMAND_EXPAND_LISTS
+        )
+    endif ()
 
-  if(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set_tests_properties(test_${PROJECT_NAME}_${test_name} PROPERTIES
-        WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+    add_test(NAME ${target_exe}
+            COMMAND ${target_exe})
+
+    add_dependencies(${PROJECT_NAME}-tests ${target_exe})
+
+    if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+        set_tests_properties(${target_exe} PROPERTIES
+                WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        )
+    endif ()
+
+    set(final_labels "${PROJECT_NAME}")
+    if (ARG_LABELS)
+        list(APPEND final_labels ${ARG_LABELS})
+    endif ()
+
+    set_tests_properties(${target_exe} PROPERTIES
+            LABELS "${final_labels}"
     )
-  endif()
 
-  set(final_labels "${PROJECT_NAME}")
-  if(ARG_LABELS)
-    list(APPEND final_labels ${ARG_LABELS})
-  endif()
-
-  set_tests_properties(test_${PROJECT_NAME}_${test_name} PROPERTIES
-      LABELS "${final_labels}"
-  )
-
-  if(ARG_RESOURCE_LOCK)
-    set_tests_properties(test_${PROJECT_NAME}_${test_name} PROPERTIES
-        RESOURCE_LOCK "${ARG_RESOURCE_LOCK}"
-    )
-  endif()
+    if (ARG_RESOURCE_LOCK)
+        set_tests_properties(${target_exe} PROPERTIES
+                RESOURCE_LOCK "${ARG_RESOURCE_LOCK}"
+        )
+    endif ()
 
 endfunction()
 
 
 function(integration_test test_name test_src)
-  if (NOT TARGET ${PROJECT_NAME}-tests)
-    add_custom_target(${PROJECT_NAME}-tests)
-  endif()
+    if (NOT TARGET ${PROJECT_NAME}-tests)
+        add_custom_target(${PROJECT_NAME}-tests)
+    endif ()
 
-  add_executable(ftest_${PROJECT_NAME}_${test_name} ${test_src})
-  target_link_libraries(ftest_${PROJECT_NAME}_${test_name} PRIVATE ${PROJECT_NAME}-lib)
-  add_dependencies(${PROJECT_NAME}-tests ftest_${PROJECT_NAME}_${test_name})
+    set(target_exe "ftest_${PROJECT_NAME}_${test_name}")
+
+    add_executable(${target_exe} ${test_src})
+    target_link_libraries(${target_exe} PRIVATE ${PROJECT_NAME}-lib)
+
+    if (WIN32)
+        add_custom_command(TARGET ${target_exe} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E
+                $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>,copy_if_different,true>
+                $<TARGET_RUNTIME_DLLS:${target_exe}>
+                $<$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>:$<TARGET_FILE_DIR:${target_exe}>>
+                COMMAND_EXPAND_LISTS
+        )
+    endif ()
+
+    add_dependencies(${PROJECT_NAME}-tests ${target_exe})
 endfunction()
 
+# Common testing setup
 if (BUILD_TESTING)
-  find_package(doctest CONFIG REQUIRED)
-  enable_testing()
-  find_program(MEMORYCHECK_COMMAND valgrind)
-  set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
-  include(CTest)
-endif()
+    find_package(doctest CONFIG REQUIRED)
+    enable_testing()
+    find_program(MEMORYCHECK_COMMAND valgrind)
+    set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
+    include(CTest)
+endif ()
