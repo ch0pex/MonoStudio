@@ -13,19 +13,7 @@ function(create_test test_name test_src)
     add_executable(${target_exe} ${test_src})
     target_link_libraries(${target_exe} PRIVATE doctest::doctest ${PROJECT_NAME}-lib)
 
-    # Only copy DLLs on Windows. Linux uses RPATH automatically in the build tree.
-    if (WIN32)
-        add_custom_command(TARGET ${target_exe} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E
-                $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>,copy_if_different,true>
-                $<TARGET_RUNTIME_DLLS:${target_exe}>
-                $<$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>:$<TARGET_FILE_DIR:${target_exe}>>
-                COMMAND_EXPAND_LISTS
-        )
-    endif ()
-
-    add_test(NAME ${target_exe}
-            COMMAND ${target_exe})
+    add_test(NAME ${target_exe} COMMAND ${target_exe})
 
     add_dependencies(${PROJECT_NAME}-tests ${target_exe})
 
@@ -62,16 +50,6 @@ function(integration_test test_name test_src)
 
     add_executable(${target_exe} ${test_src})
     target_link_libraries(${target_exe} PRIVATE ${PROJECT_NAME}-lib)
-
-    if (WIN32)
-        add_custom_command(TARGET ${target_exe} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E
-                $<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>,copy_if_different,true>
-                $<TARGET_RUNTIME_DLLS:${target_exe}>
-                $<$<BOOL:$<TARGET_RUNTIME_DLLS:${target_exe}>>:$<TARGET_FILE_DIR:${target_exe}>>
-                COMMAND_EXPAND_LISTS
-        )
-    endif ()
 
     add_dependencies(${PROJECT_NAME}-tests ${target_exe})
 endfunction()

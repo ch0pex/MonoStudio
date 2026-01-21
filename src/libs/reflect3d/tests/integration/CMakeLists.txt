@@ -1,6 +1,7 @@
 
 # Render
 integration_test(test_vk_triangle render/test_vk_triangle.cpp)
+target_copy_slang_binaries(ftest_reflect3d_test_vk_triangle)
 
 # Window
 integration_test(test_window_modes window/test_window_modes.cpp)

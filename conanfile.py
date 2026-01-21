@@ -37,7 +37,6 @@ class MonoGameRecipe(ConanFile):
         tc.user_presets_path = ""
         tc.generate()
 
-
     def build(self):
         cmake = CMake(self)
         cmake.configure()

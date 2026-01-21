@@ -127,7 +127,6 @@ if (SLANG_LIB_FOUND)
 
     add_library(slang SHARED IMPORTED GLOBAL)
 
-    # 1. Definimos el mapeo de configuraciones (Coverage/Sanitize -> Release)
     set_target_properties(slang PROPERTIES
             MAP_IMPORTED_CONFIG_COVERAGE "Release"
             MAP_IMPORTED_CONFIG_SANITIZE "Release"
@@ -137,7 +136,6 @@ if (SLANG_LIB_FOUND)
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         if (MSVC)
-            # FIX: Definimos explícitamente IMPORTED_LOCATION_RELEASE y IMPORTED_IMPLIB_RELEASE
             set_target_properties(
                     slang
                     PROPERTIES
@@ -153,7 +151,6 @@ if (SLANG_LIB_FOUND)
             message(FATAL_ERROR "Sorry, Slang does not provide precompiled binaries for MSYS/MinGW")
         endif ()
     elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        # FIX: Hacemos lo mismo para Linux (.so)
         set_target_properties(
                 slang
                 PROPERTIES
@@ -211,6 +208,7 @@ if (SLANG_LIB_FOUND)
                 COMMAND
                 ${CMAKE_COMMAND} -E copy_if_different
                 ${SLANG_RUNTIME_LIB}
+                ${Slang_ROOT}/bin/slang-glslang.dll
                 $<TARGET_FILE_DIR:${TargetName}>
                 COMMENT
                 "Copying '${SLANG_RUNTIME_LIB}' to '$<TARGET_FILE_DIR:${TargetName}>'..."
