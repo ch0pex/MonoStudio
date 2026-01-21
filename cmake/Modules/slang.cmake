@@ -203,6 +203,9 @@ if (SLANG_LIB_FOUND)
     set(SLANG_RUNTIME_LIB ${SLANG_RUNTIME_LIB} CACHE INTERNAL "Path to the Slang library binary")
 
     function(target_copy_slang_binaries TargetName)
+        if (NOT WIN32)
+            return()
+        endif ()
         add_custom_command(
                 TARGET ${TargetName} POST_BUILD
                 COMMAND
