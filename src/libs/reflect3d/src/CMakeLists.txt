@@ -1,4 +1,4 @@
-add_library(reflect3d-lib INTERFACE)
+add_library(reflect3d-lib STATIC)
 
 target_sources(
         reflect3d-lib
@@ -59,9 +59,16 @@ target_sources(
         reflect3d/render/viewport.hpp
 )
 
+target_sources(reflect3d-lib
+        PRIVATE
+
+        # Window
+        reflect3d/window/utils/context.cpp
+)
+
 target_link_libraries(
         reflect3d-lib
-        INTERFACE
+        PUBLIC
         glfw
         Vulkan::Loader
         glm::glm
@@ -72,7 +79,7 @@ target_link_libraries(
 
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)
 
-target_compile_definitions(reflect3d-lib INTERFACE
+target_compile_definitions(reflect3d-lib PUBLIC
         VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
         VULKAN_HPP_NO_STRUCT_CONSTRUCTORS=1
 )

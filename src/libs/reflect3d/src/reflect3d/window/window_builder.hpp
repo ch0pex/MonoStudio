@@ -29,7 +29,7 @@ public:
   using native_type = GLFWwindow*;
 
   explicit WindowBuilder(config::Window const& config = {}) {
-    GlfwContext::init();
+    platform::init();
 
     // Handle must be created after GLFW context
     handle = detail::native_window(config); // NOLINT

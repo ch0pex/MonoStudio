@@ -28,7 +28,7 @@ inline void setup_validation_layers(raii::Context const& context, core::Instance
  * @return A NativeInstance handle representing the created Vulkan instance.
  */
 inline raii::Instance create_instance(raii::Context const& context) {
-  GlfwContext::init();
+  platform::init();
   static constexpr core::ApplicationInfo app_info {
     .pApplicationName   = "Reflect3D Application",
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),

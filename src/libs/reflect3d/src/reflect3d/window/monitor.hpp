@@ -47,7 +47,7 @@ public:
   // --- Factory methods ---
 
   static std::optional<Monitor> from_id(MonitorId const monitor_id) {
-    GlfwContext::init();
+    platform::init();
     auto const monitors = detail::get_native_monitors();
 
     if (monitor_id >= monitors.size()) {
@@ -58,13 +58,13 @@ public:
   }
 
   static Monitor primary() {
-    GlfwContext::init();
+    platform::init();
     auto* monitor = glfwGetPrimaryMonitor();
     return Monitor {monitor};
   }
 
   static std::vector<Monitor> get_all() {
-    GlfwContext::init();
+    platform::init();
     return detail::get_native_monitors() //
            | std::views::transform([](NativeMonitor monitor) { return Monitor {monitor}; }) //
            | std::ranges::to<std::vector<Monitor>>();
