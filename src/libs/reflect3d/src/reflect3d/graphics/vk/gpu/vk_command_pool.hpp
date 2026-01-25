@@ -1,8 +1,9 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
+#include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_command_buffer.hpp"
-#include "reflect3d/graphics/vk/vk_logical_device.hpp"
 
 #include <mono/containers/stable_vector.hpp>
 
@@ -10,9 +11,6 @@
 #include <ranges>
 
 namespace rf3d::gfx::vk {
-
-namespace details { } // namespace details
-//
 
 class CommandPool {
 public:
@@ -26,10 +24,12 @@ public:
     allocate_command_buffers(device, 1);
   }
 
-  [[nodiscard]] buffer_type const& next_command_buffer() {
+  [[nodiscard]] FrameIndex next_frame() {
     current_buffer = (current_buffer + 1U) % buffers.size();
-    return buffers.at(current_buffer);
+    return current_buffer;
   }
+
+  [[nodiscard]] buffer_type const& command_buffer() { return buffers.at(current_buffer); }
 
   void allocate_command_buffers(device_type const& device, std::uint32_t const count) {
     core::CommandBufferAllocateInfo alloc_info {

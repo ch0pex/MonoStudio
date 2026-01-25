@@ -7,7 +7,7 @@
 
 namespace rf3d::gfx::vk {
 
-class PsoManager {
+class PsoCache {
   // public:
   //   using pso_id_type = std::size_t;
   //   using pso_type    = Pipeline;

@@ -1,10 +1,9 @@
 #pragma once
 
 //
-#include "reflect3d/graphics/vk/vk_gpu_families_detail.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_gpu_families_detail.hpp"
 
 //
-#include <optional>
 #include <ranges>
 #include <unordered_map>
 

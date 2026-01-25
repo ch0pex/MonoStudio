@@ -1,138 +1,57 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
-#include "reflect3d/graphics/vk/vk_command_pool.hpp"
-#include "reflect3d/graphics/vk/vk_gpu_queues.hpp"
-#include "reflect3d/graphics/vk/vk_logical_device.hpp"
-#include "reflect3d/graphics/vk/vk_physical_device.hpp"
-#include "reflect3d/graphics/vk/vk_pso.hpp"
-#include "reflect3d/graphics/vk/vk_pso_builder.hpp"
-#include "reflect3d/graphics/vk/vk_swapchain.hpp"
-#include "reflect3d/window/utils/resolution.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
-#include <assets_path.hpp>
+//
+
+#include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
-#include <vulkan/vulkan_raii.hpp>
+
+//
+#include <assets_path.hpp>
+
+//
+#include <cassert>
 #include <vulkan/vulkan_structs.hpp>
 
-namespace rf3d::gfx::vk {
+namespace rf3d::gfx::vk::gpu {
 
-class Instance; // forward declaration
+// ----------------------------------------------
+// --- Gpu frame commands and synchronization ---
+// ----------------------------------------------
 
-struct GpuDevices {
-  using logical_type  = LogicalDevice;
-  using physical_type = PhysicalDevice;
+void wait_idle();
 
-  explicit GpuDevices(physical_type&& physical_device) :
-    physical(std::move(physical_device)), //
-    logical(physical.create_logical_device()) //
-  { }
+FrameIndex next_frame();
 
-  physical_type physical;
-  logical_type logical;
-};
+CommandBuffer const& record_commands(
+    CommandBuffer::begin_info const& begin_info, //
+    std::function<void(CommandBuffer const&)>&& command_recording_func
+);
 
-/**
- * @brief Represents a GPU device along with its logical device and associated queues.
- *
- * In reflect3d, a Gpu represents a physical GPU device along with its logical device and associated queues.
- * User can specify which queues they want to use by providing the corresponding queue types as template parameters.
- * If there is not a gpu supporting the requested queues construction will raise an exception.
- *
- * @tparam Types Variadic template parameter representing the types of queues to be used with this GPU.
- */
-template<Queue... Types>
-  requires(sizeof...(Types) >= 1)
-class Gpu {
-public:
-  using queues_type  = Queues<Types...>;
-  using devices_type = GpuDevices;
+void submit_work(core::SubmitInfo const& info);
 
-  Gpu( //
-      devices_type::physical_type&& physical_device, //
-      mono::PassKey<Instance> key [[maybe_unused]]
-  ) :
-    devices(std::move(physical_device)), //
-    gpu_queues(devices.logical, devices.physical.queue_creation_info()), //
-    command_pool(
-        devices.logical,
-        CommandPool::config_type {
-          .flags = core::CommandPoolCreateFlagBits::eResetCommandBuffer, //
-          .queueFamilyIndex =
-              devices.physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex, //
-        }
-    ) { }
+mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
 
-  ~Gpu() {
-    LOG_INFO("Destroying Gpu");
-    wait_idle();
-  }
+// --------------------------------------
+// --- Gpu resource factory functions ---
+// --------------------------------------
 
-  void wait_idle() const { devices.logical.wait_idle(); }
+raii::ShaderModule make_shader_module(core::ShaderModuleCreateInfo const& module_info);
 
-  Swapchain create_swapchain(raii::SurfaceKHR&& surface, Resolution const& resolution) {
-    auto const swapchain_config = create_swapchain_config(
-        surface, //
-        devices.physical.get_surface_info(*surface), //
-        resolution
-    );
+raii::ImageView make_image_view(core::ImageViewCreateInfo const& view_info);
 
-    auto swapchain = Swapchain(*devices.logical, std::move(surface), swapchain_config);
+raii::SwapchainKHR make_swapchain(core::SwapchainCreateInfoKHR const& swapchain_info);
 
-    // Provisional pipeline for testing
-    auto const assets_path = std::filesystem::path {mono::assets_path};
-    auto const shader_path = assets_path / "shaders" / "shader.slang";
+raii::Semaphore make_semaphore(core::SemaphoreCreateInfo const& semaphore_info = {});
 
-    auto shader = devices.logical.create_shader(load_shader_bytecode(shader_path));
+raii::Pipeline make_graphics_pipeline(core::GraphicsPipelineCreateInfo const& pipeline_info);
 
-    auto pso = PipelineBuilder({.color_attachment_format = swapchain_config.imageFormat}) //
-                   .vertex_stage(shader)
-                   .fragment_stage(shader)
-                   .build(*devices.logical);
+raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& layout_info);
 
+SurfaceInfo get_surface_info(raii::SurfaceKHR const& surface);
 
-    psos.insert({0, std::move(pso)});
-
-    return swapchain;
-  }
-
-  [[nodiscard]] std::tuple<std::uint32_t, CommandPool::buffer_type const&> command_buffer() {
-    auto const& buffer = command_pool.next_command_buffer();
-    auto const& fence  = command_pool.fence();
-
-    (*devices.logical).waitForFences(*fence, core::True, defaults::wait_timeout) >> check::error;
-    (*devices.logical).resetFences(*fence);
-
-
-    return {command_pool.current_frame_index(), buffer};
-  }
-
-  template<Queue QueueType>
-  void submit_work(core::SubmitInfo const& info) {
-    gpu_queues.template get<QueueType>().submit(info, command_pool.fence());
-  }
-
-  void present(core::PresentInfoKHR const& present_info)
-    requires(mono::meta::in_pack<PresentQueue, Types...>)
-  {
-    gpu_queues.present().presentKHR(present_info) >> check::error;
-  }
-
-  [[nodiscard]] Pipeline const& pipeline() const { return psos.at(0); }
-
-private:
-  devices_type devices;
-  queues_type gpu_queues;
-  CommandPool command_pool;
-  std::unordered_map<std::uint32_t, Pipeline> psos;
-};
-
-using HeadlessGraphicsGpu = Gpu<GraphicQueue>;
-
-using ComputeGpu = Gpu<ComputeQueue>;
-
-using GraphicsGpu = Gpu<GraphicQueue, PresentQueue>;
-
-
-} // namespace rf3d::gfx::vk
+} // namespace rf3d::gfx::vk::gpu

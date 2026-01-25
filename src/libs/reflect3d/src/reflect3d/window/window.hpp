@@ -1,13 +1,14 @@
 #pragma once
 
-#include <glm/fwd.hpp>
-#include <mono/logging/logger.hpp>
-#include <mono/misc/passkey.hpp>
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window_types.hpp"
 
+#include <mono/logging/logger.hpp>
+#include <mono/misc/passkey.hpp>
+
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 namespace rf3d {
 
@@ -99,10 +100,6 @@ public:
 
   void make_context_current() const { glfwMakeContextCurrent(handle); }
 
-  template<typename Renderder> // TODO define better this type with HRI concept
-  auto create_surface(Renderder& renderer) const {
-    return renderer.create_surface(handle);
-  }
 
   // void resolution(resolution_type const resolution) const {
   //   int width  = 0;
@@ -154,6 +151,8 @@ public:
     monitor.attach_window(handle);
     glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
   }
+
+  [[nodiscard]] native_type native_handle() const noexcept { return handle; }
 
 private:
   native_type handle {};

@@ -2,6 +2,7 @@
 
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_pso.hpp"
 #include "reflect3d/graphics/vk/vk_shader.hpp"
 
@@ -12,7 +13,7 @@ inline std::string const fragment_entry_point_name = "main"; // NOLINT
 
 
 struct FixedFunctionsConfig {
-  core::Format color_attachment_format = core::Format::eB8G8R8A8Unorm;
+  core::Format color_attachment_format = core::Format::eB8G8R8A8Srgb;
   core::Format depth_attachment_format = core::Format::eD32Sfloat;
 };
 
@@ -65,7 +66,7 @@ public:
     return *this;
   }
 
-  Pipeline build(raii::Device const& device) {
+  Pipeline build() {
     core::PipelineViewportStateCreateInfo viewport_state {.viewportCount = 1, .scissorCount = 1};
 
     std::vector dynamic_states_list = {
@@ -82,7 +83,7 @@ public:
       .pDynamicStates    = dynamic_states_list.data(),
     };
 
-    raii::PipelineLayout pipeline_layout {device, layout_info};
+    raii::PipelineLayout pipeline_layout = gpu::make_pipeline_layout(layout_info);
 
     core::StructureChain<pipeline_info_type, rendering_info_type> pipeline_info_chain {
       {
@@ -107,7 +108,7 @@ public:
 
     Pipeline pipeline {
       std::move(pipeline_layout), //
-      {device, nullptr, pipeline_info_chain.get<pipeline_info_type>()} //
+      gpu::make_graphics_pipeline(pipeline_info_chain.get<pipeline_info_type>()) //
     };
 
     *this = PipelineBuilder {}; // reset builder state

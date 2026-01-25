@@ -1,9 +1,8 @@
 #pragma once
 
 #include "mono/meta/concepts.hpp"
-#include "reflect3d/graphics/vk/vk_gpu_families.hpp"
-#include "reflect3d/graphics/vk/vk_logical_device.hpp"
-#include "reflect3d/graphics/vk/vk_physical_device.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_gpu_families.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 
 #include <mono/misc/passkey.hpp>
 
@@ -16,7 +15,6 @@ namespace rf3d::gfx::vk {
 template<typename T>
 concept Queue =
     std::is_base_of_v<raii::Queue, T> and std::constructible_from<T, LogicalDevice const&, GpuQueueFamilies const&>;
-
 
 struct GraphicQueue : raii::Queue {
   GraphicQueue(LogicalDevice const& device, GpuQueueFamilies const& queue_families) :

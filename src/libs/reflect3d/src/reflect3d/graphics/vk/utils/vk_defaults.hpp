@@ -57,7 +57,7 @@ inline constexpr core::PipelineLayoutCreateInfo pipeline_layout_info {
   .pushConstantRangeCount = 0,
 };
 
-constexpr core::Rect2D render_area(Resolution const& resolution) {
+constexpr core::Rect2D render_area(Resolution const resolution) {
   return core::Rect2D {
     .offset = core::Offset2D {.x = 0, .y = 0},
     .extent = core::Extent2D {
@@ -67,7 +67,7 @@ constexpr core::Rect2D render_area(Resolution const& resolution) {
   };
 }
 
-constexpr core::Viewport viewport(Resolution const& resolution) {
+constexpr core::Viewport viewport(Resolution const resolution) {
   return {
     .x        = 0.0F,
     .y        = 0.0F,

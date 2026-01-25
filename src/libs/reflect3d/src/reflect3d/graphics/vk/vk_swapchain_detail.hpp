@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
@@ -37,7 +38,7 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
 }
 
 inline core::Extent2D
-choose_swap_extent(Resolution const& resolution, core::SurfaceCapabilitiesKHR const& capabilities) {
+choose_swap_extent(Resolution const resolution, core::SurfaceCapabilitiesKHR const& capabilities) {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
   }
@@ -57,7 +58,6 @@ choose_swap_extent(Resolution const& resolution, core::SurfaceCapabilitiesKHR co
 }
 
 inline std::vector<Image> get_images(
-    raii::Device const& device, //
     raii::SwapchainKHR const& swapchain, //
     core::Format const format //
 ) {
@@ -75,7 +75,7 @@ inline std::vector<Image> get_images(
 
   auto build_image = [&](core::Image const& img) { //
     view_info.image = img;
-    return Image {img, Image::view_type {device, view_info}};
+    return Image {img, gpu::make_image_view(view_info)};
   };
 
   return swapchain.getImages() //

@@ -5,5 +5,6 @@ macro(add_target_assets_path TARGET_NAME)
     "${CMAKE_SOURCE_DIR}/cmake/src/assets_path.hpp.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/assets_path.hpp"
 )
-  target_include_directories(${TARGET_NAME} INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  # TODO check if is interface target
+  target_include_directories(${TARGET_NAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/generated")
 endmacro()

@@ -8,7 +8,6 @@
 #include <GLFW/glfw3.h>
 
 //
-#include <cstdint>
 #include <string>
 #include <unordered_map>
 

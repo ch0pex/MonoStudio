@@ -1,8 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_validation_layers.hpp"
+#include "reflect3d/graphics/vk/instance/vk_validation_layers.hpp"
 
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>

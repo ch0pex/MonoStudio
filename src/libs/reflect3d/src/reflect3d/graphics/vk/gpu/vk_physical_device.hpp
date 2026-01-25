@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/vk_gpu_families.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_gpu_families.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 

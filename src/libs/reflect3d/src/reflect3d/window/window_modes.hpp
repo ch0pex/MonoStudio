@@ -1,12 +1,13 @@
 #pragma once
 
-#include "mono/logging/logger.hpp"
 #include "reflect3d/window/monitor.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/utils/window_error.hpp"
 #include "reflect3d/window/window.hpp"
 #include "reflect3d/window/window_config.hpp"
 #include "reflect3d/window/window_types.hpp"
+
+#include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
 

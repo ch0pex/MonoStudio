@@ -1,48 +1,24 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/vk_gpu.hpp"
-#include "reflect3d/graphics/vk/vk_instance_profiles.hpp"
-#include "reflect3d/graphics/vk/vk_physical_device_detail.hpp"
-#include "reflect3d/graphics/vk/vk_validation_layers.hpp"
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/window/window_types.hpp"
 
-#include <mono/meta/concepts.hpp>
+namespace rf3d::gfx::vk::instance {
 
-namespace rf3d::gfx::vk {
+/**
+ * Creates a Vulkan surface for the given native window.
+ *
+ * @param window The native window handle.
+ * @return A raii::SurfaceKHR representing the created Vulkan surface.
+ */
+[[nodiscard]] raii::SurfaceKHR create_surface(NativeWindow window);
 
-class Instance {
-public:
-  /*********************
-   *    Type Traits    *
-   ********************/
+/**
+ * Retrieves the list of physical devices available on the system.
+ *
+ * @return A reference to a raii::PhysicalDevices object containing the physical devices.
+ */
+[[nodiscard]] raii::PhysicalDevices const& physical_devices();
 
-  using underlying_type = std::conditional_t<enable_validation_layers, detail::DebugInstance, detail::ReleaseInstance>;
-  using context_type    = raii::Context;
-  using surface_type    = raii::SurfaceKHR;
 
-  /**************************
-   *    Member functions    *
-   **************************/
-
-  [[nodiscard]] surface_type create_surface(NativeWindow const window) const {
-    core::SurfaceKHR::NativeType surface = nullptr;
-
-    if (glfwCreateWindowSurface(*instance.handle, window, nullptr, &surface) != VK_SUCCESS) {
-      throw std::runtime_error("Failed to create window surface");
-    }
-
-    return surface_type {instance.handle, surface};
-  }
-
-  template<typename GpuType = GraphicsGpu>
-    requires mono::meta::specialization_of<GpuType, Gpu>
-  [[nodiscard]] GpuType create_gpu() const {
-    return {detail::pick_best_physical_device(instance.handle), mono::PassKey<Instance> {}};
-  }
-
-private:
-  context_type context;
-  underlying_type instance {context};
-};
-
-} // namespace rf3d::gfx::vk
+} // namespace rf3d::gfx::vk::instance

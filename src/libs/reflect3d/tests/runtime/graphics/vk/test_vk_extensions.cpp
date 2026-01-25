@@ -1,4 +1,4 @@
-#include <reflect3d/graphics/vk/vk_extensions.hpp>
+#include <reflect3d/graphics/vk/instance/vk_extensions.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>

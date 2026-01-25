@@ -3,10 +3,8 @@
 create_test(input test_input.cpp)
 
 # Graphics
-create_test(vk_instance graphics/vk/test_vk_instance.cpp LABELS "graphics")
 create_test(vk_extensions graphics/vk/test_vk_extensions.cpp LABELS "graphics")
 create_test(vk_validation_layers graphics/vk/test_vk_validation_layers.cpp LABELS "graphics")
-create_test(vk_gpu graphics/vk/test_vk_gpu.cpp LABELS "graphics")
 create_test(shader_compiler graphics/shaders/test_shader_compiler.cpp)
 target_copy_slang_binaries(test_reflect3d_shader_compiler)
 

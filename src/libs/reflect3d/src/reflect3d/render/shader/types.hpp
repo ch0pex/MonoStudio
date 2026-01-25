@@ -1,7 +1,7 @@
 #pragma once
 
+#include <span>
 #include <string>
-#include <vector>
 
 namespace rf3d::gfx::shader {
 

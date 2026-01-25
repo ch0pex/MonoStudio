@@ -26,4 +26,20 @@ private:
   view_type image_view;
 };
 
+class ImageProxy {
+public:
+  ImageProxy(Image& img) : image(&img) { }
+
+  Image* operator->() noexcept { return image; }
+
+  Image const* operator->() const noexcept { return image; }
+
+  Image& operator*() noexcept { return *image; }
+
+  Image const& operator*() const noexcept { return *image; }
+
+private:
+  Image* image;
+};
+
 } // namespace rf3d::gfx::vk

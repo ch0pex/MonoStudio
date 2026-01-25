@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vulkan/vulkan_raii.hpp>
+#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_shader.hpp"
 
 namespace rf3d::gfx::vk {
 
@@ -24,7 +23,25 @@ public:
 
   void wait_idle() const { handle.waitIdle(); }
 
-  Shader create_shader(Shader::byte_code_type&& bytecode) const { return Shader(handle, std::move(bytecode)); }
+  void wait_for_fences(std::span<core::Fence const> fences, bool wait_all, std::chrono::milliseconds timeout) const {
+    handle.waitForFences(
+        fences, //
+        wait_all ? core::True : core::False, //
+        static_cast<std::uint64_t>(timeout.count())
+    ) >> check::error;
+  }
+
+  void wait_fence(core::Fence const& fence, bool wait_all, std::chrono::milliseconds timeout) const {
+    handle.waitForFences(
+        fence, //
+        wait_all ? core::True : core::False, //
+        static_cast<std::uint64_t>(timeout.count())
+    ) >> check::error;
+  }
+
+  void reset_fences(std::span<core::Fence const> fences) const { handle.resetFences(fences); }
+
+  void reset_fence(core::Fence const& fence) const { handle.resetFences(fence); }
 
   native_type const& operator*() const noexcept { return handle; }
 

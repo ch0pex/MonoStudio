@@ -1,7 +1,7 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-#include "reflect3d/graphics/vk/vk_logical_device.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -29,7 +29,7 @@ public:
 
   CommandBuffer const& record_rendering( // NOLINT
       render_info const& render_info, //
-      std::function<void(CommandBuffer const&)> const& record_function //
+      auto const& record_function //
   ) const {
     cmd_buffer.beginRendering(render_info);
     record_function(*this);

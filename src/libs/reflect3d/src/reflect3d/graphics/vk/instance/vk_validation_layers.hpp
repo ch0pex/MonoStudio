@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/instance/vk_debug_messenger.hpp"
 #include "reflect3d/graphics/vk/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
@@ -9,7 +10,6 @@
 
 // STD library
 #include <algorithm>
-#include <cstdint>
 #include <ranges>
 #include <string_view>
 #include <vector>
@@ -97,6 +97,19 @@ inline std::vector<char const*> get_validation_layers(raii::Context const& conte
   return validation_layers //
          | std::views::transform([](auto const& layer) { return layer.data(); }) //
          | std::ranges::to<std::vector>();
+}
+
+/**
+ * Setups validation layers and debug utils info
+ */
+void setup_validation_layers(raii::Context const& context, core::InstanceCreateInfo& create_info) {
+  if constexpr (enable_validation_layers) {
+    // This needs to survive until vkCreateInstance is invoked thats why it has static storage
+    static auto const validation_layers = get_validation_layers(context);
+    create_info.enabledLayerCount       = validation_layers.size();
+    create_info.ppEnabledLayerNames     = not validation_layers.empty() ? validation_layers.data() : nullptr;
+    create_info.pNext                   = &debug_utils_messenger_create_info;
+  }
 }
 
 } // namespace rf3d::gfx::vk
