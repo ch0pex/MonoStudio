@@ -25,6 +25,7 @@ class MonoGameRecipe(ConanFile):
         "glfw/*:with_wayland": True,
         "glad/*:gl_version": "4.5",
         "glad/*:gl_profile": "core",
+        "boost/*:without_cobalt": True
     }
 
     def layout(self):

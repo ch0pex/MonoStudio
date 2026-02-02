@@ -6,6 +6,20 @@
   },
   "configurePresets": [
     {
+      "name": "base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_CXX_EXTENSIONS": "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CONAN_INSTALL_ARGS": "--build=missing;-u",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
+        "BUILD_TESTING": true
+      }
+    },
+    {
       "name": "msvc",
       "inherits": "base",
       "generator": "Ninja Multi-Config",
@@ -30,21 +44,7 @@
       }
     },
     {
-      "name": "base",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "26",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_EXTENSIONS": "OFF",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CONAN_INSTALL_ARGS": "--build=missing;-u",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
-        "BUILD_TESTING": true
-      }
-    },
-    {
-      "name": "unix-base",
+      "name": "base-gcc",
       "inherits": "base",
       "hidden": true,
       "generator": "Ninja",
@@ -54,155 +54,120 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body -Wno-deprecated-variadic-comma-omission"
       }
     },
     {
-      "name": "mixin-flags-release",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3 -DNDEBUG"
-      }
-    },
-    {
-      "name": "mixin-flags-sanitize",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
-        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined"
-      }
-    },
-    {
-      "name": "mixin-flags-coverage",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
-        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage"
-      }
-    },
-    {
       "name": "Debug-gcc",
-      "inherits": "unix-base",
+      "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG"
       }
     },
     {
       "name": "Release-gcc",
-      "inherits": [
-        "unix-base",
-        "mixin-flags-release"
-      ],
+      "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/release",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3 -DNDEBUG"
       }
     },
     {
       "name": "RelWithDebInfo-gcc",
-      "inherits": [
-        "unix-base",
-        "mixin-flags-release"
-      ],
+      "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/relwithdebinfo",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
       "name": "Sanitize-gcc",
-      "inherits": [
-        "unix-base",
-        "mixin-flags-sanitize"
-      ],
+      "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/sanitize",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_BUILD_TYPE": "Sanitize",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release"
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release",
+        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined"
       }
     },
     {
       "name": "Coverage-gcc",
       "inherits": [
-        "unix-base",
-        "mixin-flags-coverage"
+        "base-gcc"
       ],
       "binaryDir": "${sourceDir}/build/gcc/coverage",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_BUILD_TYPE": "Coverage",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
         "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
       }
     },
     {
-      "name": "Debug-clang",
-      "inherits": "unix-base",
-      "binaryDir": "${sourceDir}/build/clang/debug",
+      "name": "base-clang",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
       }
     },
     {
+      "name": "Debug-clang",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build/clang/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG"
+      }
+    },
+    {
       "name": "Release-clang",
-      "inherits": [
-        "unix-base",
-        "mixin-flags-release"
-      ],
+      "inherits": "base-clang",
       "binaryDir": "${sourceDir}/build/clang/release",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
+        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3 -DNDEBUG"
       }
     },
     {
       "name": "RelWithDebInfo-clang",
       "inherits": [
-        "unix-base",
-        "mixin-flags-release"
+        "base-clang"
       ],
       "binaryDir": "${sourceDir}/build/clang/relwithdebinfo",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
+        "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG"
       }
     },
     {
       "name": "Sanitize-clang",
       "inherits": [
-        "unix-base",
-        "mixin-flags-sanitize"
+        "base-clang"
       ],
       "binaryDir": "${sourceDir}/build/clang/sanitize",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Sanitize",
-        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
-        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
+        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug"
       }
     }
   ],

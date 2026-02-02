@@ -36,8 +36,8 @@ public:
 
     auto image = opt_image.value();
 
-    auto const& commands = gpu::record_commands({}, [this, &image, &surface, frame_index](CommandBuffer const& cmd) {
-      std::vector const attachment_info = {defaults::attachament_info(image->view(), defaults::clear_color)};
+    auto const commands = gpu::record_commands({}, [this, &image, &surface](CommandBuffer const& cmd) {
+      std::array const attachment_info = {defaults::attachament_info(image->view(), defaults::clear_color)};
 
       transition_image_layout(cmd, *image, gfx::vk::rendering_layout);
 
@@ -57,19 +57,14 @@ public:
       transition_image_layout(cmd, *image, gfx::vk::present_layout);
     });
 
+    // gpu::submit_work(wait_semaphores, command_buffers, signal_semaphores);
 
-    static constexpr core::PipelineStageFlags mask = core::PipelineStageFlagBits::eColorAttachmentOutput;
-    core::SubmitInfo const submit_info {
-      .waitSemaphoreCount   = 1,
-      .pWaitSemaphores      = std::addressof(*surface.present_semaphore(frame_index)),
-      .pWaitDstStageMask    = std::addressof(mask),
-      .commandBufferCount   = 1,
-      .pCommandBuffers      = std::addressof(**commands),
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores    = std::addressof(*surface.render_semaphore()),
-    };
+    gpu::submit_work(
+        {std::addressof(*surface.present_semaphore(frame_index)), 1}, //
+        {std::addressof(commands), 1}, //
+        {std::addressof(*surface.render_semaphore()), 1}
+    );
 
-    gpu::submit_work(submit_info);
     surface.present();
   }
 

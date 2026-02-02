@@ -39,8 +39,8 @@ public:
    *********************/
 
   explicit PipelineBuilder(FixedFunctionsConfig const& config = {}) :
-    color_format(config.color_attachment_format), //
-    depth_format(config.depth_attachment_format) //
+    color_format(config.color_attachment_format) //
+  // depth_format(config.depth_attachment_format) //
   { }
 
   /**************************
@@ -125,7 +125,7 @@ private:
   color_blending_info_type color_blending  = defaults::color_blending;
   layout_info_type layout_info             = defaults::pipeline_layout_info;
   core::Format color_format                = core::Format::eB8G8R8A8Unorm;
-  core::Format depth_format                = core::Format::eD32Sfloat;
+  // core::Format depth_format                = core::Format::eD32Sfloat;
 };
 
 } // namespace rf3d::gfx::vk

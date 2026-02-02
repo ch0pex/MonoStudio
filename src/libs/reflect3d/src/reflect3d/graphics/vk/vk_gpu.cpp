@@ -20,6 +20,7 @@
 
 //
 #include <cassert>
+#include <vulkan/vulkan_handles.hpp>
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -104,20 +105,39 @@ FrameIndex next_frame() {
   return frame_index;
 }
 
-CommandBuffer const& record_commands(
+core::CommandBuffer record_commands(
     CommandBuffer::begin_info const& begin_info, //
-    std::function<void(CommandBuffer const&)>&& command_recording_func //
+    std::function<void(CommandBuffer const&)> const& command_recording_func //
 ) {
   auto& gpu          = get_gpu();
   auto const& buffer = gpu.command_pool.command_buffer();
 
   gpu.logical.reset_fence(*gpu.command_pool.fence());
-  buffer.record(begin_info, std::move(command_recording_func));
+  buffer.record(begin_info, command_recording_func);
 
-  return buffer;
+  return **buffer;
 }
 
-void submit_work(core::SubmitInfo const& info) {
+// void submit_work(core::SubmitInfo const& info) {
+//   get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
+// }
+
+void submit_work(
+    std::span<core::Semaphore const> wait_semaphores, //
+    std::span<core::CommandBuffer const> command_buffers, //
+    std::span<core::Semaphore const> signal_semaphores //
+) {
+  static constexpr core::PipelineStageFlags mask = core::PipelineStageFlagBits::eColorAttachmentOutput;
+  core::SubmitInfo const info {
+    .waitSemaphoreCount   = static_cast<uint32_t>(wait_semaphores.size()),
+    .pWaitSemaphores      = wait_semaphores.data(),
+    .pWaitDstStageMask    = std::addressof(mask),
+    .commandBufferCount   = static_cast<uint32_t>(command_buffers.size()),
+    .pCommandBuffers      = command_buffers.data(),
+    .signalSemaphoreCount = static_cast<uint32_t>(signal_semaphores.size()),
+    .pSignalSemaphores    = signal_semaphores.data(),
+  };
+
   get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
 }
 

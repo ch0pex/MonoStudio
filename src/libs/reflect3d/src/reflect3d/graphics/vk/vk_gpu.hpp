@@ -15,6 +15,7 @@
 
 //
 #include <cassert>
+#include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk::gpu {
@@ -27,12 +28,16 @@ void wait_idle();
 
 FrameIndex next_frame();
 
-CommandBuffer const& record_commands(
+core::CommandBuffer record_commands(
     CommandBuffer::begin_info const& begin_info, //
-    std::function<void(CommandBuffer const&)>&& command_recording_func
+    std::function<void(CommandBuffer const&)> const& command_recording_func
 );
 
-void submit_work(core::SubmitInfo const& info);
+void submit_work(
+    std::span<core::Semaphore const> wait_semaphores, //
+    std::span<core::CommandBuffer const> command_buffers, //
+    std::span<core::Semaphore const> signal_semaphores //
+);
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
 

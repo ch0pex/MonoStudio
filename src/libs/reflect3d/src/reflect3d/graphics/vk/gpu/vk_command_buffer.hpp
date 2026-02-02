@@ -93,6 +93,14 @@ public:
     return *this;
   }
 
+  // core::SubmitInfo const submit_info( // NOLINT
+  //     std::uint32_t const wait_semaphore_count, //
+  //     core::Semaphore const* p_wait_semaphores, //
+  //     core::PipelineStageFlags const* p_wait_dst_stage_mask, //
+  //     std::uint32_t const command_buffer_count, //
+  //     core::CommandBuffer const* p_command_buffers, //
+  //     std::uint32_t const signal_semaphore_count, //
+
   native_type const& operator*() const noexcept { return cmd_buffer; }
 
 private:

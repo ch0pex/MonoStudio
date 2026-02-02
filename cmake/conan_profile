@@ -1,4 +1,4 @@
 [settings]
 compiler.cppstd=23
-build_type=RelWithDebInfo
+compiler.libcxx=libstdc++11
 arch=x86_64
