@@ -96,8 +96,8 @@ void wait_idle() { //
 }
 
 FrameIndex next_frame() {
-  auto& gpu        = get_gpu();
-  auto frame_index = gpu.command_pool.next_frame();
+  auto& gpu              = get_gpu();
+  auto const frame_index = gpu.command_pool.next_frame();
 
   auto const& fence = gpu.command_pool.fence();
   gpu.logical.wait_fence(*fence, true, std::chrono::milliseconds {defaults::wait_timeout});
@@ -118,10 +118,6 @@ core::CommandBuffer record_commands(
   return **buffer;
 }
 
-// void submit_work(core::SubmitInfo const& info) {
-//   get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
-// }
-
 void submit_work(
     std::span<core::Semaphore const> wait_semaphores, //
     std::span<core::CommandBuffer const> command_buffers, //
@@ -129,12 +125,12 @@ void submit_work(
 ) {
   static constexpr core::PipelineStageFlags mask = core::PipelineStageFlagBits::eColorAttachmentOutput;
   core::SubmitInfo const info {
-    .waitSemaphoreCount   = static_cast<uint32_t>(wait_semaphores.size()),
+    .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphores.size()),
     .pWaitSemaphores      = wait_semaphores.data(),
     .pWaitDstStageMask    = std::addressof(mask),
-    .commandBufferCount   = static_cast<uint32_t>(command_buffers.size()),
+    .commandBufferCount   = static_cast<std::uint32_t>(command_buffers.size()),
     .pCommandBuffers      = command_buffers.data(),
-    .signalSemaphoreCount = static_cast<uint32_t>(signal_semaphores.size()),
+    .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphores.size()),
     .pSignalSemaphores    = signal_semaphores.data(),
   };
 
@@ -142,7 +138,7 @@ void submit_work(
 }
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info) {
-  auto result = get_gpu().queues.present().presentKHR(present_info);
+  auto const result = get_gpu().queues.present().presentKHR(present_info);
   if (result == core::Result::eSuboptimalKHR or result == core::Result::eErrorOutOfDateKHR) {
     return mono::err::unexpected("Swapchain is out of date or suboptimal");
   }

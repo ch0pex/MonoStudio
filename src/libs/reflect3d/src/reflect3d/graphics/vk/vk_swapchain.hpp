@@ -27,7 +27,7 @@ public:
   using image_type     = Image;
   using semaphore_type = raii::Semaphore;
 
-  Swapchain(config_type const& config) :
+  explicit Swapchain(config_type const& config) :
     handle(gpu::make_swapchain(config)), //
     extent(config.imageExtent), //
     images(detail::get_images(handle, config.imageFormat)) //
@@ -75,11 +75,20 @@ public:
     };
   }
 
-  Resolution resolution() const noexcept {
+  [[nodiscard]] Resolution resolution() const noexcept {
     return Resolution {
       .width  = static_cast<std::uint16_t>(extent.width),
       .height = static_cast<std::uint16_t>(extent.height),
     };
+  }
+
+  void recreate(config_type config) {
+    config.oldSwapchain    = *handle;
+    native_type new_handle = gpu::make_swapchain(config);
+    handle                 = std::move(new_handle);
+    extent                 = config.imageExtent;
+    images                 = detail::get_images(handle, config.imageFormat);
+    image_index            = 0;
   }
 
 private:
@@ -99,14 +108,14 @@ inline Swapchain::config_type create_swapchain_config(
     SurfaceInfo const& surface_details, //
     Resolution const& resolution //
 ) {
-  auto const surface_format = detail::choose_surface_format(surface_details.formats);
-  auto const present_mode   = detail::choose_present_mode(surface_details.present_modes);
+  auto const [format, colorSpace] = detail::choose_surface_format(surface_details.formats);
+  auto const present_mode         = detail::choose_present_mode(surface_details.present_modes);
 
   return {
     .surface          = *surface,
     .minImageCount    = detail::choose_swap_min_image_count(surface_details.capabilities),
-    .imageFormat      = surface_format.format,
-    .imageColorSpace  = surface_format.colorSpace,
+    .imageFormat      = format,
+    .imageColorSpace  = colorSpace,
     .imageExtent      = detail::choose_swap_extent(resolution, surface_details.capabilities),
     .imageArrayLayers = 1,
     .imageUsage       = core::ImageUsageFlagBits::eColorAttachment,
@@ -117,64 +126,6 @@ inline Swapchain::config_type create_swapchain_config(
     .clipped          = core::True,
   };
 }
-
-class Surface {
-public:
-  using images_type  = Image;
-  using surface_type = raii::SurfaceKHR;
-  using format_type  = core::Format;
-  using window_type  = Window;
-
-  explicit Surface(Window&& window) :
-    window_handle(std::move(window)), //
-    window_surface(instance::create_surface(window_handle.native_handle())), //
-    swapchain(create_swapchain_config(
-        window_surface, //
-        gpu::get_surface_info(window_surface), //
-        window_handle.resolution() //
-    )) { }
-
-  [[nodiscard]] std::optional<ImageProxy> next_image(FrameIndex const frame_index) {
-
-    auto image = swapchain.next_image(frame_index);
-    if (not image) {
-      // recreate swapchain
-      return std::nullopt;
-    }
-    return image;
-  }
-
-  [[nodiscard]] Swapchain::semaphore_type const& present_semaphore(FrameIndex const index) const noexcept {
-    return swapchain.present_semaphore(index);
-  }
-
-  [[nodiscard]] Swapchain::semaphore_type const& render_semaphore() const noexcept {
-    return swapchain.render_semaphore();
-  }
-
-  [[nodiscard]] Resolution winwdow_size() const {
-    auto res = window_handle.resolution();
-    return res;
-  }
-
-  [[nodiscard]] Resolution resolution() const {
-    auto res = swapchain.resolution();
-    return res;
-  }
-
-  void present() {
-    gpu::present(swapchain.present_info()).or_else([](auto&& err) { // NOLINT
-      LOG_INFO("Recreating swapchain due to: {}", err.what());
-      // gpu.recreate_swapchain(swapchain);
-      return mono::err::expected<void> {};
-    });
-  }
-
-private:
-  window_type window_handle;
-  surface_type window_surface;
-  Swapchain swapchain;
-};
 
 
 } // namespace rf3d::gfx::vk
