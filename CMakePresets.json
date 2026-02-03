@@ -167,7 +167,8 @@
         "CMAKE_BUILD_TYPE": "Sanitize",
         "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
         "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug"
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
+        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
       }
     }
   ],
