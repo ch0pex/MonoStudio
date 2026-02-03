@@ -164,16 +164,6 @@ jobs:
       - name: Setup MSVC Environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Slang Compiler
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download --repo shader-slang/slang --pattern "*windows-x86_64.zip" --output slang.zip --clobber 
-          unzip -q slang.zip -d slang_dist
-          echo "$PWD/slang_dist/bin" >> $GITHUB_PATH
-          echo "Slang installation prepared."
-
       - name: Configure Conan Remote
         shell: bash
         run: |
