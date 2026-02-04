@@ -1,9 +1,0 @@
-[engine.logger]
-path = 'C:\tmp'
-name = 'Vixel'
-
-[game.window]
-title = "Vixel"
-resolution = { width = 800, height = 800 }
-mode = "exclusive_full_screen" # windowed | windowed_borderless | exclusive_full_screen | boderless_full_screen
-monitor = 2 
