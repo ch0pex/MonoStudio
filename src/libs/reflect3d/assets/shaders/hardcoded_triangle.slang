@@ -22,10 +22,10 @@ float3 getColor(uint vid) {
 [shader("vertex")]
 VertexOutput vertMain(uint vid : SV_VertexID) {
     VertexOutput output;
-    
+
     output.sv_position = float4(getPosition(vid), 0.0, 1.0);
     output.color = getColor(vid);
-    
+
     return output;
 }
 

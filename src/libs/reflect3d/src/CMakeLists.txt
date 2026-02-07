@@ -28,6 +28,7 @@ target_sources(
         reflect3d/graphics/vk/vk_swapchain.hpp
         reflect3d/graphics/vk/vk_swapchain_detail.hpp
         reflect3d/graphics/vk/vk_traits.hpp
+        reflect3d/graphics/vk/vk_vertex_buffer.hpp
         reflect3d/graphics/hri.hpp
 
         # Input

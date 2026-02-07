@@ -16,6 +16,7 @@
 //
 #include <cassert>
 #include <vulkan/vulkan_handles.hpp>
+#include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk::gpu {
@@ -56,6 +57,17 @@ raii::Semaphore make_semaphore(core::SemaphoreCreateInfo const& semaphore_info =
 raii::Pipeline make_graphics_pipeline(core::GraphicsPipelineCreateInfo const& pipeline_info);
 
 raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& layout_info);
+
+raii::Buffer make_buffer(core::BufferCreateInfo const& buffer_info);
+
+raii::DeviceMemory allocate_memory(core::MemoryRequirements const& req, core::MemoryPropertyFlags const& prop);
+
+// --------------------------------
+// --- Gpu info query functions ---
+// --------------------------------
+
+
+core::PhysicalDeviceMemoryProperties get_memory_properties();
 
 SurfaceInfo get_surface_info(raii::SurfaceKHR const& surface);
 

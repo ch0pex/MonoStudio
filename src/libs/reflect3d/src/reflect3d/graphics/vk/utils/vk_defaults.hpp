@@ -2,6 +2,7 @@
 
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
+#include "reflect3d/render/vertex.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <limits>
@@ -10,10 +11,23 @@ namespace rf3d::gfx::vk::defaults {
 
 inline constexpr std::size_t max_frames_in_flight = 2U;
 inline constexpr std::uint64_t wait_timeout       = std::numeric_limits<std::uint64_t>::max();
-// inline constexpr std::uint64_t wait_timeout = 1000000000ULL; // 1 second in nanoseconds
-inline constexpr gfx::vk::core::ClearColorValue clear_color {0.0F, 0.0F, 0.0F, 1.0F};
+inline constexpr core::ClearColorValue clear_color {0.0F, 0.0F, 0.0F, 1.0F};
 
-inline constexpr core::PipelineVertexInputStateCreateInfo vertex_input_info {};
+
+inline constexpr core::VertexInputBindingDescription vertex_binding_description = {
+  0, sizeof(Vertex), core::VertexInputRate::eVertex
+};
+inline constexpr std::array vertex_attribute_description = {
+  core::VertexInputAttributeDescription(0, 0, core::Format::eR32G32Sfloat, offsetof(Vertex, position)),
+  core::VertexInputAttributeDescription(1, 0, core::Format::eR32G32B32Sfloat, offsetof(Vertex, color))
+};
+
+inline constexpr core::PipelineVertexInputStateCreateInfo vertex_input_info {
+  .vertexBindingDescriptionCount   = 1,
+  .pVertexBindingDescriptions      = std::addressof(vertex_binding_description),
+  .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_attribute_description.size()),
+  .pVertexAttributeDescriptions    = vertex_attribute_description.data()
+};
 
 inline constexpr core::PipelineInputAssemblyStateCreateInfo input_assembly {
   .topology = core::PrimitiveTopology::eTriangleList,
@@ -60,10 +74,11 @@ inline constexpr core::PipelineLayoutCreateInfo pipeline_layout_info {
 constexpr core::Rect2D render_area(Resolution const resolution) {
   return core::Rect2D {
     .offset = core::Offset2D {.x = 0, .y = 0},
-    .extent = core::Extent2D {
-      .width  = static_cast<std::uint32_t>(resolution.width),
-      .height = static_cast<std::uint32_t>(resolution.height),
-    },
+    .extent =
+        core::Extent2D {
+          .width  = static_cast<std::uint32_t>(resolution.width),
+          .height = static_cast<std::uint32_t>(resolution.height),
+        },
   };
 }
 

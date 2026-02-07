@@ -7,6 +7,7 @@
 #include "reflect3d/graphics/vk/vk_shader.hpp"
 #include "reflect3d/graphics/vk/vk_surface.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
+#include "reflect3d/graphics/vk/vk_vertex_buffer.hpp"
 
 namespace rf3d::gfx::vk {
 
@@ -14,9 +15,9 @@ struct FrameInfo { };
 
 class Core {
 public:
-  Core() {
+  Core() : vertex_buffer(3) {
     // hardcoded TODO write pso cache
-    auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "shader.slang";
+    auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
     auto const shader      = Shader {load_shader_bytecode(shader_path)};
 
     auto pso = PipelineBuilder() //
@@ -25,6 +26,12 @@ public:
                    .build(); //
 
     pso_cache.emplace_back(std::move(pso));
+
+    Vertex constexpr vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
+    Vertex constexpr vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
+    Vertex constexpr vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
+    static constexpr std::array vertices = {vertex1, vertex2, vertex3};
+    vertex_buffer.insert_range(0, vertices);
   }
 
   void render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {
@@ -46,6 +53,7 @@ public:
       auto const rendering_info = defaults::rendering_info(render_area, attachment_info);
       cmd.record_rendering(rendering_info, [this, &surface, &render_area](CommandBuffer const& cmd_buffer) {
         cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *this->pso_cache.at(0))
+            .bind_vertex_buffer(0, vertex_buffer.view(), 0)
             .set_viewport(0, defaults::viewport(surface.resolution()))
             .set_scissor(0, render_area)
             .set_cull_mode(core::CullModeFlagBits::eBack)
@@ -69,6 +77,7 @@ public:
 
 private:
   std::vector<Pipeline> pso_cache;
+  VertexBuffer vertex_buffer;
 };
 
 

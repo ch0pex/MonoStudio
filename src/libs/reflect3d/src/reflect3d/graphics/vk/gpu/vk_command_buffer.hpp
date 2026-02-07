@@ -45,6 +45,24 @@ public:
     return *this;
   }
 
+  CommandBuffer const& bind_vertex_buffer( // NOLINT
+      std::uint32_t const binding, //
+      core::Buffer const& buffer, //
+      core::DeviceSize const offset //
+  ) const {
+    cmd_buffer.bindVertexBuffers(binding, std::span {&buffer, 1}, std::span {&offset, 1});
+    return *this;
+  }
+
+  CommandBuffer const& bind_vertex_buffers( // NOLINT
+      std::uint32_t const first_binding, //
+      std::span<core::Buffer const> buffers, //
+      std::span<core::DeviceSize const> offsets //
+  ) const {
+    cmd_buffer.bindVertexBuffers(first_binding, buffers, offsets);
+    return *this;
+  }
+
   CommandBuffer const& draw( // NOLINT
       std::uint32_t const vertex_count, //
       std::uint32_t const instance_count, //

@@ -67,6 +67,20 @@ PhysicalDevice pick_best_physical_device() {
   return PhysicalDevice {candidates.begin()->second};
 }
 
+std::uint32_t find_memory_type(std::uint32_t type_filter, core::MemoryPropertyFlags properties) {
+  auto const mem_properties = gpu::get_memory_properties();
+
+  for (std::uint32_t i = 0; i < mem_properties.memoryTypeCount; i++) {
+    bool const filters_match    = (type_filter & (1 << i)) != 0U;
+    bool const properties_match = (mem_properties.memoryTypes.at(i).propertyFlags & properties) == properties;
+    if (filters_match and properties_match) {
+      return i;
+    }
+  }
+
+  throw std::runtime_error("Failed to find suitable memory type");
+}
+
 struct Gpu {
   PhysicalDevice physical {pick_best_physical_device()};
   LogicalDevice logical {physical.create_logical_device()};
@@ -172,6 +186,27 @@ raii::Pipeline make_graphics_pipeline(core::GraphicsPipelineCreateInfo const& pi
 
 raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& layout_info) {
   return {*get_gpu().logical, layout_info};
+}
+
+raii::Buffer make_buffer(core::BufferCreateInfo const& buffer_info) { //
+  return {*get_gpu().logical, buffer_info};
+}
+
+
+raii::DeviceMemory allocate_memory(core::MemoryRequirements const& req, core::MemoryPropertyFlags const& prop) {
+  auto memory_alloc_info = core::MemoryAllocateInfo {
+    .allocationSize  = req.size,
+    .memoryTypeIndex = find_memory_type(req.memoryTypeBits, prop),
+  };
+  return {*get_gpu().logical, memory_alloc_info};
+}
+
+// --------------------------------
+// --- Gpu info query functions ---
+// --------------------------------
+
+core::PhysicalDeviceMemoryProperties get_memory_properties() { //
+  return get_gpu().physical.get_memory_properties();
 }
 
 SurfaceInfo get_surface_info(raii::SurfaceKHR const& surface) { //

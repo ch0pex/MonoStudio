@@ -67,6 +67,8 @@ public:
     };
   }
 
+  core::PhysicalDeviceMemoryProperties get_memory_properties() const { return native.getMemoryProperties(); }
+
 private:
   native_type native;
   queues_info_type queues_info;
