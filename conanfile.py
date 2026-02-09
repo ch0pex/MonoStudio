@@ -55,6 +55,7 @@ class MonoGameRecipe(ConanFile):
         self.requires("quill/[>=10]")
         self.requires("glm/[>=1]")
         self.requires("glad/[>=2]")
+        self.requires("vulkan-memory-allocator/3.3.0")
 
     def build_requirements(self):
         self.test_requires("doctest/2.4.11")

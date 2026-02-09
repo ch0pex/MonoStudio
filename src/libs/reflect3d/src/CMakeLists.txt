@@ -60,6 +60,7 @@ target_sources(
 target_sources(reflect3d-lib
         PRIVATE
         # Graphics
+        reflect3d/graphics/vk/utils/vk_vma_usage.cpp
         reflect3d/graphics/vk/vk_gpu.cpp
         reflect3d/graphics/vk/vk_instance.cpp
 
@@ -76,6 +77,7 @@ target_link_libraries(
         mono::mono-lib
         glad::glad
         slang
+        GPUOpen::VulkanMemoryAllocator
 )
 
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)
