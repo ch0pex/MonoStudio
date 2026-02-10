@@ -12,7 +12,6 @@
 //
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
-#include <mono/misc/passkey.hpp>
 
 
 //
@@ -20,78 +19,24 @@
 
 //
 #include <cassert>
-#include <vulkan/vulkan_handles.hpp>
 
 namespace rf3d::gfx::vk::gpu {
 
 namespace {
 
-std::uint64_t rate_device(raii::PhysicalDevice const& device) {
-  auto const device_properties = device.getProperties();
-  auto const device_features   = device.getFeatures();
-
-  std::uint64_t score = 0;
-
-  // Discrete GPUs have a significant performance advantage
-  if (device_properties.deviceType == core::PhysicalDeviceType::eDiscreteGpu) {
-    score += 1000;
-  }
-
-  // Maximum possible size of textures affects graphics quality
-  score += device_properties.limits.maxImageDimension2D;
-  score += device_properties.limits.maxImageDimension3D;
-  score += device_properties.limits.maxImageDimensionCube;
-  score += device_properties.limits.maxComputeSharedMemorySize;
-
-  // Application can't function without geometry shaders
-  if (device_features.geometryShader == VK_FALSE) {
-    return 0;
-  }
-
-  return score;
-}
-
-PhysicalDevice pick_best_physical_device() {
-  LOG_INFO("Picking the best GPU for the application");
-  std::multimap<std::uint64_t, raii::PhysicalDevice, std::greater<>> candidates;
-
-  for (auto const& device: instance::physical_devices()) {
-    LOG_INFO("Found GPU: {}", std::string_view {device.getProperties().deviceName});
-    candidates.insert({rate_device(device), device});
-  }
-
-  if (candidates.empty() or candidates.begin()->first == 0) {
-    throw std::runtime_error("Failed to find a suitable GPU!");
-  }
-
-  return PhysicalDevice {candidates.begin()->second};
-}
-
-std::uint32_t find_memory_type(std::uint32_t type_filter, core::MemoryPropertyFlags properties) {
-  auto const mem_properties = gpu::get_memory_properties();
-
-  for (std::uint32_t i = 0; i < mem_properties.memoryTypeCount; i++) {
-    bool const filters_match    = (type_filter & (1 << i)) != 0U;
-    bool const properties_match = (mem_properties.memoryTypes.at(i).propertyFlags & properties) == properties;
-    if (filters_match and properties_match) {
-      return i;
-    }
-  }
-
-  throw std::runtime_error("Failed to find suitable memory type");
-}
 
 struct Gpu {
   PhysicalDevice physical {pick_best_physical_device()};
   LogicalDevice logical {physical.create_logical_device()};
   Queues<GraphicQueue, PresentQueue> queues {logical, physical.queue_creation_info()};
   CommandPool command_pool {
-    logical, //
+    logical,
     CommandPool::config_type {
       .flags            = core::CommandPoolCreateFlagBits::eResetCommandBuffer,
       .queueFamilyIndex = physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex,
     }
   };
+  VmaAllocator memory_allocator {instance::create_allocator(*physical, *logical)};
 };
 
 Gpu& get_gpu() {
@@ -188,26 +133,31 @@ raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& 
   return {*get_gpu().logical, layout_info};
 }
 
-raii::Buffer make_buffer(core::BufferCreateInfo const& buffer_info) { //
-  return {*get_gpu().logical, buffer_info};
-}
+AllocatedBuffer allocate_buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info) {
+  VkBuffer buffer;
+  VmaAllocation allocation;
+  VmaAllocationInfo allocation_info;
 
+  VkBufferCreateInfo const vk_buffer_info = buffer_info;
+  vmaCreateBuffer(
+      get_gpu().memory_allocator,
+      &vk_buffer_info, //
+      &alloc_info, //
+      &buffer, //
+      &allocation, //
+      &allocation_info //
+  );
 
-raii::DeviceMemory allocate_memory(core::MemoryRequirements const& req, core::MemoryPropertyFlags const& prop) {
-  auto memory_alloc_info = core::MemoryAllocateInfo {
-    .allocationSize  = req.size,
-    .memoryTypeIndex = find_memory_type(req.memoryTypeBits, prop),
+  return AllocatedBuffer {
+    .buffer          = buffer,
+    .allocation      = allocation,
+    .allocation_info = allocation_info,
   };
-  return {*get_gpu().logical, memory_alloc_info};
 }
 
 // --------------------------------
 // --- Gpu info query functions ---
 // --------------------------------
-
-core::PhysicalDeviceMemoryProperties get_memory_properties() { //
-  return get_gpu().physical.get_memory_properties();
-}
 
 SurfaceInfo get_surface_info(raii::SurfaceKHR const& surface) { //
   return get_gpu().physical.get_surface_info(surface);

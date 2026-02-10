@@ -32,6 +32,7 @@ public:
     Vertex constexpr vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
     static constexpr std::array vertices = {vertex1, vertex2, vertex3};
     vertex_buffer.insert_range(0, vertices);
+
   }
 
   void render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {

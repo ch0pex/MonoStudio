@@ -5,19 +5,14 @@
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 //
-
 #include <mono/error/expected.hpp>
-#include <mono/logging/logger.hpp>
-#include <mono/misc/passkey.hpp>
 
 //
-#include <assets_path.hpp>
-
-//
-#include <cassert>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <vulkan/vulkan_structs.hpp>
+
+#include "vk_buffer.hpp"
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -58,16 +53,11 @@ raii::Pipeline make_graphics_pipeline(core::GraphicsPipelineCreateInfo const& pi
 
 raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& layout_info);
 
-raii::Buffer make_buffer(core::BufferCreateInfo const& buffer_info);
-
-raii::DeviceMemory allocate_memory(core::MemoryRequirements const& req, core::MemoryPropertyFlags const& prop);
+AllocatedBuffer allocate_buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info = {});
 
 // --------------------------------
 // --- Gpu info query functions ---
 // --------------------------------
-
-
-core::PhysicalDeviceMemoryProperties get_memory_properties();
 
 SurfaceInfo get_surface_info(raii::SurfaceKHR const& surface);
 

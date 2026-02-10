@@ -13,7 +13,6 @@ namespace rf3d::gfx::vk::instance {
 
 namespace {
 
-
 using context_type  = raii::Context;
 using instance_type = std::conditional_t<enable_validation_layers, detail::DebugInstance, detail::ReleaseInstance>;
 
@@ -25,7 +24,7 @@ instance_type& instance() {
 
 } // namespace
 
-[[nodiscard]] raii::SurfaceKHR create_surface(NativeWindow const window) {
+raii::SurfaceKHR create_surface(NativeWindow const window) {
   LOG_INFO("Creating Vulkan surface for the window");
   core::SurfaceKHR::NativeType surface = nullptr;
 
@@ -41,6 +40,22 @@ raii::PhysicalDevices const& physical_devices() {
   static raii::PhysicalDevices physical_devices {instance().handle};
 
   return physical_devices;
+}
+
+Allocator create_allocator(core::PhysicalDevice const physical_device, core::Device const device) {
+  VmaAllocatorCreateInfo const allocatorInfo = {
+    .physicalDevice   = physical_device,
+    .device           = device,
+    .instance         = *instance().handle,
+    .vulkanApiVersion = VK_API_VERSION_1_3,
+  };
+
+  VmaAllocator allocator;
+  if (core::Result const result {vmaCreateAllocator(&allocatorInfo, &allocator)}; result != core::Result::eSuccess) {
+    throw std::runtime_error("Failed to create vulkan memory allocator");
+  }
+
+  return allocator;
 }
 
 } // namespace rf3d::gfx::vk::instance

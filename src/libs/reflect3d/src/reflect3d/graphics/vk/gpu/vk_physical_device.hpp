@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/gpu/vk_gpu_families.hpp"
+#include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 
@@ -67,11 +68,52 @@ public:
     };
   }
 
-  core::PhysicalDeviceMemoryProperties get_memory_properties() const { return native.getMemoryProperties(); }
+  native_type operator*() const noexcept { return native; }
 
 private:
   native_type native;
   queues_info_type queues_info;
 };
+
+inline std::uint64_t rate_device(raii::PhysicalDevice const& device) {
+  auto const device_properties = device.getProperties();
+  auto const device_features   = device.getFeatures();
+
+  std::uint64_t score = 0;
+
+  // Discrete GPUs have a significant performance advantage
+  if (device_properties.deviceType == core::PhysicalDeviceType::eDiscreteGpu) {
+    score += 1000;
+  }
+
+  // Maximum possible size of textures affects graphics quality
+  score += device_properties.limits.maxImageDimension2D;
+  score += device_properties.limits.maxImageDimension3D;
+  score += device_properties.limits.maxImageDimensionCube;
+  score += device_properties.limits.maxComputeSharedMemorySize;
+
+  // Application can't function without geometry shaders
+  if (device_features.geometryShader == VK_FALSE) {
+    return 0;
+  }
+
+  return score;
+}
+
+inline PhysicalDevice pick_best_physical_device() {
+  LOG_INFO("Picking the best GPU for the application");
+  std::multimap<std::uint64_t, raii::PhysicalDevice, std::greater<>> candidates;
+
+  for (auto const& device: instance::physical_devices()) {
+    LOG_INFO("Found GPU: {}", std::string_view {device.getProperties().deviceName});
+    candidates.insert({rate_device(device), device});
+  }
+
+  if (candidates.empty() or candidates.begin()->first == 0) {
+    throw std::runtime_error("Failed to find a suitable GPU!");
+  }
+
+  return PhysicalDevice {candidates.begin()->second};
+}
 
 } // namespace rf3d::gfx::vk

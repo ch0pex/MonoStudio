@@ -3,6 +3,7 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/window/window_types.hpp"
 
+
 namespace rf3d::gfx::vk::instance {
 
 /**
@@ -20,5 +21,13 @@ namespace rf3d::gfx::vk::instance {
  */
 [[nodiscard]] raii::PhysicalDevices const& physical_devices();
 
+/*
+ * Creates a VMA allocator for the given physical device and logical device.
+ *
+ * @param physical_device The physical device for which to create the allocator.
+ * @param device The logical device for which to create the allocator.
+ * @return A VmaAllocator representing the created allocator.
+ */
+Allocator create_allocator(core::PhysicalDevice physical_device, core::Device device);
 
 } // namespace rf3d::gfx::vk::instance

@@ -18,6 +18,7 @@ target_sources(
         reflect3d/graphics/vk/gpu/vk_logical_device.hpp
         reflect3d/graphics/vk/gpu/vk_physical_device.hpp
         reflect3d/graphics/vk/vk_gpu.hpp
+        reflect3d/graphics/vk/vk_buffer.hpp
         reflect3d/graphics/vk/utils/vk_checker.hpp
         reflect3d/graphics/vk/utils/vk_debug_callback.hpp
         reflect3d/graphics/vk/utils/vk_exception.hpp
