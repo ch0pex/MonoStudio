@@ -43,15 +43,15 @@ raii::PhysicalDevices const& physical_devices() {
 }
 
 Allocator create_allocator(core::PhysicalDevice const physical_device, core::Device const device) {
-  VmaAllocatorCreateInfo const allocatorInfo = {
-    .physicalDevice   = physical_device,
-    .device           = device,
-    .instance         = *instance().handle,
-    .vulkanApiVersion = VK_API_VERSION_1_3,
-  };
+  VmaAllocatorCreateInfo allocator_info {};
 
-  VmaAllocator allocator;
-  if (core::Result const result {vmaCreateAllocator(&allocatorInfo, &allocator)}; result != core::Result::eSuccess) {
+  allocator_info.physicalDevice   = physical_device;
+  allocator_info.device           = device;
+  allocator_info.instance         = *instance().handle;
+  allocator_info.vulkanApiVersion = VK_API_VERSION_1_3;
+
+  VmaAllocator allocator = nullptr;
+  if (core::Result const result {vmaCreateAllocator(&allocator_info, &allocator)}; result != core::Result::eSuccess) {
     throw std::runtime_error("Failed to create vulkan memory allocator");
   }
 
