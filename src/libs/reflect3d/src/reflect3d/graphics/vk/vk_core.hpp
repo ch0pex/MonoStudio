@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/memory/vk_vertex_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_barriers.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_pso.hpp"
@@ -7,7 +8,6 @@
 #include "reflect3d/graphics/vk/vk_shader.hpp"
 #include "reflect3d/graphics/vk/vk_surface.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
-#include "reflect3d/graphics/vk/vk_vertex_buffer.hpp"
 
 namespace rf3d::gfx::vk {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/vk_buffer.hpp"
+#include "reflect3d/graphics/vk/memory/vk_dynamic_buffer.hpp"
 #include "reflect3d/render/vertex.hpp"
 
 namespace rf3d::gfx::vk {
