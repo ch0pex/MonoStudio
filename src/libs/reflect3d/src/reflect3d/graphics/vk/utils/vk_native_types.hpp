@@ -12,6 +12,7 @@ using FrameIndex           = std::uint32_t;
 using ImageIndex           = std::uint32_t;
 using Allocator            = VmaAllocator;
 using Allocation           = VmaAllocation;
+using AllocationInfo       = VmaAllocationInfo;
 using AllocationCreateInfo = VmaAllocationCreateInfo;
 
 } // namespace rf3d::gfx::vk

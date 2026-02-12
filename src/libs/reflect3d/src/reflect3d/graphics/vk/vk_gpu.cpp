@@ -26,17 +26,35 @@ namespace {
 
 
 struct Gpu {
+  /**********************
+   *    Constructors    *
+   **********************/
+  Gpu() = default;
+
+  Gpu(Gpu const&) = delete;
+
+  Gpu(Gpu&&) = delete;
+
+  Gpu& operator=(Gpu const&) = delete;
+
+  Gpu& operator=(Gpu&&) = delete;
+
+  ~Gpu() { vmaDestroyAllocator(memory_allocator); }
+
+  /**************************
+   *    Member variables    *
+   **************************/
+
   PhysicalDevice physical {pick_best_physical_device()};
   LogicalDevice logical {physical.create_logical_device()};
   Queues<GraphicQueue, PresentQueue> queues {logical, physical.queue_creation_info()};
-  CommandPool command_pool {
-    logical,
-    CommandPool::config_type {
-      .flags            = core::CommandPoolCreateFlagBits::eResetCommandBuffer,
-      .queueFamilyIndex = physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex,
-    }
-  };
   VmaAllocator memory_allocator {instance::create_allocator(*physical, *logical)};
+  CommandPool command_pool {
+    logical, CommandPool::config_type {
+               .flags            = core::CommandPoolCreateFlagBits::eResetCommandBuffer,
+               .queueFamilyIndex = physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex,
+             }
+  };
 };
 
 Gpu& get_gpu() {
@@ -133,12 +151,12 @@ raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& 
   return {*get_gpu().logical, layout_info};
 }
 
-AllocatedBuffer allocate_buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info) {
-  VkBuffer buffer;
-  VmaAllocation allocation;
+BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, AllocationCreateInfo const& alloc_info) {
+  VkBuffer buffer          = nullptr;
+  VmaAllocation allocation = nullptr;
   VmaAllocationInfo allocation_info;
 
-  VkBufferCreateInfo const vk_buffer_info = buffer_info;
+  VkBufferCreateInfo const vk_buffer_info = buf_info;
   vmaCreateBuffer(
       get_gpu().memory_allocator,
       &vk_buffer_info, //
@@ -148,11 +166,15 @@ AllocatedBuffer allocate_buffer(core::BufferCreateInfo const& buffer_info, Alloc
       &allocation_info //
   );
 
-  return AllocatedBuffer {
-    .buffer          = buffer,
-    .allocation      = allocation,
-    .allocation_info = allocation_info,
+  return {
+    .buffer_handle     = buffer,
+    .allocation_handle = allocation,
+    .allocation_info   = allocation_info,
   };
+}
+
+void free_buffer(BufferAllocation const& buffer_allocation) {
+  vmaDestroyBuffer(get_gpu().memory_allocator, buffer_allocation.buffer_handle, buffer_allocation.allocation_handle);
 }
 
 // --------------------------------

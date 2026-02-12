@@ -1,19 +1,138 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_gpu.hpp"
+
+#include <ranges>
+#include <type_traits>
 
 namespace rf3d::gfx::vk {
 
-/**
- * Buffer resource allocated on the GPU, containing both the buffer handle and the allocation information
- * this allocation is handled by VMA and should be freed using the allocator, not directly
- */
-struct AllocatedBuffer {
-  core::Buffer buffer;
-  Allocation allocation;
-  VmaAllocationInfo allocation_info;
+template<typename Type>
+  requires(std::is_trivially_copyable_v<Type>)
+class Buffer {
+public:
+  /*********************
+   *    Type traits    *
+   *********************/
+
+  using handle_type          = core::Buffer;
+  using allocation_info_type = AllocationInfo;
+
+
+  /**********************
+   *    Constructors    *
+   **********************/
+
+  explicit Buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info) :
+    buffer_allocation(gpu::allocate_buffer(buffer_info, alloc_info)) {
+    if (buffer_info.size % sizeof(Type) != 0) {
+      throw std::runtime_error("Buffer size must be a multiple of the element type size");
+    }
+  }
+
+  Buffer(Buffer&&) = default;
+
+  Buffer& operator=(Buffer const&) = delete;
+
+  Buffer& operator=(Buffer&&) = default;
+
+  Buffer(Buffer const&) = delete;
+
+  ~Buffer() { gpu::free_buffer(buffer_allocation); }
+
+  /**************************
+   *    Member functions    *
+   **************************/
+
+  [[nodiscard]] handle_type handle() const { return buffer_allocation.buffer_handle; }
+
+  [[nodiscard]] allocation_info_type allocation_info() const { return buffer_allocation.allocation_info; }
+
+private:
+  BufferAllocation buffer_allocation;
 };
 
+/**
+ * @brief Generic host visble buffer
+ *
+ * DynamicBuffer is a generic buffer mapped to host memory, allowing for direct CPU access.
+ * The buffer is created with specific allocation flags to optimize sequential write access
+ *
+ * @tparam Type The type of elements stored in the buffer. Must be trivially copyable.
+ *
+ * @note Read operations in mapped memory are slow, so it's recommended to avoid them if possible.
+ */
+template<typename Type>
+  requires(std::is_trivially_copyable_v<Type>)
+class DynamicBuffer : public Buffer<Type> {
+public:
+  /*********************
+   *    Type traits    *
+   *********************/
 
+  using size_type          = std::size_t;
+  using value_type         = Type;
+  using mapped_memory_type = std::span<value_type>;
+  using iterator           = mapped_memory_type::iterator;
+  using const_iterator     = mapped_memory_type::const_iterator;
+
+  /*********************
+   *    Constructor    *
+   *********************/
+
+  explicit DynamicBuffer(core::BufferCreateInfo const& buffer_info) :
+    Buffer<Type> {
+      buffer_info,
+      {
+        .flags          = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+        .usage          = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
+        .requiredFlags  = {},
+        .preferredFlags = {},
+        .memoryTypeBits = 0,
+        .pool           = nullptr,
+        .pUserData      = nullptr,
+        .priority       = 0.0F,
+      }
+    },
+    mapped_memory(
+        static_cast<Type*>(this->allocation_info().pMappedData), this->allocation_info().size / sizeof(Type)
+    ) { }
+
+  /**************************
+   *    Member functions    *
+   **************************/
+
+  template<typename Self>
+  auto begin(this Self&& self) {
+    return std::ranges::begin(std::forward<Self>(self).mapped_memory);
+  }
+
+  template<typename Self>
+  auto end(this Self&& self) {
+    return std::ranges::end(std::forward<Self>(self).mapped_memory);
+  }
+
+  void insert(size_type const index, Type const& element) {
+    std::memcpy(std::addressof(mapped_memory[index]), &element, sizeof(Type));
+  }
+
+  void insert_range(size_type const index, std::ranges::contiguous_range auto elements) {
+    std::ranges::copy(elements.begin(), elements.end(), mapped_memory.begin() + index);
+  }
+
+  // @note read operations in mapped memory are slow avoid them if possible
+  value_type& operator[](size_type const index) { return mapped_memory[index]; }
+
+  value_type const& operator[](size_type const index) const { return mapped_memory[index]; }
+
+  value_type& at(size_type const index) { return mapped_memory.at(index); }
+
+  value_type const& at(size_type const index) const { return mapped_memory.at(index); }
+
+  mapped_memory_type data() const { return mapped_memory; }
+
+private:
+  std::span<Type> mapped_memory;
+};
 
 } // namespace rf3d::gfx::vk

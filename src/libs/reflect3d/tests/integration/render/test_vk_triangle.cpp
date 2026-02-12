@@ -36,7 +36,6 @@ int main() try {
 
     for (auto& surface: surfaces) {
       renderer.render_surface(surface, {});
-      // render_surface(surface);
     }
   }
   gpu::wait_idle();

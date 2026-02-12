@@ -32,7 +32,6 @@ public:
     Vertex constexpr vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
     static constexpr std::array vertices = {vertex1, vertex2, vertex3};
     vertex_buffer.insert_range(0, vertices);
-
   }
 
   void render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {
@@ -54,7 +53,7 @@ public:
       auto const rendering_info = defaults::rendering_info(render_area, attachment_info);
       cmd.record_rendering(rendering_info, [this, &surface, &render_area](CommandBuffer const& cmd_buffer) {
         cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *this->pso_cache.at(0))
-            .bind_vertex_buffer(0, vertex_buffer.view(), 0)
+            .bind_vertex_buffer(0, vertex_buffer.handle(), 0)
             .set_viewport(0, defaults::viewport(surface.resolution()))
             .set_scissor(0, render_area)
             .set_cull_mode(core::CullModeFlagBits::eBack)
@@ -78,7 +77,7 @@ public:
 
 private:
   std::vector<Pipeline> pso_cache;
-  VertexBuffer vertex_buffer;
+  DynamicVertexBuffer vertex_buffer;
 };
 
 

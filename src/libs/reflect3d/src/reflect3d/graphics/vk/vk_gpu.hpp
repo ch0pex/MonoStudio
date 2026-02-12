@@ -2,17 +2,12 @@
 
 #include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
+#include "reflect3d/graphics/vk/vk_buffer_allocation.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 //
 #include <mono/error/expected.hpp>
 
-//
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_raii.hpp>
-#include <vulkan/vulkan_structs.hpp>
-
-#include "vk_buffer.hpp"
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -37,9 +32,9 @@ void submit_work(
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
 
-// --------------------------------------
-// --- Gpu resource factory functions ---
-// --------------------------------------
+// -----------------------------
+// --- Gpu factory functions ---
+// -----------------------------
 
 raii::ShaderModule make_shader_module(core::ShaderModuleCreateInfo const& module_info);
 
@@ -53,7 +48,14 @@ raii::Pipeline make_graphics_pipeline(core::GraphicsPipelineCreateInfo const& pi
 
 raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& layout_info);
 
-AllocatedBuffer allocate_buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info = {});
+
+// -------------------------------------
+// --- Gpu memory resource functions ---
+// -------------------------------------
+
+BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, AllocationCreateInfo const& alloc_info = {});
+
+void free_buffer(BufferAllocation const& buffer);
 
 // --------------------------------
 // --- Gpu info query functions ---
