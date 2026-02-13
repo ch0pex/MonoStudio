@@ -9,6 +9,9 @@
 namespace mono::meta {
 
 template<typename T>
+concept trivially_copyable_value = std::is_trivially_copyable_v<std::decay_t<T>>;
+
+template<typename T>
 concept movable_value = std::move_constructible<std::decay_t<T>> and std::constructible_from<std::decay_t<T>, T>;
 
 template<typename Type, template<typename...> class Template>
