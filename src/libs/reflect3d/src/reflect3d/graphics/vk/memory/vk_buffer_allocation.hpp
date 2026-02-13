@@ -14,5 +14,26 @@ struct BufferAllocation {
   VmaAllocationInfo allocation_info;
 };
 
+inline constexpr AllocationCreateInfo mapped_allocation_create_info = {
+  .flags          = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+  .usage          = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
+  .requiredFlags  = {},
+  .preferredFlags = {},
+  .memoryTypeBits = 0,
+  .pool           = nullptr,
+  .pUserData      = nullptr,
+  .priority       = 0.0F,
+};
+
+inline constexpr AllocationCreateInfo device_local_allocation_create_info = {
+  .flags          = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+  .usage          = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE,
+  .requiredFlags  = {},
+  .preferredFlags = {},
+  .memoryTypeBits = 0,
+  .pool           = nullptr,
+  .pUserData      = nullptr,
+  .priority       = 0.0F,
+};
 
 } // namespace rf3d::gfx::vk

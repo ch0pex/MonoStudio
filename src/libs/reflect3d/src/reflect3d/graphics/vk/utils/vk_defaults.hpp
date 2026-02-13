@@ -1,6 +1,5 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/render/vertex.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
@@ -74,11 +73,10 @@ inline constexpr core::PipelineLayoutCreateInfo pipeline_layout_info {
 constexpr core::Rect2D render_area(Resolution const resolution) {
   return core::Rect2D {
     .offset = core::Offset2D {.x = 0, .y = 0},
-    .extent =
-        core::Extent2D {
-          .width  = static_cast<std::uint32_t>(resolution.width),
-          .height = static_cast<std::uint32_t>(resolution.height),
-        },
+    .extent = core::Extent2D {
+      .width  = static_cast<std::uint32_t>(resolution.width),
+      .height = static_cast<std::uint32_t>(resolution.height),
+    },
   };
 }
 

@@ -19,6 +19,8 @@
 
 //
 #include <cassert>
+#include <vulkan/vulkan_handles.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -114,6 +116,17 @@ void submit_work(
   get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
 }
 
+void submit_work(
+    std::span<core::CommandBuffer const> command_buffers //
+) {
+  core::SubmitInfo const info {
+    .commandBufferCount = static_cast<std::uint32_t>(command_buffers.size()),
+    .pCommandBuffers    = command_buffers.data(),
+  };
+
+  get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
+}
+
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info) {
   auto const result = get_gpu().queues.present().presentKHR(present_info);
   if (result == core::Result::eSuboptimalKHR or result == core::Result::eErrorOutOfDateKHR) {
@@ -151,6 +164,10 @@ raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& 
   return {*get_gpu().logical, layout_info};
 }
 
+// -------------------------------------
+// --- Gpu memory resource functions ---
+// -------------------------------------
+
 BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, AllocationCreateInfo const& alloc_info) {
   VkBuffer buffer          = nullptr;
   VmaAllocation allocation = nullptr;
@@ -175,6 +192,26 @@ BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, Allocat
 
 void free_buffer(BufferAllocation const& buffer_allocation) {
   vmaDestroyBuffer(get_gpu().memory_allocator, buffer_allocation.buffer_handle, buffer_allocation.allocation_handle);
+}
+
+void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::BufferCopy const& copy_region) {
+  core::CommandBufferAllocateInfo const alloc_info {
+    .commandPool        = *get_gpu().command_pool,
+    .level              = core::CommandBufferLevel::ePrimary,
+    .commandBufferCount = 1,
+  };
+
+  auto buffers = raii::CommandBuffers(*get_gpu().logical, alloc_info);
+  CommandBuffer cmd_copy_buffer {std::move(buffers.front())};
+
+  CommandBuffer::begin_info begin_info {.flags = core::CommandBufferUsageFlagBits::eOneTimeSubmit};
+
+  cmd_copy_buffer.record(begin_info, [dst_buffer, staging_buffer, copy_region](CommandBuffer const& cmd) {
+    cmd.copy_buffer(staging_buffer, dst_buffer, copy_region);
+  });
+
+  submit_work(std::span {&**cmd_copy_buffer, 1});
+  wait_idle();
 }
 
 // --------------------------------

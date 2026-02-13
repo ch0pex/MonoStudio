@@ -1,6 +1,8 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
+#include "reflect3d/window/window.hpp"
 
 namespace rf3d::gfx::vk {
 class Surface {
@@ -41,7 +43,7 @@ public:
 
   [[nodiscard]] Resolution resolution() const { return swapchain.resolution(); }
 
-  void present() try { gpu::present(swapchain.present_info()); }
+  void present() try { gpu::present(swapchain.present_info()); } // NOLINT
   catch (std::exception const& e) {
     recreate_swapchain();
   }

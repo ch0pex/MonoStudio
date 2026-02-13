@@ -8,7 +8,6 @@
 #include <mono/containers/stable_vector.hpp>
 
 #include <cstdint>
-#include <ranges>
 
 namespace rf3d::gfx::vk {
 
@@ -21,7 +20,7 @@ public:
   using fence_type  = raii::Fence;
 
   explicit CommandPool(device_type const& device, config_type const& config) : handle(*device, config) {
-    allocate_command_buffers(device, 1);
+    allocate_command_buffers(device, defaults::max_frames_in_flight);
   }
 
   [[nodiscard]] FrameIndex next_frame() {
@@ -57,6 +56,8 @@ public:
   [[nodiscard]] fence_type const& fence() const { return draw_fences.at(current_buffer); }
 
   [[nodiscard]] FrameIndex current_frame_index() const noexcept { return current_buffer; }
+
+  native_type const& operator*() const noexcept { return handle; }
 
 private:
   native_type handle;

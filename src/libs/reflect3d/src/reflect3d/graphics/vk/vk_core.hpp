@@ -11,11 +11,16 @@
 
 namespace rf3d::gfx::vk {
 
+inline constexpr Vertex vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
+inline constexpr Vertex vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
+inline constexpr Vertex vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
+inline constexpr std::array vertices = {vertex1, vertex2, vertex3};
+
 struct FrameInfo { };
 
 class Core {
 public:
-  Core() : vertex_buffer(3) {
+  Core() : vertex_buffer(vertices) {
     // hardcoded TODO write pso cache
     auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
     auto const shader      = Shader {load_shader_bytecode(shader_path)};
@@ -26,12 +31,6 @@ public:
                    .build(); //
 
     pso_cache.emplace_back(std::move(pso));
-
-    Vertex constexpr vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
-    Vertex constexpr vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
-    Vertex constexpr vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
-    static constexpr std::array vertices = {vertex1, vertex2, vertex3};
-    vertex_buffer.insert_range(0, vertices);
   }
 
   void render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {
@@ -77,7 +76,7 @@ public:
 
 private:
   std::vector<Pipeline> pso_cache;
-  DynamicVertexBuffer vertex_buffer;
+  VertexBuffer vertex_buffer;
 };
 
 

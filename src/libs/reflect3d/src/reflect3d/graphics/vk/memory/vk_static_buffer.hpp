@@ -19,13 +19,15 @@ struct StaticBuffer : Buffer<Type> {
   explicit StaticBuffer(StaticBufferCreateInfo<Type> const& create_info) :
     Buffer<Vertex> {
       core::BufferCreateInfo {
-        .size        = create_info.data.size_bytes(),
-        .usage       = core::BufferUsageFlagBits::eTransferDst | create_info.usage,
-        .sharingMode = core::SharingMode::eExclusive,
+        .size  = create_info.data.size_bytes(),
+        .usage = core::BufferUsageFlagBits::eTransferDst | create_info.usage,
       },
       device_local_allocation_create_info
     } {
     StagingBuffer<Type> staging_buffer {create_info.data};
+    gpu::upload_buffer(
+        this->handle(), staging_buffer.handle(), core::BufferCopy {.size = create_info.data.size_bytes()}
+    );
   }
 };
 

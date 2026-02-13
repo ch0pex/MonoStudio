@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/meta/concepts.hpp"
 #include "reflect3d/graphics/vk/memory/vk_buffer.hpp"
 
 
@@ -15,8 +16,7 @@ namespace rf3d::gfx::vk {
  *
  * @note Read operations in mapped memory are slow, so it's recommended to avoid them if possible.
  */
-template<typename Type>
-  requires(std::is_trivially_copyable_v<Type>)
+template<mono::meta::trivially_copyable_value Type>
 class DynamicBuffer : public Buffer<Type> {
 public:
   /*********************
@@ -34,22 +34,14 @@ public:
    *********************/
 
   explicit DynamicBuffer(core::BufferCreateInfo const& buffer_info) :
-    Buffer<Type> {
-      buffer_info,
-      {
-        .flags          = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-        .usage          = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
-        .requiredFlags  = {},
-        .preferredFlags = {},
-        .memoryTypeBits = 0,
-        .pool           = nullptr,
-        .pUserData      = nullptr,
-        .priority       = 0.0F,
-      }
-    },
+    Buffer<Type> {buffer_info, mapped_allocation_create_info},
     mapped_memory(
         static_cast<Type*>(this->allocation_info().pMappedData), this->allocation_info().size / sizeof(Type)
-    ) { }
+    ) //
+  {
+    assert(mapped_memory.size() > 0 && "Mapped memory size must be greater than zero");
+    assert(mapped_memory.data() != nullptr && "Mapped memory pointer must not be null");
+  }
 
   /**************************
    *    Member functions    *

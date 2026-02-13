@@ -30,6 +30,10 @@ void submit_work(
     std::span<core::Semaphore const> signal_semaphores //
 );
 
+void submit_work(
+    std::span<core::CommandBuffer const> command_buffers //
+);
+
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
 
 // -----------------------------
@@ -56,6 +60,8 @@ raii::PipelineLayout make_pipeline_layout(core::PipelineLayoutCreateInfo const& 
 BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, AllocationCreateInfo const& alloc_info = {});
 
 void free_buffer(BufferAllocation const& buffer);
+
+void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::BufferCopy const& copy_region);
 
 // --------------------------------
 // --- Gpu info query functions ---

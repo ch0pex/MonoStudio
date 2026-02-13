@@ -2,12 +2,11 @@
 
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 
-#include <type_traits>
+#include <mono/meta/concepts.hpp>
 
 namespace rf3d::gfx::vk {
 
-template<typename Type>
-  requires(std::is_trivially_copyable_v<Type>)
+template<mono::meta::trivially_copyable_value Type>
 class Buffer {
 public:
   /*********************

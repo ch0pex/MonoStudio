@@ -1,17 +1,39 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/memory/vk_dynamic_buffer.hpp"
+#include "reflect3d/graphics/vk/memory/vk_static_buffer.hpp"
 #include "reflect3d/render/vertex.hpp"
 
 namespace rf3d::gfx::vk {
 
+struct VertexBuffer : StaticBuffer<Vertex> {
+  explicit VertexBuffer(std::span<Vertex const> vertices) :
+    StaticBuffer {
+      StaticBufferCreateInfo {
+        .data  = vertices,
+        .usage = core::BufferUsageFlagBits::eVertexBuffer,
+      },
+    } { }
+};
+
 struct DynamicVertexBuffer : DynamicBuffer<Vertex> {
   explicit DynamicVertexBuffer(std::size_t const count) :
-    DynamicBuffer {core::BufferCreateInfo {
-      .size        = count * sizeof(Vertex),
-      .usage       = core::BufferUsageFlagBits::eVertexBuffer,
-      .sharingMode = core::SharingMode::eExclusive,
-    }} { }
+    DynamicBuffer {
+      core::BufferCreateInfo {
+        .size  = count * sizeof(Vertex),
+        .usage = core::BufferUsageFlagBits::eVertexBuffer,
+      },
+    } { }
+
+  explicit DynamicVertexBuffer(std::span<Vertex const> vertices) :
+    DynamicBuffer {
+      core::BufferCreateInfo {
+        .size  = vertices.size_bytes(),
+        .usage = core::BufferUsageFlagBits::eVertexBuffer,
+      },
+    } {
+    insert_range(0, vertices);
+  }
 };
 
 

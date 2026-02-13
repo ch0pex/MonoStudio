@@ -111,6 +111,15 @@ public:
     return *this;
   }
 
+  CommandBuffer const& copy_buffer( // NOLINT
+      core::Buffer const& src_buffer, //
+      core::Buffer const& dst_buffer, //
+      core::BufferCopy const& copy_region //
+  ) const {
+    cmd_buffer.copyBuffer(src_buffer, dst_buffer, copy_region);
+    return *this;
+  }
+
   // core::SubmitInfo const submit_info( // NOLINT
   //     std::uint32_t const wait_semaphore_count, //
   //     core::Semaphore const* p_wait_semaphores, //

@@ -4,16 +4,15 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
-#include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain_detail.hpp"
 
 #include "reflect3d/window/utils/resolution.hpp"
-#include "reflect3d/window/window.hpp"
 
 #include <mono/containers/stable_vector.hpp>
 
 namespace rf3d::gfx::vk {
 
+// TODO Number of present and render semaphores may differ, separate them
 struct Semaphores {
   raii::Semaphore present {gpu::make_semaphore()};
   raii::Semaphore render {gpu::make_semaphore()};
@@ -59,6 +58,7 @@ public:
     return std::nullopt;
   }
 
+  // TODO maybe I should move these synchroniztion functions to other class
   [[nodiscard]] semaphore_type const& present_semaphore(FrameIndex const index) const noexcept {
     return semaphores.at(index % defaults::max_frames_in_flight).present;
   }

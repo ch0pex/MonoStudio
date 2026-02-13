@@ -14,6 +14,7 @@ target_sources(
         reflect3d/graphics/vk/gpu/vk_gpu_queues.hpp
         reflect3d/graphics/vk/gpu/vk_logical_device.hpp
         reflect3d/graphics/vk/gpu/vk_physical_device.hpp
+
         reflect3d/graphics/vk/instance/vk_debug_messenger.hpp
         reflect3d/graphics/vk/instance/vk_extensions.hpp
         reflect3d/graphics/vk/instance/vk_validation_layers.hpp
@@ -22,7 +23,9 @@ target_sources(
         reflect3d/graphics/vk/memory/vk_buffer.hpp
         reflect3d/graphics/vk/memory/vk_buffer_allocation.hpp
         reflect3d/graphics/vk/memory/vk_dynamic_buffer.hpp
+        reflect3d/graphics/vk/memory/vk_staging_buffer.hpp
         reflect3d/graphics/vk/memory/vk_vertex_buffer.hpp
+
         reflect3d/graphics/vk/utils/vk_checker.hpp
         reflect3d/graphics/vk/utils/vk_debug_callback.hpp
         reflect3d/graphics/vk/utils/vk_exception.hpp
