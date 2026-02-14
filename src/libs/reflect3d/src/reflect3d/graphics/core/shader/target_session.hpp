@@ -12,7 +12,7 @@
  */
 #pragma once
 
-#include "reflect3d/render/shader/targets.hpp"
+#include "reflect3d/graphics/core/shader/targets.hpp"
 
 #include <assets_path.hpp>
 

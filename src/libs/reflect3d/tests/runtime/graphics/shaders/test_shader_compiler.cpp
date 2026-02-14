@@ -2,7 +2,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include <reflect3d/render/shader/compiler.hpp>
+#include <reflect3d/graphics/core/shader/compiler.hpp>
 
 TEST_SUITE_BEGIN("Shaders");
 

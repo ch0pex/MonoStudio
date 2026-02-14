@@ -4,8 +4,8 @@
 #include <iostream>
 
 
-#include "reflect3d/render/shader/targets.hpp"
-#include "reflect3d/render/shader/types.hpp"
+#include "reflect3d/graphics/core/shader/targets.hpp"
+#include "reflect3d/graphics/core/shader/types.hpp"
 #include "target_session.hpp"
 
 namespace rf3d::gfx::shader {

@@ -9,7 +9,7 @@
 #include "reflect3d/graphics/vk/vk_shader.hpp"
 #include "reflect3d/graphics/vk/vk_surface.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
-#include "reflect3d/render/mesh.hpp"
+#include "reflect3d/graphics/core/mesh.hpp"
 
 #include <mono/misc/as_span.hpp>
 

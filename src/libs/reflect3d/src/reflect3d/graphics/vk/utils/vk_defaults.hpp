@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/vk_image.hpp"
-#include "reflect3d/render/vertex.hpp"
+#include "reflect3d/graphics/core/vertex.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <limits>

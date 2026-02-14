@@ -68,9 +68,7 @@ target_sources(
         reflect3d/window/window_types.hpp
 
         # Render
-        reflect3d/render/mesh.hpp
         reflect3d/render/renderer.hpp
-        reflect3d/render/vertex.hpp
         reflect3d/render/viewport.hpp
 )
 

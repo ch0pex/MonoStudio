@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/render/shader/global_session.hpp"
+#include "reflect3d/graphics/core/shader/global_session.hpp"
 
 #include <slang-com-helper.h>
 #include <slang-com-ptr.h>

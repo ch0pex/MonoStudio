@@ -2,7 +2,7 @@
 
 #include "reflect3d/graphics/vk/memory/vk_dynamic_buffer.hpp"
 #include "reflect3d/graphics/vk/memory/vk_static_buffer.hpp"
-#include "reflect3d/render/vertex.hpp"
+#include "reflect3d/graphics/core/vertex.hpp"
 
 namespace rf3d::gfx::vk {
 
