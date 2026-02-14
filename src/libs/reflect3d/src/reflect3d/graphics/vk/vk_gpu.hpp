@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/memory/vk_buffer_allocation.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
@@ -24,15 +25,9 @@ core::CommandBuffer record_commands(
     std::function<void(CommandBuffer const&)> const& command_recording_func
 );
 
-void submit_work(
-    std::span<core::Semaphore const> wait_semaphores, //
-    std::span<core::CommandBuffer const> command_buffers, //
-    std::span<core::Semaphore const> signal_semaphores //
-);
+void submit_work(SubmitInfo const& submit_info, wait::fence_t wait);
 
-void submit_work(
-    std::span<core::CommandBuffer const> command_buffers //
-);
+void submit_work(SubmitInfo const& submit_info, wait::idle_t wait);
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
 

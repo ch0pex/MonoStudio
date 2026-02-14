@@ -5,6 +5,7 @@
 #include "reflect3d/graphics/vk/gpu/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_physical_device.hpp"
+#include "reflect3d/graphics/vk/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
@@ -96,34 +97,13 @@ core::CommandBuffer record_commands(
   return **buffer;
 }
 
-void submit_work(
-    std::span<core::Semaphore const> wait_semaphores, //
-    std::span<core::CommandBuffer const> command_buffers, //
-    std::span<core::Semaphore const> signal_semaphores //
-) {
-  static constexpr core::PipelineStageFlags mask = core::PipelineStageFlagBits::eColorAttachmentOutput;
-  core::SubmitInfo const info {
-    .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphores.size()),
-    .pWaitSemaphores      = wait_semaphores.data(),
-    .pWaitDstStageMask    = std::addressof(mask),
-    .commandBufferCount   = static_cast<std::uint32_t>(command_buffers.size()),
-    .pCommandBuffers      = command_buffers.data(),
-    .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphores.size()),
-    .pSignalSemaphores    = signal_semaphores.data(),
-  };
-
-  get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
+void submit_work(SubmitInfo const& submit_info, [[maybe_unused]] wait::fence_t const wait) {
+  get_gpu().queues.graphics().submit(to_native(submit_info), get_gpu().command_pool.fence());
 }
 
-void submit_work(
-    std::span<core::CommandBuffer const> command_buffers //
-) {
-  core::SubmitInfo const info {
-    .commandBufferCount = static_cast<std::uint32_t>(command_buffers.size()),
-    .pCommandBuffers    = command_buffers.data(),
-  };
-
-  get_gpu().queues.graphics().submit(info);
+void submit_work(SubmitInfo const& submit_info, [[maybe_unused]] wait::idle_t const wait) {
+  get_gpu().queues.graphics().submit(to_native(submit_info));
+  wait_idle();
 }
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info) {
@@ -209,8 +189,8 @@ void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::B
     cmd.copy_buffer(staging_buffer, dst_buffer, copy_region);
   });
 
-  submit_work(mono::as_span(**cmd_copy_buffer));
-  wait_idle();
+  SubmitInfo const submit_info = {.command_buffers = mono::as_span(**cmd_copy_buffer)};
+  submit_work(submit_info, wait::idle);
 }
 
 // --------------------------------

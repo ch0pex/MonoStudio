@@ -74,12 +74,14 @@ public:
       transition_image_layout(cmd, *image, present_layout);
     });
 
-    // TODO: improve API by creating my onw submit info structure
-    gpu::submit_work(
-        mono::as_span(*surface.present_semaphore(frame_index)), //
-        mono::as_span(commands), //
-        mono::as_span(*surface.render_semaphore())
-    );
+    core::PipelineStageFlags mask {core::PipelineStageFlagBits::eColorAttachmentOutput};
+    auto submit_info = gpu::SubmitInfo {
+      .wait_semaphores     = mono::as_span(*surface.present_semaphore(frame_index)),
+      .wait_dst_stage_mask = mono::as_span(mask),
+      .command_buffers     = mono::as_span(commands),
+      .signal_semaphores   = mono::as_span(*surface.render_semaphore()),
+    };
+    gpu::submit_work(submit_info, gpu::wait::fence);
     surface.present();
   }
 
