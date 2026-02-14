@@ -6,16 +6,17 @@
 #include <mono/logging/logger.hpp>
 
 #include <iostream>
-#include <ranges>
 
 using namespace rf3d;
 using namespace rf3d::gfx;
 using namespace rf3d::gfx::vk;
 
-inline constexpr Vertex vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
-inline constexpr Vertex vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
-inline constexpr Vertex vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
-inline constexpr std::array vertices = {vertex1, vertex2, vertex3};
+std::array constexpr vertices = {
+  Vertex {.position = {-0.5F, -0.5F, 0.F}, .color {1.0F, 0.0F, 0.0F, 0.0F}},
+  Vertex {.position = {0.5F, -0.5F, 0.F}, .color = {0.0F, 1.0F, 0.0F, 0.F}},
+  Vertex {.position = {0.5F, 0.5F, 0.F}, .color = {0.0F, 0.0F, 1.0F, 0.F}},
+  Vertex {.position = {-0.5F, 0.5F, 0.F}, .color = {1.0F, 1.0F, 1.0F, 0.F}}
+};
 
 int main() try {
   mono::ex::setup_signals();
@@ -27,7 +28,7 @@ int main() try {
   renderer.add_mesh(
       Mesh {
         .vertices = std::ranges::to<std::vector>(vertices),
-        .indices  = std::vector<Index> {0, 1, 2},
+        .indices  = std::vector<Index> {0, 1, 2, 2, 3, 0},
       }
   );
 

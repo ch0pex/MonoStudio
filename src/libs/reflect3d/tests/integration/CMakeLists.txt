@@ -1,9 +1,11 @@
 
 # Render
-integration_test(test_vk_triangle render/test_vk_triangle.cpp)
 integration_test(test_vk_multiple_surfaces render/test_vk_multiple_surfaces.cpp)
+integration_test(test_vk_triangle render/test_vk_triangle.cpp)
+integration_test(test_vk_square render/test_vk_square.cpp)
 
-target_copy_slang_binaries(ftest_reflect3d_test_vk_triangle)
+target_copy_slang_binaries(ftest_reflect3d_test_vk_multiple_surfaces)
+target_copy_slang_binaries(ftest_reflect3d_test_vk_square)
 target_copy_slang_binaries(ftest_reflect3d_test_vk_triangle)
 
 # Window
