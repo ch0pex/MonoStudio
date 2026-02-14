@@ -11,4 +11,6 @@ struct Vertex {
   // math::vec2 uv {0.0F, 0.0F};
 };
 
+using Index = std::uint16_t;
+
 } // namespace rf3d::gfx

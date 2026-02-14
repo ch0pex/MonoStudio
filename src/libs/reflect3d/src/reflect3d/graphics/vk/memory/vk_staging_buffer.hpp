@@ -10,18 +10,16 @@ struct StagingBuffer : DynamicBuffer<Type> {
   explicit StagingBuffer(std::size_t const count) :
     DynamicBuffer<Type> {
       core::BufferCreateInfo {
-        .size        = count * sizeof(Type),
-        .usage       = core::BufferUsageFlagBits::eTransferSrc,
-        .sharingMode = core::SharingMode::eExclusive,
+        .size  = count * sizeof(Type),
+        .usage = core::BufferUsageFlagBits::eTransferSrc,
       },
     } { }
 
   explicit StagingBuffer(std::span<Type const> elements) :
     DynamicBuffer<Type> {
       core::BufferCreateInfo {
-        .size        = elements.size_bytes(),
-        .usage       = core::BufferUsageFlagBits::eTransferSrc,
-        .sharingMode = core::SharingMode::eExclusive,
+        .size  = elements.size_bytes(),
+        .usage = core::BufferUsageFlagBits::eTransferSrc,
       },
     } {
     this->insert_range(0, elements);

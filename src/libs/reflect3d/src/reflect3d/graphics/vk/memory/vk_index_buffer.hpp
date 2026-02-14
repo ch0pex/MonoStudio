@@ -1,0 +1,40 @@
+#pragma once
+
+#include "reflect3d/graphics/vk/memory/vk_dynamic_buffer.hpp"
+#include "reflect3d/graphics/vk/memory/vk_static_buffer.hpp"
+#include "reflect3d/render/vertex.hpp"
+
+namespace rf3d::gfx::vk {
+
+struct IndexBuffer : StaticBuffer<Index> {
+  explicit IndexBuffer(std::span<Index const> indices) :
+    StaticBuffer {
+      StaticBufferCreateInfo {
+        .data  = indices,
+        .usage = core::BufferUsageFlagBits::eIndexBuffer,
+      },
+    } { }
+};
+
+struct DynamicIndexBuffer : DynamicBuffer<Index> {
+  explicit DynamicIndexBuffer(std::size_t const count) :
+    DynamicBuffer {
+      core::BufferCreateInfo {
+        .size  = count * sizeof(Index),
+        .usage = core::BufferUsageFlagBits::eIndexBuffer,
+      },
+    } { }
+
+  explicit DynamicIndexBuffer(std::span<Index const> indices) :
+    DynamicBuffer {
+      core::BufferCreateInfo {
+        .size  = indices.size_bytes(),
+        .usage = core::BufferUsageFlagBits::eIndexBuffer,
+      },
+    } {
+    insert_range(0, indices);
+  }
+};
+
+
+} // namespace rf3d::gfx::vk

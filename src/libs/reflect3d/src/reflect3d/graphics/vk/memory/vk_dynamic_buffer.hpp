@@ -37,8 +37,7 @@ public:
     Buffer<Type> {buffer_info, mapped_allocation_create_info},
     mapped_memory(
         static_cast<Type*>(this->allocation_info().pMappedData), this->allocation_info().size / sizeof(Type)
-    ) //
-  {
+    ) {
     assert(mapped_memory.size() > 0 && "Mapped memory size must be greater than zero");
     assert(mapped_memory.data() != nullptr && "Mapped memory pointer must not be null");
   }

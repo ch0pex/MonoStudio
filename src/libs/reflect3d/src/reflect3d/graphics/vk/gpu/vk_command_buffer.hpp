@@ -1,8 +1,13 @@
 #pragma once
 
+//
 #include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
+//
+#include <mono/misc/as_span.hpp>
+
+//
 #include <cstdint>
 #include <functional>
 
@@ -50,7 +55,7 @@ public:
       core::Buffer const& buffer, //
       core::DeviceSize const offset //
   ) const {
-    cmd_buffer.bindVertexBuffers(binding, std::span {&buffer, 1}, std::span {&offset, 1});
+    cmd_buffer.bindVertexBuffers(binding, mono::as_span(buffer), mono::as_span(offset));
     return *this;
   }
 
@@ -63,6 +68,15 @@ public:
     return *this;
   }
 
+  CommandBuffer const& bind_index_buffer( // NOLINT
+      core::Buffer const& buffer, //
+      core::DeviceSize const offset, //
+      core::IndexType const index_type //
+  ) const {
+    cmd_buffer.bindIndexBuffer(buffer, offset, index_type);
+    return *this;
+  }
+
   CommandBuffer const& draw( // NOLINT
       std::uint32_t const vertex_count, //
       std::uint32_t const instance_count, //
@@ -72,6 +86,18 @@ public:
     cmd_buffer.draw(vertex_count, instance_count, first_vertex, first_instance);
     return *this;
   }
+
+  CommandBuffer const& draw_indexed( // NOLINT
+      std::uint32_t const index_count, //
+      std::uint32_t const instance_count, //
+      std::uint32_t const first_index, //
+      std::int32_t const vertex_offset, //
+      std::uint32_t const first_instance //
+  ) const {
+    cmd_buffer.drawIndexed(index_count, instance_count, first_index, vertex_offset, first_instance);
+    return *this;
+  }
+
 
   CommandBuffer const& set_viewport( // NOLINT
       std::uint32_t const first_viewport, //

@@ -2,7 +2,6 @@
 
 #include "reflect3d/graphics/vk/memory/vk_buffer.hpp"
 #include "reflect3d/graphics/vk/memory/vk_staging_buffer.hpp"
-#include "reflect3d/render/vertex.hpp"
 
 
 namespace rf3d::gfx::vk {
@@ -17,7 +16,7 @@ struct StaticBufferCreateInfo {
 template<mono::meta::trivially_copyable_value Type>
 struct StaticBuffer : Buffer<Type> {
   explicit StaticBuffer(StaticBufferCreateInfo<Type> const& create_info) :
-    Buffer<Vertex> {
+    Buffer<Type> {
       core::BufferCreateInfo {
         .size  = create_info.data.size_bytes(),
         .usage = core::BufferUsageFlagBits::eTransferDst | create_info.usage,

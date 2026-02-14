@@ -51,7 +51,7 @@ public:
 private:
   void recreate_swapchain() {
     LOG_INFO("Recreating swapchain");
-    while (window_size() == Resolution {0, 0}) {
+    while (window_size() == Resolution {.width = 0, .height = 0}) {
       glfwWaitEvents();
     }
     gpu::wait_idle();

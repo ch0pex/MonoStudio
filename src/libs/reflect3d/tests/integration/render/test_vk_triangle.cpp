@@ -1,9 +1,4 @@
-#include "reflect3d/graphics/vk/vk_core.hpp"
-#include "reflect3d/graphics/vk/vk_gpu.hpp"
-#include "reflect3d/graphics/vk/vk_swapchain.hpp"
-#include "reflect3d/input/input.hpp"
-#include "reflect3d/window/window_builder.hpp"
-#include "reflect3d/window/window_config.hpp"
+#include "common.hpp"
 
 #include <mono/error/expected.hpp>
 #include <mono/execution/signals.hpp>
@@ -12,32 +7,34 @@
 
 #include <iostream>
 
+using namespace rf3d;
+using namespace rf3d::gfx;
+using namespace rf3d::gfx::vk;
+
+inline constexpr Vertex vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
+inline constexpr Vertex vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
+inline constexpr Vertex vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
+inline constexpr std::array vertices = {vertex1, vertex2, vertex3};
+
 int main() try {
-  using namespace rf3d;
-  using namespace rf3d::gfx::vk;
   mono::ex::setup_signals();
   LOG_INFO("Begining of the program");
 
-  std::vector<Surface> surfaces;
+  Surface surface = test::create_test_surface("Vk Triangle");
   Core renderer {};
 
-  for (std::size_t i = 0; i < 2; ++i) {
-    auto window_config = config::Window {
-      .title = std::format("Window {}", i),
-      .mode  = WindowMode::windowed,
-    };
-
-    auto window = WindowBuilder(window_config).default_callbacks().build(); //
-    surfaces.emplace_back(std::move(window));
-  }
+  renderer.add_mesh(
+      Mesh {
+        .vertices = std::vector<Vertex> {vertices.begin(), vertices.end()},
+        .indices  = std::vector<Index> {0, 1, 2},
+      }
+  );
 
   while (mono::ex::should_run()) {
     input::poll_events();
-
-    for (auto& surface: surfaces) {
-      renderer.render_surface(surface, {});
-    }
+    renderer.render_surface(surface, {});
   }
+
   gpu::wait_idle();
 }
 catch (std::exception const& e) {

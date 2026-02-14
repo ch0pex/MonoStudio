@@ -12,6 +12,7 @@
 //
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
+#include <mono/misc/as_span.hpp>
 
 
 //
@@ -19,8 +20,6 @@
 
 //
 #include <cassert>
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -124,7 +123,7 @@ void submit_work(
     .pCommandBuffers    = command_buffers.data(),
   };
 
-  get_gpu().queues.graphics().submit(info, get_gpu().command_pool.fence());
+  get_gpu().queues.graphics().submit(info);
 }
 
 mono::err::expected<void> present(core::PresentInfoKHR const& present_info) {
@@ -210,7 +209,7 @@ void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::B
     cmd.copy_buffer(staging_buffer, dst_buffer, copy_region);
   });
 
-  submit_work(std::span {&**cmd_copy_buffer, 1});
+  submit_work(mono::as_span(**cmd_copy_buffer));
   wait_idle();
 }
 

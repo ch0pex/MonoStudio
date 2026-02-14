@@ -15,6 +15,7 @@ public:
 
   using handle_type          = core::Buffer;
   using allocation_info_type = AllocationInfo;
+  using size_type            = std::size_t;
 
 
   /**********************
@@ -22,21 +23,44 @@ public:
    **********************/
 
   explicit Buffer(core::BufferCreateInfo const& buffer_info, AllocationCreateInfo const& alloc_info) :
-    buffer_allocation(gpu::allocate_buffer(buffer_info, alloc_info)) {
+    buffer_allocation(gpu::allocate_buffer(buffer_info, alloc_info)), //
+    element_count(buffer_info.size / sizeof(Type)), //
+    name(std::format("Buffer<{}>-{}", to_string(buffer_info.usage), counter++))
+  //
+  {
     if (buffer_info.size % sizeof(Type) != 0) {
       throw std::runtime_error("Buffer size must be a multiple of the element type size");
     }
+    LOG_INFO("Created {} with size {} bytes", name, buffer_allocation.allocation_info.size);
   }
 
-  Buffer(Buffer&&) = default;
+  Buffer(Buffer&& other) noexcept :
+    buffer_allocation(std::exchange(other.buffer_allocation, {})),
+    element_count(std::exchange(other.element_count, 0)) { }
 
-  Buffer& operator=(Buffer const&) = delete;
+  Buffer& operator=(Buffer&& other) noexcept {
+    if (this != &other) {
 
-  Buffer& operator=(Buffer&&) = default;
+      if (buffer_allocation.buffer_handle != nullptr) {
+        gpu::free_buffer(buffer_allocation);
+      }
+
+      buffer_allocation = std::exchange(other.buffer_allocation, {});
+      element_count     = std::exchange(other.element_count, 0);
+    }
+    return *this;
+  }
 
   Buffer(Buffer const&) = delete;
 
-  ~Buffer() { gpu::free_buffer(buffer_allocation); }
+  Buffer& operator=(Buffer const&) = delete;
+
+  ~Buffer() {
+    if (buffer_allocation.buffer_handle != nullptr) {
+      LOG_INFO("Destroying {} with size {} bytes", name, buffer_allocation.allocation_info.size);
+      gpu::free_buffer(buffer_allocation);
+    }
+  }
 
   /**************************
    *    Member functions    *
@@ -46,8 +70,16 @@ public:
 
   [[nodiscard]] allocation_info_type allocation_info() const { return buffer_allocation.allocation_info; }
 
+  [[nodiscard]] std::size_t size() const { return element_count; }
+
+  [[nodiscard]] std::size_t size_bytes() const { return buffer_allocation.allocation_info.size; }
+
+
 private:
   BufferAllocation buffer_allocation;
+  size_type element_count;
+  std::string name;
+  inline static auto counter = 0;
 };
 
 } // namespace rf3d::gfx::vk
