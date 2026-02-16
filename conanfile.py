@@ -23,6 +23,7 @@ class MonoGameRecipe(ConanFile):
     default_options = {
         "reflect-cpp/*:with_toml": True,
         "glfw/*:with_wayland": True,
+        # "glfw/*:with_x11": False,
         "glad/*:gl_version": "4.5",
         "glad/*:gl_profile": "core",
         "boost/*:without_cobalt": True
@@ -33,6 +34,7 @@ class MonoGameRecipe(ConanFile):
 
     def generate(self):
         deps = CMakeDeps(self)
+        deps.check_components_exist = False
         deps.generate()
         tc = CMakeToolchain(self)
         tc.user_presets_path = ""

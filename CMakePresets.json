@@ -13,7 +13,8 @@
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CONAN_INSTALL_ARGS": "--build=missing;-u",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CONAN_INSTALL_ARGS": "--build=missing",
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
         "BUILD_TESTING": true
