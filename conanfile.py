@@ -50,13 +50,13 @@ class MonoGameRecipe(ConanFile):
         cmake.install()
 
     def requirements(self):
-        self.requires("vulkan-loader/[>=1]")
-        self.requires("glfw/[>=3]")
-        self.requires("boost/[>=1]")
-        self.requires("reflect-cpp/[>=0]")
-        self.requires("quill/[>=10]")
-        self.requires("glm/[>=1]")
-        self.requires("glad/[>=2]")
+        self.requires("vulkan-loader/1.4.313.0")
+        self.requires("glfw/3.4")
+        self.requires("boost/1.90.0")
+        self.requires("reflect-cpp/0.23.0")
+        self.requires("quill/11.0.2")
+        self.requires("glm/1.0.1")
+        self.requires("glad/2.0.8")
         self.requires("vulkan-memory-allocator/3.3.0")
 
     def build_requirements(self):
