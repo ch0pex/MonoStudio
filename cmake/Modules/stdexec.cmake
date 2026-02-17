@@ -16,5 +16,14 @@ CPMAddPackage(
   NAME stdexec
   GITHUB_REPOSITORY NVIDIA/stdexec
   GIT_TAG main
+  SYSTEM YES
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format=2)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  target_compile_options(stdexec INTERFACE /permissive-)
+endif()
 

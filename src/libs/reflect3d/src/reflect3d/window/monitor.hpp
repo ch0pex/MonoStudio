@@ -114,22 +114,22 @@ public:
 
   [[nodiscard]] std::uint8_t redBits() const {
     auto const* mode = glfwGetVideoMode(handle);
-    return mode->redBits;
+    return static_cast<std::uint8_t>(mode->redBits);
   }
 
   [[nodiscard]] std::uint8_t greenBits() const {
     auto const* mode = glfwGetVideoMode(handle);
-    return mode->greenBits;
+    return static_cast<std::uint8_t>(mode->greenBits);
   }
 
   [[nodiscard]] std::uint8_t blueBits() const {
     auto const* mode = glfwGetVideoMode(handle);
-    return mode->blueBits;
+    return static_cast<std::uint8_t>(mode->blueBits);
   }
 
-  [[nodiscard]] std::uint8_t refresh_rate() const {
+  [[nodiscard]] std::uint16_t refresh_rate() const {
     auto const* mode = glfwGetVideoMode(handle);
-    return mode->refreshRate;
+    return static_cast<std::uint16_t>(mode->refreshRate);
   }
 
   [[nodiscard]] working_area_type working_area() const {

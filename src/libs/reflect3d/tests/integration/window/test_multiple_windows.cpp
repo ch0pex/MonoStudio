@@ -3,7 +3,7 @@
 #include "reflect3d/window/window_types.hpp"
 
 
-int main(int argc, char** argv) { //
+int main() { //
   using namespace rf3d;
   mono::ex::setup_signals();
 

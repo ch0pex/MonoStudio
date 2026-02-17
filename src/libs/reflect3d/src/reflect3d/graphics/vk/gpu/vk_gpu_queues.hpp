@@ -27,13 +27,15 @@ struct PresentQueue : raii::Queue {
 };
 
 struct ComputeQueue : raii::Queue {
-  ComputeQueue(LogicalDevice const& device, GpuQueueFamilies const& queue_families) : raii::Queue {nullptr} {
+  ComputeQueue([[maybe_unused]] LogicalDevice const& device, [[maybe_unused]] GpuQueueFamilies const& queue_families) :
+    raii::Queue {nullptr} {
     throw std::runtime_error("ComputeQueue not yet implemented");
   }
 };
 
 struct TransferQueue : raii::Queue {
-  TransferQueue(LogicalDevice const& device, GpuQueueFamilies const& queue_families) : raii::Queue {nullptr} {
+  TransferQueue([[maybe_unused]] LogicalDevice const& device, [[maybe_unused]] GpuQueueFamilies const& queue_families) :
+    raii::Queue {nullptr} {
     throw std::runtime_error("TransferQueue not yet implemented");
   }
 };

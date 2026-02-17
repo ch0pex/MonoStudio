@@ -8,8 +8,7 @@
 namespace vix {
 
 // clang-format off
-inline rf3d::Window main_window(rf3d::config::Window const& config = {}) {
-
+inline rf3d::Window main_window([[maybe_unused]] rf3d::config::Window const& config = {}) {
   return rf3d::Window {  
     rf3d::WindowBuilder() 
       .on_close([](rf3d::Window::native_type) { 

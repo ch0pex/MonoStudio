@@ -6,7 +6,7 @@
 #include <mono/config/parser.hpp>
 #include <mono/error/log_error.hpp>
 
-int main(int argc, char** argv) {
+int main() {
   using namespace vix;
   //
   // auto result = vix::po::parse_options(std::span(argv, argc)) //

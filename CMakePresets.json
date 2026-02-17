@@ -57,7 +57,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body -Wno-deprecated-variadic-comma-omission"
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion"
       }
     },
     {
@@ -125,7 +125,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -pedantic-errors -Wno-unused-parameter -Wno-empty-body -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
       }
     },

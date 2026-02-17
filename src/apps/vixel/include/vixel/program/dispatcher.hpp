@@ -11,7 +11,7 @@
 
 namespace vix::program {
 
-void run(config::Vixel const& config) {
+void run([[maybe_unused]] config::Vixel const& config) {
   namespace exec = mono::ex;
   exec::static_thread_pool main_pool {std::thread::hardware_concurrency() >= 4U ? 3U : 1U};
   auto sched = main_pool.get_scheduler();

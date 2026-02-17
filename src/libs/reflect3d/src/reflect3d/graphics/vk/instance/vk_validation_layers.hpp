@@ -6,6 +6,7 @@
 
 
 // Mono library
+#include <cstdint>
 #include <mono/logging/logger.hpp>
 
 // STD library
@@ -106,7 +107,7 @@ void setup_validation_layers(raii::Context const& context, core::InstanceCreateI
   if constexpr (enable_validation_layers) {
     // This needs to survive until vkCreateInstance is invoked thats why it has static storage
     static auto const validation_layers = get_validation_layers(context);
-    create_info.enabledLayerCount       = validation_layers.size();
+    create_info.enabledLayerCount       = static_cast<std::uint32_t>(validation_layers.size());
     create_info.ppEnabledLayerNames     = not validation_layers.empty() ? validation_layers.data() : nullptr;
     create_info.pNext                   = &debug_utils_messenger_create_info;
   }

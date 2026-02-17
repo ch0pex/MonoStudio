@@ -26,7 +26,8 @@ concept HasLogger = requires(T config) {
  */
 template<Program ProgramConfig>
 err::expected<ProgramConfig> parse_file(std::filesystem::path const& path) {
-  auto const result = rfl::toml::load<ProgramConfig, rfl::DefaultIfMissing, rfl::NoExtraFields>(path.string());
+  auto path_str     = path.string();
+  auto const result = rfl::toml::load<ProgramConfig, rfl::DefaultIfMissing, rfl::NoExtraFields>(path_str);
 
   if (not result) {
     return err::unexpected(result.error().what());

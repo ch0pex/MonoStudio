@@ -1,7 +1,7 @@
 #pragma once
 
-#include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/graphics/core/vertex.hpp"
+#include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <limits>
@@ -101,13 +101,14 @@ rendering_info(core::Rect2D const render_area, std::span<core::RenderingAttachme
   };
 }
 
-inline core::RenderingAttachmentInfo attachament_info(Image::view_type const& image_view, core::ClearColorValue color) {
+inline core::RenderingAttachmentInfo
+attachament_info(Image::view_type const& image_view, core::ClearColorValue const color) {
   return {
     .imageView   = image_view,
     .imageLayout = gfx::vk::core::ImageLayout::eColorAttachmentOptimal,
     .loadOp      = gfx::vk::core::AttachmentLoadOp::eClear,
     .storeOp     = gfx::vk::core::AttachmentStoreOp::eStore,
-    .clearValue  = gfx::vk::core::ClearColorValue {0.0F, 0.0F, 0.0F, 1.0F},
+    .clearValue  = color,
   };
 }
 

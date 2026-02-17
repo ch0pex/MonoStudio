@@ -24,7 +24,7 @@ public:
   }
 
   [[nodiscard]] FrameIndex next_frame() {
-    current_buffer = (current_buffer + 1U) % buffers.size();
+    current_buffer = (current_buffer + 1U) % static_cast<std::uint32_t>(buffers.size());
     return current_buffer;
   }
 
@@ -47,7 +47,7 @@ public:
   }
 
   void deallocate_command_buffers(std::uint32_t const count) {
-    std::uint32_t const dealloc_count = std::min<std::uint32_t>(count, buffers.size());
+    auto const dealloc_count = std::min<std::uint32_t>(count, static_cast<std::uint32_t>(buffers.size()));
     if (dealloc_count > 0) {
       buffers.erase(buffers.end() - dealloc_count, buffers.end());
     }

@@ -3,7 +3,7 @@
 #include "reflect3d/window/window_types.hpp"
 
 
-int main(int argc, char** argv) { //
+int main() { //
   rf3d::config::Window window_spec {.mode = rf3d::WindowMode::windowed};
   rf3d::Window window {rf3d::WindowBuilder(window_spec).default_callbacks().build()};
 

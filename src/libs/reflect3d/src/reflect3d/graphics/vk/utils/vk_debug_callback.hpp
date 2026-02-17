@@ -13,7 +13,8 @@ namespace rf3d::gfx::vk {
 inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     core::DebugUtilsMessageSeverityFlagBitsEXT message_severity,
     core::DebugUtilsMessageTypeFlagsEXT message_type, // Nota: Flags, no FlagBits
-    core::DebugUtilsMessengerCallbackDataEXT const* callback_data, void* user_data
+    core::DebugUtilsMessengerCallbackDataEXT const* callback_data, //
+    [[maybe_unused]] void* user_data
 ) {
   static mono::unordered_flat_map<core::DebugUtilsMessageSeverityFlagBitsEXT, quill::LogLevel> const severity_map {
     {core::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose, mono::LogLevel::Debug},

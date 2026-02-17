@@ -88,13 +88,20 @@ public:
   }
 
   CommandBuffer const& draw_indexed( // NOLINT
-      std::uint32_t const index_count, //
-      std::uint32_t const instance_count, //
-      std::uint32_t const first_index, //
-      std::int32_t const vertex_offset, //
-      std::uint32_t const first_instance //
+      std::uint64_t const index_count, //
+      std::uint64_t const instance_count, //
+      std::uint64_t const first_index, //
+      std::uint64_t const vertex_offset, //
+      std::uint64_t const first_instance //
   ) const {
-    cmd_buffer.drawIndexed(index_count, instance_count, first_index, vertex_offset, first_instance);
+    //
+    cmd_buffer.drawIndexed(
+        static_cast<std::uint32_t>(index_count), //
+        static_cast<std::uint32_t>(instance_count), //
+        static_cast<std::uint32_t>(first_index), //
+        static_cast<std::int32_t>(vertex_offset), //
+        static_cast<std::uint32_t>(first_instance) //
+    );
     return *this;
   }
 

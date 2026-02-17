@@ -18,12 +18,13 @@
 
 namespace rf3d::detail {
 
-inline void center_window_on_monitor(NativeWindow const window, Monitor const monitor, int width, int height) {
+inline void center_window_on_monitor(
+    NativeWindow const window, Monitor const monitor, std::uint16_t const width, std::uint16_t const height
+) {
   MonitorWorkingArea const work_area = monitor.working_area();
 
-
-  std::uint16_t const x = work_area.position.x + ((work_area.size.width - width) / 2);
-  std::uint16_t const y = work_area.position.y + ((work_area.size.height - height) / 2);
+  auto const x = static_cast<std::uint16_t>(work_area.position.x + ((work_area.size.width - width) / 2));
+  auto const y = static_cast<std::uint16_t>(work_area.position.y + ((work_area.size.height - height) / 2));
 
   glfwSetWindowPos(window, x, y);
 }
