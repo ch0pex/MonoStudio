@@ -13,17 +13,19 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 #
 
 CPMAddPackage(
-  NAME stdexec
-  GITHUB_REPOSITORY NVIDIA/stdexec
-  GIT_TAG main
-  SYSTEM YES
+        NAME stdexec
+        GITHUB_REPOSITORY NVIDIA/stdexec
+        GIT_TAG 044d43bdc6aefc38bfd1c1cee867225d2d5aec35
+        SYSTEM YES
 )
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format=2)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(stdexec INTERFACE /permissive-)
-endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format=2)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(stdexec INTERFACE -Wno-shadow -Wno-old-style-cast -Wno-sign-conversion -Wno-format)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(stdexec INTERFACE /wd4702) # disable unreachable code warning
+    # target_compile_options(stdexec  /Zc:constexpr)
+endif ()
 

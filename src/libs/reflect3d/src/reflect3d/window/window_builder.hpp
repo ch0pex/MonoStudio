@@ -152,7 +152,7 @@ public:
         .on_maximize(window_maximize)
         .on_framebuffer_size(framebuffer_size)
         .on_content_scale(window_content_scale)
-        .on_key(key)
+        .on_key(key_event)
         .on_char(character)
         .on_char_mods(char_mods)
         .on_mouse_button(mouse_button)

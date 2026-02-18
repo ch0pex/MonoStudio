@@ -44,7 +44,7 @@ public:
   [[nodiscard]] Resolution resolution() const { return swapchain.resolution(); }
 
   void present() try { gpu::present(swapchain.present_info()); } // NOLINT
-  catch (std::exception const& e) {
+  catch ([[maybe_unused]] std::exception const& e) {
     recreate_swapchain();
   }
 

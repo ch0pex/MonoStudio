@@ -12,7 +12,7 @@
 TEST_SUITE_BEGIN("CycleView");
 
 using mono::views::cycle;
-using mono::views::CycleView;
+using mono::views::detail::CycleView;
 
 TEST_CASE("CycleView repeats forward range indefinitely") {
   std::vector<int> vec = {1, 2, 3};
@@ -230,9 +230,13 @@ TEST_CASE("CycleView iterator three-way comparison") {
   auto it2 = it1 + 5;
   auto it3 = cycled.begin();
 
-  CHECK((it1 <=> it2) < 0);
-  CHECK((it2 <=> it1) > 0);
-  CHECK((it1 <=> it3) == 0);
+  auto const result  = it1 <=> it2 < 0;
+  auto const result2 = it2 <=> it1 > 0;
+  auto const result3 = it1 <=> it3 == 0;
+
+  CHECK(result);
+  CHECK(result2);
+  CHECK(result3);
 }
 
 TEST_CASE("CycleView base() returns underlying view") {

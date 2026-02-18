@@ -98,7 +98,7 @@ inline constexpr WindowContentScale window_content_scale = [](GLFWwindow* handle
 
 // --- Input callbacks ---
 
-inline constexpr Key key = [](GLFWwindow* handle [[maybe_unused]], int key, int scancode, int action, int mods) {
+inline constexpr Key key_event = [](GLFWwindow* handle [[maybe_unused]], int key, int scancode, int action, int mods) {
   LOG_INFO(
       "Key event on window '{}': key = {}, scancode = {}, action = {}, mods = {}", get_title(handle), key, scancode,
       action, mods

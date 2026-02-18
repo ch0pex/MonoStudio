@@ -55,6 +55,7 @@ public:
     return images.at(index);
   }
   catch (std::exception const& e) {
+    LOG_INFO("Failed to acquire image: {}", e.what());
     return std::nullopt;
   }
 

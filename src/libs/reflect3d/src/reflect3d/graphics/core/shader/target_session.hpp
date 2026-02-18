@@ -32,7 +32,7 @@ Slang::ComPtr<slang::ISession> create_session() {
     .searchPaths              = search_paths.data(),
     .searchPathCount          = 1,
     .compilerOptionEntries    = options.data(),
-    .compilerOptionEntryCount = options.size(),
+    .compilerOptionEntryCount = static_cast<std::uint32_t>(options.size()),
   };
 
   Slang::ComPtr<slang::ISession> session;

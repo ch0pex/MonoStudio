@@ -7,14 +7,14 @@
 
 namespace mono::views {
 
+namespace detail {
 template<std::ranges::view V>
   requires std::ranges::forward_range<V>
-class CycleView : public std::ranges::view_interface<CycleView<V>> {
-private:
+struct CycleView : std::ranges::view_interface<CycleView<V>> {
   V base_ = V();
 
   template<bool Const>
-  class iterator {
+  struct iterator {
     friend CycleView;
     using Base = std::conditional_t<Const, V const, V>;
 
@@ -26,7 +26,6 @@ private:
         std::conditional_t<Const, CycleView const, CycleView>& parent, std::ranges::iterator_t<Base> current
     ) : current_(std::move(current)), parent_(std::addressof(parent)) { }
 
-  public:
     using value_type      = std::ranges::range_value_t<Base>;
     using difference_type = std::ptrdiff_t;
 
@@ -53,7 +52,7 @@ private:
       requires std::default_initializable<std::ranges::iterator_t<Base>>
     = default;
 
-    constexpr iterator(iterator<!Const> i)
+    explicit constexpr iterator(iterator<!Const> i)
       requires Const && std::convertible_to<std::ranges::iterator_t<V>, std::ranges::iterator_t<Base>>
       : current_(std::move(i.current_)), parent_(i.parent_), n_(i.n_) { }
 
@@ -166,7 +165,6 @@ private:
     }
   };
 
-public:
   CycleView()
     requires std::default_initializable<V>
   = default;
@@ -192,12 +190,14 @@ public:
 template<class R>
 CycleView(R&&) -> CycleView<std::views::all_t<R>>;
 
+} // namespace detail
+
 // Range Adaptor
 struct CycleFn {
   template<std::ranges::viewable_range R>
     requires std::ranges::forward_range<R>
   constexpr auto operator()(R&& r) const {
-    return CycleView(std::views::all(std::forward<R>(r)));
+    return detail::CycleView(std::views::all(std::forward<R>(r)));
   }
 
   template<std::ranges::forward_range R>
