@@ -21,16 +21,15 @@ int main() try {
     test::create_test_surface("Surface 4"),
   };
 
-  Core renderer {};
+  Core gfx {};
 
   while (mono::ex::should_run()) {
     input::poll_events();
 
     for (auto& surface: surfaces) {
-      renderer.render_surface(surface, {});
+      gfx.render_surface(surface, {});
     }
   }
-  gpu::wait_idle();
 }
 catch (std::exception const& e) {
   std::cerr << "Unhandled exception: " << e.what() << '\n';

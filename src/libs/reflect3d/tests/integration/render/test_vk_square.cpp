@@ -36,8 +36,6 @@ int main() try {
     input::poll_events();
     renderer.render_surface(surface, {});
   }
-
-  gpu::wait_idle();
 }
 catch (std::exception const& e) {
   std::cerr << "Unhandled exception: " << e.what() << '\n';

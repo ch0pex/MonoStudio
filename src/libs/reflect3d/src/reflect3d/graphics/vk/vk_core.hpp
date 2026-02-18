@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/core/mesh.hpp"
 #include "reflect3d/graphics/vk/memory/vk_index_buffer.hpp"
 #include "reflect3d/graphics/vk/memory/vk_vertex_buffer.hpp"
 #include "reflect3d/graphics/vk/vk_barriers.hpp"
@@ -9,7 +10,6 @@
 #include "reflect3d/graphics/vk/vk_shader.hpp"
 #include "reflect3d/graphics/vk/vk_surface.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
-#include "reflect3d/graphics/core/mesh.hpp"
 
 #include <mono/misc/as_span.hpp>
 
@@ -37,6 +37,12 @@ public:
 
     pso_cache.emplace_back(std::move(pso));
     meshes.reserve(10);
+  }
+
+  ~Core() {
+    LOG_INFO("Waiting for gpu to be idle before destroying VkGraphics backend");
+    gpu::wait_idle();
+    LOG_INFO("VkGraphics backend destroyed");
   }
 
   void render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {
