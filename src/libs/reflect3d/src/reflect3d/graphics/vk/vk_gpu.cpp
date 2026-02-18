@@ -6,6 +6,7 @@
 #include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_physical_device.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_submit_info.hpp"
+#include "reflect3d/graphics/vk/memory/vk_memory_allocator.hpp"
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
@@ -28,39 +29,28 @@ namespace {
 
 
 struct Gpu {
-  /**********************
-   *    Constructors    *
-   **********************/
-  Gpu() = default;
+  Gpu(PhysicalDevice&& physical_device) :
+    physical(std::move(physical_device)), //
+    logical(physical.create_logical_device()), //
+    memory_allocator(instance::create_allocator(*physical, *logical)), //
+    queues(logical, physical.queue_creation_info()), //
+    command_pool {
+      logical,
+      CommandPool::config_type {
+        .flags            = core::CommandPoolCreateFlagBits::eResetCommandBuffer,
+        .queueFamilyIndex = physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex,
+      }
+    } { }
 
-  Gpu(Gpu const&) = delete;
-
-  Gpu(Gpu&&) = delete;
-
-  Gpu& operator=(Gpu const&) = delete;
-
-  Gpu& operator=(Gpu&&) = delete;
-
-  ~Gpu() { vmaDestroyAllocator(memory_allocator); }
-
-  /**************************
-   *    Member variables    *
-   **************************/
-
-  PhysicalDevice physical {pick_best_physical_device()};
-  LogicalDevice logical {physical.create_logical_device()};
-  Queues<GraphicQueue, PresentQueue> queues {logical, physical.queue_creation_info()};
-  VmaAllocator memory_allocator {instance::create_allocator(*physical, *logical)};
-  CommandPool command_pool {
-    logical, CommandPool::config_type {
-               .flags            = core::CommandPoolCreateFlagBits::eResetCommandBuffer,
-               .queueFamilyIndex = physical.queue_creation_info().family_info<QueueFamilyType::Main>().queueFamilyIndex,
-             }
-  };
+  PhysicalDevice physical;
+  LogicalDevice logical;
+  MemoryAllocator memory_allocator;
+  Queues<GraphicQueue, PresentQueue> queues;
+  CommandPool command_pool;
 };
 
 Gpu& get_gpu() {
-  static Gpu instance {};
+  static Gpu instance {pick_best_physical_device()};
   return instance;
 }
 
@@ -154,7 +144,7 @@ BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, Allocat
 
   VkBufferCreateInfo const vk_buffer_info = buf_info;
   vmaCreateBuffer(
-      get_gpu().memory_allocator,
+      get_gpu().memory_allocator.handle, //
       &vk_buffer_info, //
       &alloc_info, //
       &buffer, //
@@ -170,7 +160,9 @@ BufferAllocation allocate_buffer(core::BufferCreateInfo const& buf_info, Allocat
 }
 
 void free_buffer(BufferAllocation const& buffer_allocation) {
-  vmaDestroyBuffer(get_gpu().memory_allocator, buffer_allocation.buffer_handle, buffer_allocation.allocation_handle);
+  vmaDestroyBuffer(
+      get_gpu().memory_allocator.handle, buffer_allocation.buffer_handle, buffer_allocation.allocation_handle
+  );
 }
 
 void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::BufferCopy const& copy_region) {
