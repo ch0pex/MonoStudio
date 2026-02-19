@@ -1,6 +1,7 @@
 #include "common.hpp"
 #include "reflect3d/graphics/hri.hpp"
 #include "reflect3d/input/input.hpp"
+#include "reflect3d/window/window.hpp"
 
 #include <mono/error/expected.hpp>
 #include <mono/execution/signals.hpp>
@@ -8,28 +9,36 @@
 #include <mono/logging/logger.hpp>
 
 #include <iostream>
+#include <stack>
+#include <vector>
 
 template<rf3d::gfx::Hri hri>
 void test_surfaces() try {
   using namespace rf3d;
   using namespace rf3d::gfx;
 
+  using Surface  = typename hri::surface;
+  using Renderer = typename hri::renderer;
 
   mono::ex::setup_signals();
   LOG_INFO("Begining of the program");
 
-
-  std::array surfaces {
-    test::create_test_surface<hri>("Surface 1"),
-    test::create_test_surface<hri>("Surface 2"),
-    test::create_test_surface<hri>("Surface 3"),
-    test::create_test_surface<hri>("Surface 4"),
+  auto window_config = rf3d::config::Window {
+    .title = std::string {"Test"},
+    .mode  = rf3d::WindowMode::windowed,
   };
 
-  typename hri::renderer gfx {};
+  std::vector<Surface> surfaces {};
+
+  for (std::uint8_t i = 0; i < 3; ++i) {
+    surfaces.emplace_back(test::create_test_surface<hri>(std::format("Window {}", i)));
+  }
+
+  Renderer gfx {};
   std::vector<Index> indices {0, 1, 2, 2, 3, 0};
 
-  while (mono::ex::should_run()) {
+  while (not surfaces.empty()) {
+    std::erase_if(surfaces, [](auto& surface) { return surface.should_close(); });
     input::poll_events();
 
     for (auto& surface: surfaces) {

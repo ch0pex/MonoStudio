@@ -21,8 +21,23 @@ public:
         window_handle.resolution() //
     )) { }
 
-  [[nodiscard]] std::optional<ImageProxy> next_image(FrameIndex const frame_index) {
 
+  Surface(Surface const&) = delete;
+
+  Surface(Surface&&) = default;
+
+  Surface& operator=(Surface const&) = delete;
+
+  Surface& operator=(Surface&&) = default;
+
+  ~Surface() {
+    if (window_surface != nullptr) {
+      gpu::wait_idle();
+      LOG_INFO("Destroying Surface");
+    }
+  }
+
+  [[nodiscard]] std::optional<ImageProxy> next_image(FrameIndex const frame_index) {
     auto const image = swapchain.next_image(frame_index);
     if (not image) {
       recreate_swapchain();
@@ -47,6 +62,8 @@ public:
   catch ([[maybe_unused]] std::exception const& e) {
     recreate_swapchain();
   }
+
+  [[nodiscard]] bool should_close() const { return window_handle.should_close(); }
 
 private:
   void recreate_swapchain() {

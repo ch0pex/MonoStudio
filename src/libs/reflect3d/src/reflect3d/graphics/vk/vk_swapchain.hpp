@@ -12,6 +12,29 @@
 
 namespace rf3d::gfx::vk {
 
+class Semaphore {
+public:
+  using native_type = raii::Semaphore;
+
+  Semaphore() : handle(gpu::make_semaphore()) { }
+
+  explicit Semaphore(native_type&& handle) : handle(std::move(handle)) { }
+
+  Semaphore(Semaphore const&) = delete;
+
+  Semaphore& operator=(Semaphore const&) = delete;
+
+  Semaphore(Semaphore&& other) noexcept {
+    gpu::wait_idle();
+    handle = std::move(other.handle);
+  }
+
+  Semaphore& operator=(Semaphore&&) = delete;
+
+private:
+  native_type handle {nullptr};
+};
+
 // TODO Number of present and render semaphores may differ, separate them
 struct Semaphores {
   raii::Semaphore present {gpu::make_semaphore()};
@@ -38,9 +61,25 @@ public:
 
   Swapchain& operator=(Swapchain const&) = delete;
 
-  Swapchain(Swapchain&&) = default;
+  Swapchain(Swapchain&& other) noexcept :
+    handle((gpu::wait_idle(), std::move(other.handle))), //
+    extent(other.extent), //
+    images(std::move(other.images)), //
+    semaphores(std::move(other.semaphores)), //
+    image_index(other.image_index) //
+  { }
 
-  Swapchain& operator=(Swapchain&&) = default;
+  Swapchain& operator=(Swapchain&& other) noexcept {
+    if (other.handle != nullptr) {
+      handle      = std::move(other.handle);
+      extent      = other.extent;
+      images      = std::move(other.images);
+      image_index = other.image_index;
+      gpu::wait_idle();
+      semaphores = std::move(other.semaphores);
+    }
+    return *this;
+  }
 
   ~Swapchain() { //
     if (handle != nullptr) {

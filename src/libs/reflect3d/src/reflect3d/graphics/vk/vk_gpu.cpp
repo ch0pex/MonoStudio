@@ -61,6 +61,7 @@ Gpu& get_gpu() {
 // ----------------------------------------------
 
 void wait_idle() { //
+  LOG_INFO("Waiting for GPU to be idle...");
   get_gpu().logical.wait_idle();
 }
 
