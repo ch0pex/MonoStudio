@@ -103,7 +103,7 @@ inline std::vector<char const*> get_validation_layers(raii::Context const& conte
 /**
  * Setups validation layers and debug utils info
  */
-void setup_validation_layers(raii::Context const& context, core::InstanceCreateInfo& create_info) {
+inline void setup_validation_layers(raii::Context const& context, core::InstanceCreateInfo& create_info) {
   if constexpr (enable_validation_layers) {
     // This needs to survive until vkCreateInstance is invoked thats why it has static storage
     static auto const validation_layers = get_validation_layers(context);
