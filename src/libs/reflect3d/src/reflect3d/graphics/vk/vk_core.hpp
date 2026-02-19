@@ -25,6 +25,8 @@ struct StaticMesh {
 
 class Core {
 public:
+  using surface_type = Surface;
+
   Core() {
     // TODO: hardcoded, write pso cache
     auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
@@ -38,6 +40,14 @@ public:
     pso_cache.emplace_back(std::move(pso));
     meshes.reserve(10);
   }
+
+  Core(Core const&) = default;
+
+  Core(Core&&) = delete;
+
+  Core& operator=(Core const&) = default;
+
+  Core& operator=(Core&&) = delete;
 
   ~Core() {
     LOG_INFO("Waiting for gpu to be idle before destroying VkGraphics backend");
@@ -94,6 +104,8 @@ public:
   void add_mesh(Mesh const& mesh) { //
     meshes.emplace_back(VertexBuffer {mesh.vertices}, IndexBuffer {mesh.indices});
   }
+
+  surface_type create_surface(Window&& window) { return surface_type {std::move(window)}; } // NOLINT
 
 private:
   std::vector<Pipeline> pso_cache;

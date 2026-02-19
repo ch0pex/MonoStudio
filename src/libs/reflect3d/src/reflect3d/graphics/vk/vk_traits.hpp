@@ -1,22 +1,13 @@
 #pragma once
 
 
-#include "reflect3d/graphics/vk/vk_instance.hpp"
+#include "reflect3d/graphics/vk/vk_core.hpp"
 
 namespace rf3d::gfx::vk {
 
-// class Vulkan {
-// public:
-//   explicit Vulkan(vk::Instance const& instance) : instance(instance) { }
-//
-// private:
-//   vk::Instance instance;
-// };
-
 struct Traits {
-  using instance_type = Instance;
-  using gpu_type      = Gpu;
-  using surface_type  = raii::SurfaceKHR;
+  using renderer = ::rf3d::gfx::vk::Core;
+  using surface  = ::rf3d::gfx::vk::Surface;
 };
 
 } // namespace rf3d::gfx::vk
