@@ -37,16 +37,15 @@ public:
   Window(Window&& other) noexcept : handle(other.handle) { other.handle = nullptr; }
 
   Window& operator=(Window&& other) noexcept {
-    if (&other == this) {
-      return *this;
+    if (&other != this) {
+      std::swap(handle, other.handle);
     }
-    handle       = other.handle;
-    other.handle = nullptr;
     return *this;
   }
 
   ~Window() {
     if (handle != nullptr) {
+      LOG_INFO("Destroying Window");
       glfwDestroyWindow(handle);
     }
   }

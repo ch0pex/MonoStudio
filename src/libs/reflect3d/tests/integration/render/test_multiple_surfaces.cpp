@@ -38,8 +38,8 @@ void test_surfaces() try {
   std::vector<Index> indices {0, 1, 2, 2, 3, 0};
 
   while (not surfaces.empty()) {
-    std::erase_if(surfaces, [](auto& surface) { return surface.should_close(); });
     input::poll_events();
+    std::erase_if(surfaces, [](auto& surface) { return surface.should_close(); });
 
     for (auto& surface: surfaces) {
       gfx.render_surface(surface, {});
