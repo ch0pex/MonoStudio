@@ -1,7 +1,9 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 
+#include <mono/logging/logger.hpp>
 #include <mono/meta/concepts.hpp>
 
 namespace rf3d::gfx::vk {

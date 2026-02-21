@@ -40,8 +40,8 @@ err::expected<ProgramConfig> parse_file(std::filesystem::path const& path) {
  */
 template<Program ProgramConfig>
   requires(detail::HasLogger<ProgramConfig>)
-inline void init_logger(ProgramConfig const& config) {
-  GlobalLogger::configure(config.logger);
+inline void init_logger([[maybe_unused]] ProgramConfig const& config) {
+  // GlobalLogger::configure(config.logger); TODO: change this
 };
 
 } // namespace mono::config

@@ -3,7 +3,6 @@
 #include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/memory/vk_buffer_allocation.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
 //

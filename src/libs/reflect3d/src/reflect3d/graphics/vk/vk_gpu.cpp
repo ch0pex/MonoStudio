@@ -1,21 +1,17 @@
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 
-#include "reflect3d/graphics/vk/gpu/vk_command_buffer.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_command_pool.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_gpu_queues.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/gpu/vk_physical_device.hpp"
-#include "reflect3d/graphics/vk/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/memory/vk_memory_allocator.hpp"
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 
 //
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 #include <mono/misc/as_span.hpp>
-
 
 //
 #include <assets_path.hpp>
@@ -26,7 +22,6 @@
 namespace rf3d::gfx::vk::gpu {
 
 namespace {
-
 
 struct Gpu {
   Gpu(PhysicalDevice&& physical_device) :

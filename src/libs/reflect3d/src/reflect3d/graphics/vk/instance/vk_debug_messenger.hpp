@@ -2,15 +2,8 @@
 
 //
 #include "reflect3d/graphics/vk/utils/vk_debug_callback.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-
-//
-#include <mono/containers/unordered_flat_map.hpp>
-#include <mono/logging/logger.hpp>
-#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::gfx::vk {
-
 
 core::DebugUtilsMessageSeverityFlagsEXT constexpr severity_flags(
     core::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose //

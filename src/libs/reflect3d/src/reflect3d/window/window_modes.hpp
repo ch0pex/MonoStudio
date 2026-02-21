@@ -117,7 +117,7 @@ inline NativeWindow native_window(config::Window const& config) {
 
   // clang-format off
   Monitor const monitor = Monitor::from_id(config.monitor).or_else([]() -> std::optional<Monitor> { 
-    LOG_WARNING("Selected monitor doesn't exist, primary monitor will be used instead")
+    LOG_WARNING("Selected monitor doesn't exist, primary monitor will be used instead");
     return Monitor::primary();
   }).value(); // clang-format on
 

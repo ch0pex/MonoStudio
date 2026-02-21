@@ -13,7 +13,7 @@
 
 struct ConfigExample {
   using config_concept = mono::config::Tag;
-  mono::config::Logger logger;
+  mono::LoggerConfig logger;
 };
 
 inline bool check_file(std::filesystem::path const& path) {

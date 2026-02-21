@@ -6,7 +6,8 @@
 #include <slang-com-ptr.h>
 #include <slang.h>
 
-#include <mono/logging/logger.hpp>
+#include <array>
+#include <ranges>
 
 namespace rf3d::gfx::shader {
 

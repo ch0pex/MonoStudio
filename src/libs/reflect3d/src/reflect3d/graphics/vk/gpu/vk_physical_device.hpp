@@ -4,6 +4,7 @@
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_surface_info.hpp"
 
+#include <map>
 
 namespace rf3d::gfx::vk {
 

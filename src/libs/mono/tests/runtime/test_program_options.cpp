@@ -11,7 +11,7 @@
 
 struct SampleConfig {
   using config_concept = mono::config::Tag;
-  mono::config::Logger logger;
+  mono::LoggerConfig logger;
 };
 
 static std::filesystem::path create_temp_toml(std::string const& content) {

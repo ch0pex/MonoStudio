@@ -1,16 +1,11 @@
 #pragma once
 
 #include "reflect3d/graphics/vk/instance/vk_debug_messenger.hpp"
-#include "reflect3d/graphics/vk/utils/vk_checker.hpp"
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
-
 
 // Mono library
-#include <cstdint>
 #include <mono/logging/logger.hpp>
 
 // STD library
-#include <algorithm>
 #include <ranges>
 #include <string_view>
 #include <vector>
@@ -30,12 +25,9 @@ inline constexpr bool enable_validation_layers = true;
  *
  * @return true if all requested validation layers are supported.
  */
-template <std::ranges::range SupportedLayers, std::ranges::range RequiredLayers>
-  requires(std::same_as<std::ranges::range_value_t<SupportedLayers>, core::LayerProperties> and
-           std::same_as<std::ranges::range_value_t<RequiredLayers>, std::string_view>)
 inline bool check_validation_layer_support( //
-  SupportedLayers const& supported_layers,  
-  RequiredLayers const& required_layers) {
+  std::span<core::LayerProperties const>  supported_layers,  
+  std::span<std::string_view const> const& required_layers) {
 
   auto const transform_name  = [](auto const& ext) { return std::string {&ext.layerName[0]}; };
   auto const supported_names = supported_layers | std::views::transform(transform_name);

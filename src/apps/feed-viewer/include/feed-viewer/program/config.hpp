@@ -7,7 +7,7 @@ namespace feed {
 
 struct ProgramConfig {
   using config_concept = mono::config::Tag;
-  mono::config::Logger logger;
+  mono::LoggerConfig logger;
   int feeds {0};
 };
 

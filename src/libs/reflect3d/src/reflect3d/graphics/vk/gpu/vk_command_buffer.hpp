@@ -1,7 +1,6 @@
 #pragma once
 
 //
-#include "reflect3d/graphics/vk/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
 //

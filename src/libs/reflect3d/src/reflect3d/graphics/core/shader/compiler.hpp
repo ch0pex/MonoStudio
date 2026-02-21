@@ -1,12 +1,15 @@
 #pragma once
 
-#include <assets_path.hpp>
-#include <iostream>
 
-
+#include "reflect3d/graphics/core/shader/target_session.hpp"
 #include "reflect3d/graphics/core/shader/targets.hpp"
 #include "reflect3d/graphics/core/shader/types.hpp"
-#include "target_session.hpp"
+
+#include <mono/logging/logger.hpp>
+
+#include <assets_path.hpp>
+
+#include <filesystem>
 
 namespace rf3d::gfx::shader {
 
@@ -19,7 +22,8 @@ auto load_module(std::filesystem::path shader_path) {
   std::string const module_path = shader_path.string();
 
   Slang::ComPtr<IBlob> diagnosticBlob;
-  Slang::ComPtr<IModule> module {Session<Target>::instance()->loadModule(module_path.c_str(), diagnosticBlob.writeRef())
+  Slang::ComPtr<IModule> module {
+    Session<Target>::instance()->loadModule(module_path.c_str(), diagnosticBlob.writeRef())
   };
 
   if (diagnosticBlob) {
@@ -78,7 +82,7 @@ Bytecode compile(std::filesystem::path const& shader_path) {
   module->findEntryPointByName(entry_point_name.c_str(), entryPoint.writeRef());
 
   if (!entryPoint) {
-    LOG_ERROR("Could not find entry point 'computeMain'")
+    LOG_ERROR("Could not find entry point 'computeMain'");
     return {};
   }
 

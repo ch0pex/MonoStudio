@@ -13,7 +13,7 @@ namespace vix::config {
 
 struct Vixel {
   using config_concept = mono::config::Tag;
-  mono::config::Logger logger;
+  mono::LoggerConfig logger;
   rf3d::config::Window window;
 };
 

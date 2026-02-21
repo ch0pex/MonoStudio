@@ -3,7 +3,6 @@
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/window/window_types.hpp"
 
-
 namespace rf3d::gfx::vk::instance {
 
 /**

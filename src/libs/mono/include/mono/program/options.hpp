@@ -64,7 +64,7 @@ err::expected<T> parse_options(std::span<char*> const args) try {
   return config::parse_file<T>(config_file);
 }
 catch (boost::program_options::error const& e) {
-  return err::unexpected("Error parsing command line: {}\n", e.what());
+  return err::unexpected(std::format("Error parsing command line: {}\n", e.what()));
 }
 
 } // namespace mono::program

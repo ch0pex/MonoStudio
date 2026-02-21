@@ -12,6 +12,7 @@
 #include <ranges>
 #include <span>
 #include <stdexcept>
+#include <vector>
 
 namespace rf3d {
 
@@ -51,7 +52,7 @@ public:
     auto const monitors = detail::get_native_monitors();
 
     if (monitor_id >= monitors.size()) {
-      LOG_WARNING("Specified monitor doesn't exist")
+      LOG_WARNING("Specified monitor doesn't exist");
       return std::nullopt;
     }
     return {Monitor {monitors[monitor_id]}};
@@ -162,14 +163,14 @@ inline void log_monitors() {
         "Logical resolution: Width: {}, Height: {}", //
         monitor.logical_resolution().width, //
         monitor.logical_resolution().height //
-    )
-    LOG_INFO("Scale: X: {}, Y: {}", monitor.content_scale().x, monitor.content_scale().y)
+    );
+    LOG_INFO("Scale: X: {}, Y: {}", monitor.content_scale().x, monitor.content_scale().y);
 
     LOG_INFO(
         "Physical resolution: Width: {}, Height: {}", //
         monitor.physical_resolution().width, //
         monitor.physical_resolution().height
-    )
+    );
 
     auto const pos = monitor.position();
     LOG_INFO("Monitior pos: {}, {}", pos.x, pos.y);

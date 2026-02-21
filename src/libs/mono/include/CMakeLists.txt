@@ -1,4 +1,4 @@
-add_library(mono-lib INTERFACE)
+add_library(mono-lib STATIC)
 
 target_sources(
         mono-lib
@@ -42,9 +42,15 @@ target_sources(
         mono/program/handle_error.hpp
 )
 
+target_sources(mono-lib
+        PRIVATE
+        # Config
+        mono/logging/logger.cpp
+)
+
 target_link_libraries(
         mono-lib
-        INTERFACE
+        PUBLIC
         boost::boost
         quill::quill
         STDEXEC::stdexec
@@ -52,3 +58,6 @@ target_link_libraries(
 )
 
 add_library(mono::mono-lib ALIAS mono-lib)
+
+target_compile_definitions(mono-lib PUBLIC QUILL_DISABLE_NON_PREFIXED_MACROS)
+

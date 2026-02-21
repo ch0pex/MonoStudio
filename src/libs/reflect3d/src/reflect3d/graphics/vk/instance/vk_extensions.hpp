@@ -2,15 +2,14 @@
 
 #include "reflect3d/graphics/vk/instance/vk_validation_layers.hpp"
 
+#include <format>
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
 
 #include <cstdint>
-#include <ranges>
 #include <vector>
-#include <vulkan/vulkan.hpp>
 
 namespace rf3d::gfx::vk {
 
@@ -19,14 +18,9 @@ namespace rf3d::gfx::vk {
  *
  * @return true if all required extensions are supported, false otherwise.
  */
-template<std::ranges::range SupportedExtensions, std::ranges::range RequiredExtensions>
-  requires(
-      std::same_as<std::ranges::range_value_t<SupportedExtensions>, core::ExtensionProperties> and
-      std::same_as<std::ranges::range_value_t<RequiredExtensions>, std::string_view>
-  )
 inline bool check_extensions_support(
-    SupportedExtensions const& supported_extensions, //
-    RequiredExtensions const& required_extensions
+    std::span<core::ExtensionProperties const> supported_extensions, //
+    std::span<std::string_view const> required_extensions
 ) {
   auto const transform_name  = [](auto const& ext) { return std::string {&ext.extensionName[0]}; };
   auto const supported_names = supported_extensions | std::views::transform(transform_name);
@@ -84,9 +78,10 @@ inline std::vector<std::string_view> get_required_extensions() {
  * otherwise, throws an exception.
  */
 inline mono::err::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
-  auto const required_extensions = get_required_extensions();
+  auto const required_extensions  = get_required_extensions();
+  auto const supported_extensions = get_supported_extensions(context);
 
-  if (not check_extensions_support(get_supported_extensions(context), required_extensions)) {
+  if (not check_extensions_support(supported_extensions, required_extensions)) {
     return mono::err::unexpected("Not all required Vulkan extensions are supported.");
   }
 

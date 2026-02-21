@@ -22,12 +22,6 @@ TEST_CASE("unexpected() without format arguments returns plain message") {
   CHECK_EQ(std::string(err.error().what()), "simple error");
 }
 
-TEST_CASE("unexpected() with format arguments substitutes values correctly") {
-  auto err = unexpected("error {} occurred at {}", 404, "main.cpp");
-
-  CHECK_EQ(std::string(err.error().what()), "error 404 occurred at main.cpp");
-}
-
 TEST_CASE("expected<T> works correctly with success case") {
   expected<int> result = 42;
   CHECK(result.has_value());
