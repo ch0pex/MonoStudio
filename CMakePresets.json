@@ -15,7 +15,7 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CONAN_INSTALL_ARGS": "--build=missing",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize;Coverage",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
         "BUILD_TESTING": true
       }
@@ -95,23 +95,21 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Sanitize",
         "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release",
+        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
         "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
         "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined"
       }
     },
     {
       "name": "Coverage-gcc",
-      "inherits": [
-        "base-gcc"
-      ],
+      "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/coverage",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Coverage",
+        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
         "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
-        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo Release",
-        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
+        "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "RelWithDebInfo;Release;Debug",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage"
       }
     },
     {
@@ -138,7 +136,7 @@
       "binaryDir": "${sourceDir}/build/clang/debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG"
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG -ftime-trace"
       }
     },
     {
@@ -290,6 +288,11 @@
       "name": "Sanitize-gcc",
       "inherits": "base-test",
       "configurePreset": "Sanitize-gcc"
+    },
+    {
+      "name": "Coverage-gcc",
+      "inherits": "base-test",
+      "configurePreset": "Coverage-gcc"
     },
     {
       "name": "Debug-clang",
