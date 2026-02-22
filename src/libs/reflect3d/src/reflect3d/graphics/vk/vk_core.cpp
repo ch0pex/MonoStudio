@@ -20,29 +20,40 @@ struct StaticMesh {
   IndexBuffer index_buffer;
 };
 
-struct Core::impl {
+struct CoreImpl {
+  CoreImpl() {
+    // TODO: hardcoded, write pso cache logic
+    auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
+    auto const shader      = Shader {load_shader_bytecode(shader_path)};
+
+    auto pso = PipelineBuilder().vertex_stage(shader).fragment_stage(shader).build();
+
+    pso_cache.emplace_back(std::move(pso));
+    meshes.reserve(10);
+  }
+
+  CoreImpl(CoreImpl const&) = default;
+
+  CoreImpl(CoreImpl&&) = delete;
+
+  CoreImpl& operator=(CoreImpl const&) = default;
+
+  CoreImpl& operator=(CoreImpl&&) = delete;
+
+  ~CoreImpl() { gpu::wait_idle(); }
+
   std::vector<Pipeline> pso_cache;
   std::vector<StaticMesh> meshes;
 };
 
-Core::Core() : pimpl(std::make_unique<impl>()) {
-  // TODO: hardcoded, write pso cache logic
-  auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
-  auto const shader      = Shader {load_shader_bytecode(shader_path)};
 
-  auto pso = PipelineBuilder().vertex_stage(shader).fragment_stage(shader).build();
-
-  pimpl->pso_cache.emplace_back(std::move(pso));
-  pimpl->meshes.reserve(10);
+CoreImpl& hri() {
+  static CoreImpl impl;
+  return impl;
 }
 
-Core::~Core() {
-  LOG_INFO("Waiting for gpu to be idle before destroying VkGraphics backend");
-  gpu::wait_idle();
-  LOG_INFO("VkGraphics backend destroyed");
-}
 
-void Core::render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& frame_info) const {
+void Core::render_surface(Core::surface_type& surface, [[maybe_unused]] FrameInfo const& frame_info) {
   FrameIndex const frame_index = gpu::next_frame();
   auto const opt_image         = surface.next_image(frame_index);
 
@@ -51,17 +62,17 @@ void Core::render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& fr
   }
 
   auto image          = opt_image.value();
-  auto const commands = gpu::record_commands({}, [this, &image, &surface](CommandBuffer const& cmd) {
+  auto const commands = gpu::record_commands({}, [&image, &surface](CommandBuffer const& cmd) {
     std::array const attachment_info = {defaults::attachament_info(image->view(), defaults::clear_color)};
     auto const render_area           = defaults::render_area(surface.resolution());
     auto const rendering_info        = defaults::rendering_info(render_area, attachment_info);
 
     transition_image_layout(cmd, *image, rendering_layout);
 
-    cmd.record_rendering(rendering_info, [this, &surface, &render_area](CommandBuffer const& cmd_buffer) {
+    cmd.record_rendering(rendering_info, [&surface, &render_area](CommandBuffer const& cmd_buffer) {
       // Acceso a través de pimpl
-      for (auto const& mesh: pimpl->meshes) {
-        cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *pimpl->pso_cache.at(0))
+      for (auto const& mesh: hri().meshes) {
+        cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *hri().pso_cache.at(0))
             .bind_vertex_buffer(0, mesh.vertex_buffer.handle(), 0)
             .bind_index_buffer(mesh.index_buffer.handle(), 0, core::IndexType::eUint16)
             .set_viewport(0, defaults::viewport(surface.resolution()))
@@ -90,7 +101,7 @@ void Core::render_surface(Surface& surface, [[maybe_unused]] FrameInfo const& fr
 }
 
 void Core::add_mesh(Mesh const& mesh) {
-  pimpl->meshes.emplace_back(VertexBuffer {mesh.vertices}, IndexBuffer {mesh.indices});
+  hri().meshes.emplace_back(VertexBuffer {mesh.vertices}, IndexBuffer {mesh.indices});
 }
 
 Core::surface_type Core::create_surface(Window&& window) { return surface_type {std::move(window)}; }
