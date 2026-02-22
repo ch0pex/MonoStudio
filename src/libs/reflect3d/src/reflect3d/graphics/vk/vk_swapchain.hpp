@@ -9,31 +9,9 @@
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <mono/containers/stable_vector.hpp>
+#include <mono/logging/logger.hpp>
 
 namespace rf3d::gfx::vk {
-
-class Semaphore {
-public:
-  using native_type = raii::Semaphore;
-
-  Semaphore() : handle(gpu::make_semaphore()) { }
-
-  explicit Semaphore(native_type&& handle) : handle(std::move(handle)) { }
-
-  Semaphore(Semaphore const&) = delete;
-
-  Semaphore& operator=(Semaphore const&) = delete;
-
-  Semaphore(Semaphore&& other) noexcept {
-    gpu::wait_idle();
-    handle = std::move(other.handle);
-  }
-
-  Semaphore& operator=(Semaphore&&) = delete;
-
-private:
-  native_type handle {nullptr};
-};
 
 // TODO Number of present and render semaphores may differ, separate them
 struct Semaphores {

@@ -33,7 +33,7 @@ target_sources(
         reflect3d/graphics/vk/utils/vk_result.hpp
 
         reflect3d/graphics/vk/vk_barriers.hpp
-        reflect3d/graphics/vk/vk_core.hpp
+        reflect3d/graphics/vk/vk_renderer.hpp
         reflect3d/graphics/vk/vk_gpu.hpp
         reflect3d/graphics/vk/vk_image.hpp
         reflect3d/graphics/vk/vk_instance.hpp
@@ -45,8 +45,7 @@ target_sources(
         reflect3d/graphics/vk/vk_surface_info.hpp
         reflect3d/graphics/vk/vk_swapchain.hpp
         reflect3d/graphics/vk/vk_swapchain_detail.hpp
-        reflect3d/graphics/vk/vk_traits.hpp
-        reflect3d/graphics/hri.hpp
+        reflect3d/graphics/rhi.hpp
 
         # Input
         reflect3d/input/input.hpp
@@ -75,6 +74,7 @@ target_sources(
 target_sources(reflect3d-lib
         PRIVATE
         # Graphics
+        reflect3d/graphics/vk/vk_renderer.cpp
         reflect3d/graphics/vk/utils/vk_vma_usage.cpp
         reflect3d/graphics/vk/vk_gpu.cpp
         reflect3d/graphics/vk/vk_instance.cpp
@@ -98,6 +98,7 @@ target_link_libraries(
 add_library(mono::reflect3d-lib ALIAS reflect3d-lib)
 
 target_compile_definitions(reflect3d-lib PUBLIC
+        RF3D_VULKAN_DEFAULT
         VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1
         VULKAN_HPP_NO_STRUCT_CONSTRUCTORS=1
         "VULKAN_HPP_HANDLE_ERROR_OUT_OF_DATE_AS_SUCCESS"

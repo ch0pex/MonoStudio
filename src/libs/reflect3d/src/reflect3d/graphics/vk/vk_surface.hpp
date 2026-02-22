@@ -54,9 +54,13 @@ public:
     return swapchain.render_semaphore();
   }
 
-  [[nodiscard]] Resolution window_size() const { return window_handle.resolution(); }
+  [[nodiscard]] Resolution window_size() const { //
+    return window_handle.resolution();
+  }
 
-  [[nodiscard]] Resolution resolution() const { return swapchain.resolution(); }
+  [[nodiscard]] Resolution resolution() const { //
+    return swapchain.resolution();
+  }
 
   void present() try { std::ignore = gpu::present(swapchain.present_info()); }
   catch ([[maybe_unused]] std::exception const& e) {

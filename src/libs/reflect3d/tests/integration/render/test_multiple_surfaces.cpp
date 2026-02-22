@@ -1,5 +1,5 @@
 #include "common.hpp"
-#include "reflect3d/graphics/hri.hpp"
+#include "reflect3d/graphics/rhi.hpp"
 #include "reflect3d/input/input.hpp"
 #include "reflect3d/window/window.hpp"
 
@@ -12,13 +12,12 @@
 #include <stack>
 #include <vector>
 
-template<rf3d::gfx::Hri hri>
+template<rf3d::gfx::RenderHardwareInterface rhi>
 void test_surfaces() try {
   using namespace rf3d;
   using namespace rf3d::gfx;
 
-  using Surface  = typename hri::surface;
-  using Renderer = typename hri::renderer;
+  using Surface = typename rhi::surface_type;
 
   mono::ex::setup_signals();
   LOG_INFO("Begining of the program");
@@ -30,11 +29,11 @@ void test_surfaces() try {
 
   std::vector<Surface> surfaces {};
 
+  surfaces.reserve(3);
   for (std::uint8_t i = 0; i < 3; ++i) {
-    surfaces.emplace_back(test::create_test_surface<hri>(std::format("Window {}", i)));
+    surfaces.emplace_back(test::create_test_surface<rhi>(std::format("Window {}", i)));
   }
 
-  Renderer gfx {};
   std::vector<Index> indices {0, 1, 2, 2, 3, 0};
 
   while (not surfaces.empty()) {
@@ -42,7 +41,7 @@ void test_surfaces() try {
     std::erase_if(surfaces, [](auto& surface) { return surface.should_close(); });
 
     for (auto& surface: surfaces) {
-      gfx.render_surface(surface, {});
+      rhi::render_surface(surface, {});
     }
   }
 }
