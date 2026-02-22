@@ -55,6 +55,7 @@ target_link_libraries(
         quill::quill
         STDEXEC::stdexec
         reflectcpp::reflectcpp
+        plf_colony::plf_colony
 )
 
 add_library(mono::mono-lib ALIAS mono-lib)
