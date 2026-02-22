@@ -77,6 +77,7 @@ target_sources(reflect3d-lib
         # Graphics
         reflect3d/graphics/vk/utils/vk_vma_usage.cpp
         reflect3d/graphics/vk/vk_gpu.cpp
+        reflect3d/graphics/vk/vk_core.cpp
         reflect3d/graphics/vk/vk_instance.cpp
 
         # Window

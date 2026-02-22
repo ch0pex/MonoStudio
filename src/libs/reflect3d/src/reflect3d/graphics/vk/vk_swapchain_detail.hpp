@@ -1,10 +1,8 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
-#include "reflect3d/graphics/vk/vk_surface_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 namespace rf3d::gfx::vk::detail {
