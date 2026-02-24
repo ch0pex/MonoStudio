@@ -1,22 +1,64 @@
 #pragma once
 
-#include "reflect3d/graphics/rhi.hpp"
-#include "reflect3d/graphics/rhi_concepts.hpp"
-#include "reflect3d/window/window_builder.hpp"
 
+#include <cstdint>
+#include <reflect3d/graphics/concepts.hpp>
 #include <reflect3d/graphics/vk/vk_surface.hpp>
+#include <reflect3d/input/input.hpp>
+#include <reflect3d/window/window_builder.hpp>
+
+//
+#include <mono/execution/signals.hpp>
+
+//
+#include <iostream>
+#include "reflect3d/graphics/core/mesh.hpp"
 
 namespace test {
 
-template<rf3d::gfx::RenderHardwareInterface rhi>
-rhi::surface_type create_test_surface(std::string_view title) {
+rf3d::Window create_test_window(std::string_view title) {
   auto window_config = rf3d::config::Window {
     .title = std::string {title},
     .mode  = rf3d::WindowMode::windowed,
   };
 
-  auto window = rf3d::WindowBuilder(window_config).default_callbacks().build(); //
-  return typename rhi::surface_type {std::move(window)};
+  return rf3d::WindowBuilder(window_config).default_callbacks().build();
+}
+
+template<rf3d::gfx::RenderHardwareInterface rhi>
+void renderer(std::uint8_t const num_surfaces, std::span<rf3d::gfx::Mesh const> meshes) try {
+  using namespace rf3d;
+
+  mono::ex::setup_signals();
+  LOG_INFO("Begining of the program");
+
+  std::vector<typename rhi::Surface> surfaces {};
+
+  // create surfaces
+  surfaces.reserve(num_surfaces);
+  for (std::uint8_t i = 0; i < num_surfaces; ++i) {
+    surfaces.emplace_back(test::create_test_window("Surface " + std::to_string(i + 1)));
+  }
+
+  // add meshes to the renderer
+  for (auto const& mesh: meshes) {
+    rhi::add_mesh(mesh);
+  }
+
+  while (not surfaces.empty()) {
+    input::poll_events();
+    std::erase_if(surfaces, [](typename rhi::Surface& surface) { return surface.should_close(); });
+
+    for (auto& surface: surfaces) {
+      surface.render({});
+    }
+  }
+}
+catch (std::exception const& e) {
+  std::cerr << "Unhandled exception: " << e.what() << '\n';
+}
+catch (...) {
+  std::cerr << "Unhandled unknown exception\n";
 }
 
 } // namespace test

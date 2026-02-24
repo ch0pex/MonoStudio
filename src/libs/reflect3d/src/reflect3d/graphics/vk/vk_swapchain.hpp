@@ -62,7 +62,7 @@ public:
   ~Swapchain() { //
     if (handle != nullptr) {
       gpu::wait_idle();
-      LOG_INFO("Destroying Swapchain");
+      // LOG_INFO("Destroying Swapchain");
     }
   }
 

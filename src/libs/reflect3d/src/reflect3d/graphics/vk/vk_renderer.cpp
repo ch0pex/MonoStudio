@@ -57,33 +57,40 @@ Context& renderer_context() {
 
 } // namespace
 
-Renderer::surface_type Renderer::create_surface(Window&& window) { //
-  return surface_type {std::move(window)};
+Renderer::surface_handle Renderer::create_surface(Window&& window) { //
+  auto& context = renderer_context();
+  return std::addressof(*context.surfaces.emplace(std::move(window)));
 }
 
-void Renderer::render_surface(Renderer::surface_type& surface, [[maybe_unused]] FrameInfo const& frame_info) {
+void Renderer::destroy_surface(Renderer::surface_handle const surface) {
+  auto& context = renderer_context();
+  auto it       = context.surfaces.get_iterator(surface);
+  context.surfaces.erase(it);
+}
+
+void Renderer::render_surface(Renderer::surface_handle surface, [[maybe_unused]] FrameInfo const& frame_info) {
   FrameIndex const frame_index = gpu::next_frame();
-  auto const opt_image         = surface.next_image(frame_index);
+  auto const opt_image         = surface->next_image(frame_index);
 
   if (not opt_image) {
     return;
   }
 
   auto image          = opt_image.value();
-  auto const commands = gpu::record_commands({}, [&image, &surface](CommandBuffer const& cmd) {
+  auto const commands = gpu::record_commands({}, [&image, surface](CommandBuffer const& cmd) {
     std::array const attachment_info = {defaults::attachament_info(image->view(), defaults::clear_color)};
-    auto const render_area           = defaults::render_area(surface.resolution());
+    auto const render_area           = defaults::render_area(surface->resolution());
     auto const rendering_info        = defaults::rendering_info(render_area, attachment_info);
 
     transition_image_layout(cmd, *image, rendering_layout);
 
-    cmd.record_rendering(rendering_info, [&surface, &render_area](CommandBuffer const& cmd_buffer) {
+    cmd.record_rendering(rendering_info, [surface, &render_area](CommandBuffer const& cmd_buffer) {
       // Acceso a través de pimpl
       for (auto const& mesh: renderer_context().meshes) {
         cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *renderer_context().pso_cache.at(0))
             .bind_vertex_buffer(0, mesh.vertex_buffer.handle(), 0)
             .bind_index_buffer(mesh.index_buffer.handle(), 0, core::IndexType::eUint16)
-            .set_viewport(0, defaults::viewport(surface.resolution()))
+            .set_viewport(0, defaults::viewport(surface->resolution()))
             .set_scissor(0, render_area)
             .set_cull_mode(core::CullModeFlagBits::eBack)
             .set_front_face(core::FrontFace::eClockwise)
@@ -98,14 +105,14 @@ void Renderer::render_surface(Renderer::surface_type& surface, [[maybe_unused]] 
 
   core::PipelineStageFlags mask {core::PipelineStageFlagBits::eColorAttachmentOutput};
   auto submit_info = gpu::SubmitInfo {
-    .wait_semaphores     = mono::as_span(*surface.present_semaphore(frame_index)),
+    .wait_semaphores     = mono::as_span(*surface->present_semaphore(frame_index)),
     .wait_dst_stage_mask = mono::as_span(mask),
     .command_buffers     = mono::as_span(commands),
-    .signal_semaphores   = mono::as_span(*surface.render_semaphore()),
+    .signal_semaphores   = mono::as_span(*surface->render_semaphore()),
   };
 
   gpu::submit_work(submit_info, gpu::wait::fence);
-  surface.present();
+  surface->present();
 }
 
 void Renderer::add_mesh(Mesh const& mesh) {

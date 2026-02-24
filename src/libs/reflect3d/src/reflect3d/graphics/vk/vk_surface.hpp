@@ -1,16 +1,21 @@
 #pragma once
 
+#include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
 #include "reflect3d/window/window.hpp"
 
+#include <mono/containers/hive.hpp>
+
 namespace rf3d::gfx::vk {
+
 class Surface {
 public:
-  using images_type  = Image;
-  using surface_type = raii::SurfaceKHR;
-  using format_type  = core::Format;
-  using window_type  = Window;
+  using images_type    = Image;
+  using surface_handle = raii::SurfaceKHR;
+  using format_type    = core::Format;
+  using window_type    = Window;
+  using swapchain_type = Swapchain;
 
   explicit Surface(Window&& window) :
     window_handle(std::move(window)), //
@@ -33,7 +38,6 @@ public:
   ~Surface() {
     if (window_surface != nullptr) {
       gpu::wait_idle();
-      LOG_INFO("Destroying Surface");
     }
   }
 
@@ -84,8 +88,9 @@ private:
   }
 
   window_type window_handle;
-  surface_type window_surface;
-  Swapchain swapchain;
+  surface_handle window_surface;
+  swapchain_type swapchain;
 };
+
 
 } // namespace rf3d::gfx::vk

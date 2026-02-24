@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/rhi_concepts.hpp"
+#include "reflect3d/graphics/concepts.hpp"
 #include "reflect3d/graphics/vk/vk_renderer.hpp"
 
 namespace rf3d::gfx {
@@ -20,6 +20,6 @@ using DefaultBackend = Metal;
 using DefaultBackend = OpenGL;
 #endif
 
-static_assert(RenderHardwareInterface<Vulkan>, "Vulkan backend does not satisfy HRI concept");
+static_assert(RenderBackend<Vulkan>, "Vulkan backend does not satisfy HRI concept");
 
 } // namespace rf3d::gfx

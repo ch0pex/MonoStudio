@@ -1,15 +1,15 @@
 #pragma once
 
+#include "reflect3d/graphics/core/frame_info.hpp"
 #include "reflect3d/graphics/core/mesh.hpp"
-#include "reflect3d/graphics/vk/vk_surface.hpp"
 #include "reflect3d/window/window.hpp"
 
+#include <mono/containers/hive.hpp>
 #include <mono/misc/as_span.hpp>
 
 namespace rf3d::gfx::vk {
 
-
-struct FrameInfo { };
+class Surface;
 
 /*
  * Vulkan renderer interface
@@ -21,7 +21,7 @@ struct Renderer {
   /*********************
    *    Type Traits    *
    ********************/
-  using surface_type = Surface;
+  using surface_handle = Surface*; //
 
   /**********************
    *    Constructors    *
@@ -43,9 +43,11 @@ struct Renderer {
    *    Member functions    *
    **************************/
 
-  static surface_type create_surface(Window&& window);
+  static surface_handle create_surface(Window&& window);
 
-  static void render_surface(surface_type& surface, [[maybe_unused]] FrameInfo const& frame_info);
+  static void destroy_surface(surface_handle surface);
+
+  static void render_surface(surface_handle surface, FrameInfo const& frame_info);
 
   static void add_mesh(Mesh const& mesh);
 

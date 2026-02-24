@@ -59,7 +59,7 @@ public:
 
   ~Buffer() {
     if (buffer_allocation.buffer_handle != nullptr) {
-      LOG_INFO("Destroying {} with size {} bytes", name, buffer_allocation.allocation_info.size);
+      // LOG_INFO("Destroying {} with size {} bytes", name, buffer_allocation.allocation_info.size);
       gpu::free_buffer(buffer_allocation);
     }
   }
