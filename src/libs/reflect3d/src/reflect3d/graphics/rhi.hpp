@@ -8,11 +8,12 @@ namespace rf3d {
 
 template<gfx::RenderBackend Backend>
 struct rhi_impl : public Backend {
+  rhi_impl() = delete;
+
   using impl = Backend;
 
   using Surface = gfx::Surface<Backend>;
 };
-
 
 /*
  * Render Hardware Interface (RHI)
@@ -22,11 +23,11 @@ struct rhi_impl : public Backend {
  */
 using rhi = rhi_impl<gfx::DefaultBackend>;
 
-namespace impl {
-
 /*
  * Specific implementation of the RHI for the Vulkan backend.
  */
+namespace impl {
+
 using vk = rhi_impl<gfx::Vulkan>;
 
 } // namespace impl

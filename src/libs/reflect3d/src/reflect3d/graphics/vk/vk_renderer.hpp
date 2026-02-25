@@ -29,16 +29,6 @@ struct Renderer {
 
   Renderer() = delete;
 
-  Renderer(Renderer const&) = delete;
-
-  Renderer(Renderer&&) = delete;
-
-  Renderer& operator=(Renderer const&) = delete;
-
-  Renderer& operator=(Renderer&&) = delete;
-
-  ~Renderer() = delete;
-
   /**************************
    *    Member functions    *
    **************************/
