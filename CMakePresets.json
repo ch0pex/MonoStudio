@@ -13,7 +13,6 @@
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CONAN_INSTALL_ARGS": "--build=missing",
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize;Coverage",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
@@ -126,8 +125,8 @@
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
       }
     },
     {
