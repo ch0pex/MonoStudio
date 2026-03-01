@@ -47,7 +47,7 @@ struct Context {
 
   std::vector<Pipeline> pso_cache;
   std::vector<StaticMesh> meshes;
-  mono::hive<Surface> surfaces;
+  SurfaceContainer surfaces;
 };
 
 Context& renderer_context() {
@@ -59,16 +59,15 @@ Context& renderer_context() {
 
 Renderer::surface_handle Renderer::create_surface(Window&& window) { //
   auto& context = renderer_context();
-  return std::addressof(*context.surfaces.emplace(std::move(window)));
+  return context.surfaces.emplace(std::move(window));
 }
 
-void Renderer::destroy_surface(Renderer::surface_handle const surface) {
+void Renderer::destroy_surface(Renderer::surface_handle const& surface) {
   auto& context = renderer_context();
-  auto it       = context.surfaces.get_iterator(surface);
-  context.surfaces.erase(it);
+  context.surfaces.erase(surface);
 }
 
-void Renderer::render_surface(Renderer::surface_handle surface, [[maybe_unused]] FrameInfo const& frame_info) {
+void Renderer::render_surface(Renderer::surface_handle const& surface, [[maybe_unused]] FrameInfo const& frame_info) {
   FrameIndex const frame_index = gpu::next_frame();
   auto const opt_image         = surface->next_image(frame_index);
 
@@ -85,7 +84,6 @@ void Renderer::render_surface(Renderer::surface_handle surface, [[maybe_unused]]
     transition_image_layout(cmd, *image, rendering_layout);
 
     cmd.record_rendering(rendering_info, [surface, &render_area](CommandBuffer const& cmd_buffer) {
-      // Acceso a través de pimpl
       for (auto const& mesh: renderer_context().meshes) {
         cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *renderer_context().pso_cache.at(0))
             .bind_vertex_buffer(0, mesh.vertex_buffer.handle(), 0)

@@ -3,7 +3,6 @@
 #include "reflect3d/window/window.hpp"
 
 #include <concepts>
-#include <type_traits>
 
 namespace rf3d::gfx {
 
@@ -19,6 +18,8 @@ concept RenderBackend = requires(Renderer::surface_handle surface, Window&& wind
   { Renderer::destroy_surface(surface) } -> std::same_as<void>;
   { Renderer::render_surface(surface, {}) } -> std::same_as<void>;
 };
+
+// TODO: Add Surface concept
 
 template<typename rhi>
 concept RenderHardwareInterface = RenderBackend<typename rhi::impl> and requires { //

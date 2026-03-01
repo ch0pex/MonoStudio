@@ -92,5 +92,6 @@ private:
   swapchain_type swapchain;
 };
 
+using SurfaceContainer = mono::hive<Surface>;
 
 } // namespace rf3d::gfx::vk

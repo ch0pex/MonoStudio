@@ -2,7 +2,7 @@
 
 #include "reflect3d/graphics/core/frame_info.hpp"
 #include "reflect3d/graphics/core/mesh.hpp"
-#include "reflect3d/window/window.hpp"
+#include "reflect3d/graphics/vk/vk_surface.hpp"
 
 #include <mono/containers/hive.hpp>
 #include <mono/misc/as_span.hpp>
@@ -21,7 +21,7 @@ struct Renderer {
   /*********************
    *    Type Traits    *
    ********************/
-  using surface_handle = Surface*; //
+  using surface_handle = SurfaceContainer::iterator; //
 
   /**********************
    *    Constructors    *
@@ -35,9 +35,9 @@ struct Renderer {
 
   static surface_handle create_surface(Window&& window);
 
-  static void destroy_surface(surface_handle surface);
+  static void destroy_surface(surface_handle const& surface);
 
-  static void render_surface(surface_handle surface, FrameInfo const& frame_info);
+  static void render_surface(surface_handle const& surface, FrameInfo const& frame_info);
 
   static void add_mesh(Mesh const& mesh);
 

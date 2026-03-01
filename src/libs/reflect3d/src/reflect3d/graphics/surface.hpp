@@ -2,7 +2,6 @@
 
 #include "reflect3d/graphics/concepts.hpp"
 #include "reflect3d/graphics/core/frame_info.hpp"
-#include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 
 #include <mono/containers/hive.hpp>
@@ -29,7 +28,7 @@ public:
 
   void render(FrameInfo const& frame_info) { Backend::render_surface(surface_handle, frame_info); }
 
-  bool should_close() const { return surface_handle->should_close(); }
+  [[nodiscard]] bool should_close() const { return surface_handle->should_close(); }
 
   // void resize(Resolution const& new_resolution) { surface_handle->resize(new_resolution); }
   //
