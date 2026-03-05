@@ -1,0 +1,62 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file slang_context.hpp
+ * @version 1.0
+ * @date 13/01/2026
+ * @brief Short description
+ *
+ * Longer description
+ */
+#pragma once
+
+#include "reflect3d/graphics/core/shader/targets.hpp"
+
+#include <assets_path.hpp>
+
+namespace rf3d::gfx::shader {
+
+namespace detail {
+
+template<ShaderTarget Target>
+Slang::ComPtr<slang::ISession> create_session() {
+  std::string assets_path {mono::assets_path};
+  std::array search_paths = {assets_path.c_str()};
+
+  auto options                         = Target::options;
+  slang::SessionDesc const sessionDesc = {
+    .targets                  = std::addressof(Target::description),
+    .targetCount              = 1,
+    .searchPaths              = search_paths.data(),
+    .searchPathCount          = 1,
+    .compilerOptionEntries    = options.data(),
+    .compilerOptionEntryCount = static_cast<std::uint32_t>(options.size()),
+  };
+
+  Slang::ComPtr<slang::ISession> session;
+  GlobalSession::instance()->createSession(sessionDesc, session.writeRef());
+
+  return session;
+}
+
+} // namespace detail
+
+template<ShaderTarget Target>
+class Session {
+  Session()  = default;
+  ~Session() = default;
+
+public:
+  Session(Session const&)            = delete;
+  Session(Session&&)                 = delete;
+  Session& operator=(Session const&) = delete;
+  Session& operator=(Session&&)      = delete;
+  static auto& instance() {
+    static auto session = detail::create_session<Target>();
+    return session;
+  }
+};
+
+} // namespace rf3d::gfx::shader

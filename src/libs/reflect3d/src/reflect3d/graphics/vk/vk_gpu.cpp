@@ -18,6 +18,7 @@
 
 //
 #include <cassert>
+#include <vulkan/vulkan_core.h>
 
 namespace rf3d::gfx::vk::gpu {
 
