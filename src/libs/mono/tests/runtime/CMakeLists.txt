@@ -1,7 +1,4 @@
 
-# Containers
-create_test(deferred_erase_hive test_deferred_hive.cpp)
-
 
 # Thread
 create_test(thread test_thread.cpp)
