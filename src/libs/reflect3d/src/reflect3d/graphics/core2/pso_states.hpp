@@ -5,13 +5,17 @@
 
 namespace rf3d::gfx {
 
+/*
+ * This enum values are chosen to be compatible with
+ * Vulkan's VkPrimitiveTopology, but this is not a requirement for the API.
+ */
 enum class PrimitiveTopology : std::uint8_t {
-  point_list,
-  line_list,
-  line_strip,
-  triangle_list,
-  triangle_strip,
-  triangle_fan,
+  point_list     = 0,
+  line_list      = 1,
+  line_strip     = 2,
+  triangle_list  = 3,
+  triangle_strip = 4,
+  triangle_fan   = 5
 };
 
 enum class ComparisonFunction : std::uint8_t {
@@ -26,8 +30,8 @@ enum class ComparisonFunction : std::uint8_t {
 };
 
 enum class FrontFace : std::uint8_t {
-  clockwise,
   counter_clockwise,
+  clockwise,
 };
 
 enum class CullMode : std::uint8_t {
@@ -43,8 +47,9 @@ enum class PolygonMode : std::uint8_t {
 };
 
 enum class FillMode : std::uint8_t {
-  wireframe,
   solid,
+  wireframe,
+  point,
 };
 
 enum class Blend : std::uint8_t {
