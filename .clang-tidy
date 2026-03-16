@@ -16,7 +16,8 @@ readability-*,
 -readability-redundant-access-specifiers,
 -readability-braces-around-statements,
 -cppcoreguidelines-pro-type-union-access,
--readability-identifier-length'
+-readability-identifier-length,
+-readability-redundant-member-init'
 
 
 CheckOptions:
