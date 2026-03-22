@@ -1,0 +1,41 @@
+name: Reusable Dependencies Sync
+
+on:
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync-linux:
+    name: Linux (${{ matrix.preset }})
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [Debug-gcc, Release-gcc, Debug-clang, Release-clang, Sanitize-gcc]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          dnf -y update
+          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel \
+                         gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
+                         texinfo libasan libubsan libubsan-static libasan-static compiler-rt
+
+      - name: Configure Conan
+        run: |
+          python3 -m pip install jinja2 conan
+          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
+          conan remote enable conancenter
+
+      - name: Build and Upload
+        run: |
+          ./conan_install.sh ${{ matrix.preset }}
+          conan upload "*" -r monostudio-conan-local -c

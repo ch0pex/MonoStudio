@@ -1,0 +1,42 @@
+name: Reusable Dependencies Sync
+
+on:
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync-windows:
+    name: Windows (${{ matrix.preset }})
+    if: ${{ !inputs.skip }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [Debug-msvc, Release-msvc]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Conan and Jinja2
+        run: |
+          PYTHON_BIN="C:/hostedtoolcache/windows/Python/3.14.3/x64"
+
+          "$PYTHON_BIN/python3.exe" -m pip install --upgrade pip
+          "$PYTHON_BIN/python3.exe" -m pip install conan jinja2
+
+          echo "$PYTHON_BIN" >> $GITHUB_PATH
+          echo "$PYTHON_BIN/Scripts" >> $GITHUB_PATH
+
+          "$PYTHON_BIN/Scripts/conan.exe" config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          "$PYTHON_BIN/Scripts/conan.exe" remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
+          "$PYTHON_BIN/Scripts/conan.exe" remote enable conancenter
+
+      - name: Build and Upload
+        run: |
+          chmod +x conan_install.sh
+          ./conan_install.sh ${{ matrix.preset }}
+          conan upload "*" -r monostudio-conan-local -c

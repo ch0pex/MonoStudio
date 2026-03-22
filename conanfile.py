@@ -27,8 +27,8 @@ class MonoGameRecipe(ConanFile):
         "glad/*:gl_profile": "core",
         "boost/*:without_cobalt": True,
         "boost/*:without_stacktrace": True,
-        "boost/*:without_locale": True
-        "boost/*:with_stacktrace_backtrace": False, 
+        "boost/*:without_locale": True,
+        "boost/*:with_stacktrace_backtrace": False 
     }
 
     def layout(self):
