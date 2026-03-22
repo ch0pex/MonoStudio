@@ -9,13 +9,7 @@
       "name": "base",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "CONAN_INSTALL_ARGS": "--build=missing",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize;Coverage",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "cmake/Modules/conan_provider.cmake",
         "BUILD_TESTING": true
       }
     },
@@ -30,18 +24,23 @@
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23",
-        "CMAKE_C_COMPILER": "cl",
-        "CMAKE_CXX_COMPILER": "cl",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo;Sanitize",
-        "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc ",
-        "CMAKE_CXX_FLAGS_SANITIZE": "/fsanitize=address /Zi",
-        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "/INCREMENTAL:NO"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/generators/conan_toolchain.cmake",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
+        "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc "
       },
       "vendor": {
         "jetbrains.com/clion": {
           "toolchain": "Visual Studio"
         }
+      }
+    },
+    {
+      "name": "Sanitize-msvc",
+      "inherits": "msvc",
+      "binaryDir": "${sourceDir}/build/msvc_sanitize",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc_sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_CONFIGURATION_TYPES": "Debug"
       }
     },
     {
@@ -55,8 +54,6 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion"
       }
@@ -66,8 +63,8 @@
       "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/debug/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -75,8 +72,8 @@
       "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3 -DNDEBUG"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -84,6 +81,7 @@
       "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/relwithdebinfo",
       "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/relwithdebinfo/generators/conan_toolchain.cmake",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
@@ -92,11 +90,8 @@
       "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/sanitize",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Sanitize",
-        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
-        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
-        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -104,10 +99,9 @@
       "inherits": "base-gcc",
       "binaryDir": "${sourceDir}/build/gcc/coverage",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Coverage",
-        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile",
-        "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 -coverage -fprofile-arcs -ftest-coverage",
-        "CMAKE_MAP_IMPORTED_CONFIG_COVERAGE": "RelWithDebInfo;Release;Debug",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/coverage/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-coverage -fprofile-arcs -ftest-coverage",
         "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage"
       }
     },
@@ -122,10 +116,8 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
       }
     },
@@ -134,8 +126,8 @@
       "inherits": "base-clang",
       "binaryDir": "${sourceDir}/build/clang/debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -DDEBUG -ftime-trace"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/debug/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -143,33 +135,26 @@
       "inherits": "base-clang",
       "binaryDir": "${sourceDir}/build/clang/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_RELEASE": "-flto=auto -O3 -DNDEBUG"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
       "name": "RelWithDebInfo-clang",
-      "inherits": [
-        "base-clang"
-      ],
+      "inherits": "base-clang",
       "binaryDir": "${sourceDir}/build/clang/relwithdebinfo",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/relwithdebinfo/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
       "name": "Sanitize-clang",
-      "inherits": [
-        "base-clang"
-      ],
+      "inherits": "base-clang",
       "binaryDir": "${sourceDir}/build/clang/sanitize",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Sanitize",
-        "CMAKE_CXX_FLAGS_SANITIZE": "-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
-        "CMAKE_EXE_LINKER_FLAGS_SANITIZE": "-fsanitize=address,undefined",
-        "CMAKE_MAP_IMPORTED_CONFIG_SANITIZE": "RelWithDebInfo;Release;Debug",
-        "CONAN_HOST_PROFILE": "auto-cmake;${sourceDir}/cmake/conan_profile"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     }
   ],
@@ -191,8 +176,8 @@
     },
     {
       "name": "Sanitize-msvc",
-      "configurePreset": "msvc",
-      "configuration": "Sanitize"
+      "configurePreset": "Sanitize-msvc",
+      "configuration": "Debug"
     },
     {
       "name": "Debug-gcc",
@@ -265,8 +250,8 @@
     {
       "name": "Sanitize-msvc",
       "inherits": "base-test",
-      "configurePreset": "msvc",
-      "configuration": "Sanitize"
+      "configurePreset": "Sanitize-msvc",
+      "configuration": "Debug"
     },
     {
       "name": "Debug-gcc",
@@ -357,7 +342,7 @@
       "steps": [
         {
           "type": "configure",
-          "name": "msvc"
+          "name": "Sanitize-msvc"
         },
         {
           "type": "build",
