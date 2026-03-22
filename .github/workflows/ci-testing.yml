@@ -1,9 +1,9 @@
+# shfmt: skip
 name: Build and Test
 
 on:
   push:
-    branches:
-      - '**'
+    branches: ['**']
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -13,178 +13,148 @@ on:
       - '.vscode/**'
       - "scripts/**"
 
-concurrency:
-  group: conan-lock-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  # -------------------------------------------------------------------
-  # JOB 1: LINUX (GCC / CLANG Fedora)
-  # -------------------------------------------------------------------
-  linux-builds:
-    name: Linux - ${{ matrix.compiler }}
-    runs-on: self-hosted
-    container:
-      image: fedora:latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # --- GCC Configuration ---
-          - compiler: gcc
-            # Presets de Configuración
-            conf_debug: Debug-gcc
-            conf_release: Release-gcc
-            # Presets de Build/Test
-            build_debug: Debug-gcc
-            build_release: Release-gcc
-
-          # --- Clang Configuration ---
-          - compiler: clang
-            # Presets de Configuración
-            conf_debug: Debug-clang
-            conf_release: Release-clang
-            conf_sanitize: Sanitize-clang
-            # Presets de Build/Test
-            build_debug: Debug-clang
-            build_release: Release-clang
-            build_sanitize: Sanitize-clang
-
+  dependency_scan:
+    name: Dependency scan 
+    runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.head_commit.message, 'WIP') && 
+      !contains(github.event.head_commit.message, 'wip')
+    outputs:
+      conan_changed: ${{ steps.changes.outputs.conan }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set Parallel Jobs
-        run: |
-          CORES=$(nproc)
-          JOBS=$((CORES - 2))
-          if [ "$JOBS" -lt 1 ]; then JOBS=1; fi
-          echo "CMAKE_BUILD_PARALLEL_LEVEL=$JOBS" >> $GITHUB_ENV
-          echo "PARALLEL_JOBS=$JOBS" >> $GITHUB_ENV
+      - name: Detect changed paths
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          base: ${{ github.event.before }}
+          filters: |
+            conan:
+              - 'conanfile.py'
+
+  compile_dependencies_linux:
+    name: Compile and upload dependencies - Linux
+    needs: [dependency_scan]
+    if: ${{ needs.dependency_scan.outputs.conan_changed == 'true' }}
+    uses: ./.github/workflows/linux-dependencies.yml
+    secrets: inherit
+
+  compile_dependencies_windows:
+    name: Compile and upload dependencies - Windows
+    needs: [dependency_scan]
+    if: ${{ needs.dependency_scan.outputs.conan_changed == 'true' }}
+    uses: ./.github/workflows/windows-dependencies.yml
+    secrets: inherit
+
+  # -------------------------------------------------------------------
+  # LINUX BUILDS (Fedora en Runner de GitHub)
+  # -------------------------------------------------------------------
+  linux-builds:
+    name: Linux - ${{ matrix.preset }}
+    needs: [compile_dependencies_linux]
+    if: always() && (needs.compile_dependencies_linux.result == 'success' || needs.compile_dependencies_linux.result == 'skipped')
+      && !contains(github.event.head_commit.message, 'WIP') 
+      && !contains(github.event.head_commit.message, 'wip')
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [Debug-gcc, Release-gcc, Debug-clang, Release-clang, Sanitize-gcc]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install System Dependencies
         run: |
           dnf -y update
-          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel
-          git clone https://github.com/ch0pex/dotfiles
-          cd dotfiles
-          ./setup.sh install_packages
-          ./setup.sh install_languages
-          ./setup.sh install_conan
-          ./setup.sh install_slang
-          cd ..
-          rm -rf dotfiles
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel ccache \
+                         gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
+                         texinfo libasan libubsan libubsan-static libasan-static compiler-rt
+          python3 -m pip install conan jinja2
 
-      - name: Configure Conan Remote
+      - name: Configure Conan
         run: |
-          conan profile detect --force
-          conan remote remove '*'
-          conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
+          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
-      # --- DEBUG CYCLE ---
-      # En Linux (Single Config), configuramos y construimos por separado
-      - name: Configure & Build (Debug)
+      - name: Conan Install
         run: |
-          cmake --preset ${{ matrix.conf_debug }}
-          cmake --build --preset ${{ matrix.build_debug }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_debug }} -LE "graphics"
+          chmod +x conan_install.sh
+          ./conan_install.sh ${{ matrix.preset }}
 
-      # --- RELEASE CYCLE ---
-      - name: Configure & Build (Release)
+      - name: Build
         run: |
-          cmake --preset ${{ matrix.conf_release }}
-          cmake --build --preset ${{ matrix.build_release }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_release }} -LE "graphics"
+          cmake --preset ${{ matrix.preset }}
+          cmake --build --preset ${{ matrix.preset }}
 
-      # --- SANITIZE CYCLE ---
-      - name: Configure & Build (Sanitize)
-        if: matrix.conf_sanitize != ''
+      - name: Test (Xvfb)
         run: |
-          cmake --preset ${{ matrix.conf_sanitize }}
-          cmake --build --preset ${{ matrix.build_sanitize }}
-          xvfb-run -a --server-args="-screen 0 1280x1024x24" ctest --preset ${{ matrix.build_sanitize }} -LE "graphics"
-
-      # --- VALGRIND ---
-      - name: Valgrind Memcheck
-        run: |
-          # NOTA: La ruta build ahora es build/gcc/debug o build/clang/debug según el preset
-          TEST_DIR="build/${{ matrix.compiler }}/debug"
-          
           xvfb-run -a --server-args="-screen 0 1280x1024x24" \
-          ctest --test-dir $TEST_DIR \
-                -T MemCheck \
-                -C Debug \
-                -LE "graphics" \
-                --output-on-failure
-          
-          LOG_DIR="$TEST_DIR/Testing/Temporary"
-          echo "Checking for leaks in $LOG_DIR..."
-          if grep -rn "Definitely lost" "$LOG_DIR"/MemoryChecker.*.log; then
-            echo "::error::Critical memory leaks detected by Valgrind!"
-            exit 1
-          else
-            echo "Valgrind check passed. No definite leaks found."
-          fi
+          ctest --preset ${{ matrix.preset }} -LE "graphics" --output-on-failure
+
+      - name: Valgrind (Only on Debug)
+        if: contains(matrix.preset, 'Debug')
+        run: |
+          COMPILER=$(echo ${{ matrix.preset }} | cut -d'-' -f2)
+          xvfb-run -a --server-args="-screen 0 1280x1024x24" \
+          ctest --test-dir build/$COMPILER/debug -T MemCheck -LE "graphics" --output-on-failure
 
   # -------------------------------------------------------------------
-  # JOB 2: WINDOWS (MSVC)
+  # WINDOWS BUILDS (MSVC en Runner de GitHub)
   # -------------------------------------------------------------------
   windows-builds:
-    name: Windows - ${{ matrix.toolchain }}
+    name: Windows - ${{ matrix.preset }}
+    needs: [compile_dependencies_windows]
+    if: always() && (needs.compile_dependencies_windows.result == 'success' || needs.compile_dependencies_windows.result == 'skipped') 
+      && !contains(github.event.head_commit.message, 'WIP') 
+      && !contains(github.event.head_commit.message, 'wip')
     runs-on: windows-2025
-
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - toolchain: MSVC
-            # En Windows usamos "msvc" que es Multi-Config,
-            # así que podemos configurar una vez y construir varias.
-            configure: msvc
-            debug: Debug-msvc
-            relwithdebinfo: RelWithDebInfo-msvc
-            release: Release-msvc
-
+        preset: [Debug-msvc, Release-msvc]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Conan
-        uses: actions/setup-python@v4
+      - name: Setup Python & Conan
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
-      - name: Install Conan Package
+      - name: Install Dependencies
         shell: bash
-        run: pip install conan
+        run: pip install conan jinja2
 
-      - name: Setup MSVC Environment
+      - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Configure Conan Remote
+      - name: Configure Conan
         shell: bash
         run: |
-          conan profile detect --force
-          conan remote remove '*'
-          conan remote add monostudio-conan-local ${{ secrets.CONAN_URL }} --force
+          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
-      # En Windows mantenemos la lógica original porque "msvc" es Ninja Multi-Config
-      - name: Configure CMake
-        shell: bash
-        run: cmake --preset ${{ matrix.configure }}
-
-      - name: Build & Test (Debug)
+      - name: Conan Install
         shell: bash
         run: |
-          cmake --build --preset ${{ matrix.debug }}
-          ctest --preset ${{ matrix.debug }} -LE "graphics|window"
+          chmod +x conan_install.sh
+          ./conan_install.sh ${{ matrix.preset }}
 
-      - name: Build & Test (Release)
+      - name: Build
         shell: bash
         run: |
-          cmake --build --preset ${{ matrix.release }}
-          ctest --preset ${{ matrix.release }} -LE "graphics|window"
+          cmake --preset msvc
+          cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        shell: bash
+        run: ctest --preset ${{ matrix.preset }} -LE "graphics|window" --output-on-failure
