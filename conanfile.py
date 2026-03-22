@@ -23,14 +23,21 @@ class MonoGameRecipe(ConanFile):
     default_options = {
         "reflect-cpp/*:with_toml": True,
         "glfw/*:with_wayland": True,
-        # "glfw/*:with_x11": False,
         "glad/*:gl_version": "4.5",
         "glad/*:gl_profile": "core",
-        "boost/*:without_cobalt": True
+        "boost/*:without_cobalt": True,
+        "boost/*:without_stacktrace": True,
+        "boost/*:without_locale": True
+        "boost/*:with_stacktrace_backtrace": False, 
     }
 
     def layout(self):
-        cmake_layout(self)
+        compiler_name = str(self.settings.compiler).lower()
+        build_type = str(self.settings.build_type).lower()
+        base_path = f"build/{compiler_name}/{build_type}"
+        self.folders.build = base_path
+        self.folders.generators = f"{base_path}/generators"
+        self.folders.source = "."
 
     def generate(self):
         deps = CMakeDeps(self)

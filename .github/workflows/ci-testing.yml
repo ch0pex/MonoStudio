@@ -14,7 +14,7 @@ on:
       - "scripts/**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: conan-lock-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
