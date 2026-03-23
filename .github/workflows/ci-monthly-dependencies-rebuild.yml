@@ -1,0 +1,27 @@
+name: Monthly Dependencies Rebuild
+
+on:
+  schedule:
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+
+jobs:  
+  collect-garbage:
+    name: Cleanup Remote
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean remote
+        run: |
+          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
+          conan remove '*' -r monostudio-conan-local -c
+
+  windows-dependencies:
+    needs: [collect-garbage]
+    uses: ./.github/workflows/windows-dependencies.yml
+    secrets: inherit
+
+  linux-dependencies:
+    needs: [collect-garbage]
+    uses: ./.github/workflows/linux-dependencies.yml
+    secrets: inherit
