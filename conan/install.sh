@@ -18,6 +18,12 @@ Linux*) IS_LINUX=true ;;
 CYGWIN* | MINGW* | MSYS*) IS_WINDOWS=true ;;
 esac
 
+install_config() {
+    echo "========================================="
+    echo " Installing conan config                 "
+    echo "========================================="
+}
+
 install_preset() {
     local PRESET=$1
     local PROFILE=""
