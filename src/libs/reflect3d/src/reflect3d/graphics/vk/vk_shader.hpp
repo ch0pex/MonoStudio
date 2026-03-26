@@ -28,7 +28,7 @@ core::ShaderModuleCreateInfo create_shader_module_info(std::ranges::contiguous_r
 
 class Shader {
 public:
-  using byte_code_type = std::span<char const>;
+  using byte_code_type = mono::span<char const>;
   using module_type    = raii::ShaderModule;
   using device_type    = raii::Device;
   using stage_type     = core::PipelineShaderStageCreateInfo;

@@ -9,7 +9,7 @@
 int main() {
   using namespace vix;
   //
-  // auto result = vix::po::parse_options(std::span(argv, argc)) //
+  // auto result = vix::po::parse_options(mono::span(argv, argc)) //
   //                                                             // .and_then(mono::config::init_logger<config::Vixel>)
   //                   .and_then(program::run)
   //                   .or_else(mono::err::log<config::Vixel>);

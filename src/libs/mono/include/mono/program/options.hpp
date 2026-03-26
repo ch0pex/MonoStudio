@@ -3,6 +3,7 @@
 #include "mono/config/base_config.hpp"
 #include "mono/config/config_tags.hpp"
 #include "mono/config/parser.hpp"
+#include "mono/containers/span.hpp"
 #include "mono/error/expected.hpp"
 
 #include <boost/program_options.hpp>
@@ -33,7 +34,7 @@ inline std::string help_message(boost::program_options::options_description cons
 } // namespace detail
 
 template<config::Program T, config::OptionTag ConfigTag = config::tag::Mandatory>
-err::expected<T> parse_options(std::span<char*> const args) try {
+err::expected<T> parse_options(mono::span<char*> const args) try {
   namespace po = boost::program_options;
   po::options_description desc("Allowed options");
   desc.add_options() //

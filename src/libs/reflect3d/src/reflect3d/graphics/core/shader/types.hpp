@@ -1,12 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <span>
+#include <mono/containers/span.hpp>
 #include <string>
 
 namespace rf3d::gfx::shader {
 
-using Bytecode = std::span<char const>;
+using Bytecode = mono::span<char const>;
 
 enum class Stage : std::uint8_t {
   vertex = 0,

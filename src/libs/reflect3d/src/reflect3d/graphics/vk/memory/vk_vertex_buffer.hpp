@@ -7,7 +7,7 @@
 namespace rf3d::gfx::vk {
 
 struct VertexBuffer : StaticBuffer<Vertex> {
-  explicit VertexBuffer(std::span<Vertex const> vertices) :
+  explicit VertexBuffer(mono::span<Vertex const> vertices) :
     StaticBuffer {
       StaticBufferCreateInfo {
         .data  = vertices,
@@ -25,7 +25,7 @@ struct DynamicVertexBuffer : DynamicBuffer<Vertex> {
       },
     } { }
 
-  explicit DynamicVertexBuffer(std::span<Vertex const> vertices) :
+  explicit DynamicVertexBuffer(mono::span<Vertex const> vertices) :
     DynamicBuffer {
       core::BufferCreateInfo {
         .size  = vertices.size_bytes(),

@@ -63,7 +63,7 @@ Bytecode compile_module(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  return std::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
+  return mono::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
 }
 
 template<ShaderTarget Target, Stage ShaderStage>
@@ -103,7 +103,7 @@ Bytecode compile(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  return std::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
+  return mono::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
 }
 
 

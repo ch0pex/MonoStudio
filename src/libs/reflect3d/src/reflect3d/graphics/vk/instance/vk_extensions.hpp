@@ -2,13 +2,14 @@
 
 #include "reflect3d/graphics/vk/instance/vk_validation_layers.hpp"
 
-#include <format>
+#include <mono/containers/span.hpp>
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
 
 #include <cstdint>
+#include <format>
 #include <vector>
 
 namespace rf3d::gfx::vk {
@@ -19,8 +20,8 @@ namespace rf3d::gfx::vk {
  * @return true if all required extensions are supported, false otherwise.
  */
 inline bool check_extensions_support(
-    std::span<core::ExtensionProperties const> supported_extensions, //
-    std::span<std::string_view const> required_extensions
+    mono::span<core::ExtensionProperties const> supported_extensions, //
+    mono::span<std::string_view const> required_extensions
 ) {
   auto const transform_name  = [](auto const& ext) { return std::string {&ext.extensionName[0]}; };
   auto const supported_names = supported_extensions | std::views::transform(transform_name);
@@ -56,7 +57,7 @@ inline std::vector<std::string_view> get_required_extensions() {
   std::uint32_t glfw_extension_count = 0;
   auto const* glfw_extensions_ptr    = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-  auto extensions = std::span {glfw_extensions_ptr, glfw_extension_count} //
+  auto extensions = mono::span {glfw_extensions_ptr, glfw_extension_count} //
                     | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
                     | std::ranges::to<std::vector>();
 

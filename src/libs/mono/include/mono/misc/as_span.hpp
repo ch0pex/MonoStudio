@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include <span>
+#include <memory>
+#include "mono/containers/span.hpp"
 
 namespace mono {
 
@@ -10,7 +11,7 @@ namespace mono {
  * This is useful for APIs that expect spans, but you have a single object.
  */
 template<typename T>
-std::span<T const> as_span(T const& data) {
+mono::span<T const> as_span(T const& data) {
   return {std::addressof(data), 1U};
 }
 
@@ -18,7 +19,7 @@ std::span<T const> as_span(T const& data) {
  * Converts a single object to a writeable span of one element.
  */
 template<typename T>
-std::span<T> as_writeable_span(T& data) {
+mono::span<T> as_writeable_span(T& data) {
   return {std::addressof(data), 1U};
 }
 

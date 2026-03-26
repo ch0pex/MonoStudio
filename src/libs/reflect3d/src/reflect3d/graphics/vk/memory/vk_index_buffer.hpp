@@ -7,7 +7,7 @@
 namespace rf3d::gfx::vk {
 
 struct IndexBuffer : StaticBuffer<Index> {
-  explicit IndexBuffer(std::span<Index const> indices) :
+  explicit IndexBuffer(mono::span<Index const> indices) :
     StaticBuffer {
       StaticBufferCreateInfo {
         .data  = indices,
@@ -25,7 +25,7 @@ struct DynamicIndexBuffer : DynamicBuffer<Index> {
       },
     } { }
 
-  explicit DynamicIndexBuffer(std::span<Index const> indices) :
+  explicit DynamicIndexBuffer(mono::span<Index const> indices) :
     DynamicBuffer {
       core::BufferCreateInfo {
         .size  = indices.size_bytes(),
