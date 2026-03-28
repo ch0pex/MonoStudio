@@ -21,16 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install System Dependencies
-        run: |
-          dnf -y update
-          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel \
-                         gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
-                         texinfo libasan libubsan libubsan-static libasan-static compiler-rt
+      - name: Setup Linux build environment
+        uses: ./.github/actions/setup-linux-build-env
 
       - name: Configure Conan
         run: |
-          python3 -m pip install jinja2 conan
           conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
           conan remote enable conancenter

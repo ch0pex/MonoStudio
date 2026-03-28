@@ -3,7 +3,13 @@ name: Build and Test
 
 on:
   push:
-    branches: [ '**' ]
+    branches:
+      - "main"
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    branches:
+      - "main" 
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -37,7 +43,7 @@ jobs:
         id: changes
         uses: dorny/paths-filter@v4
         with:
-          base: ${{ github.event.before }}
+          base: main
           filters: |
             conan:
               - 'conan/**'
@@ -76,13 +82,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install System Dependencies
-        run: |
-          dnf -y update
-          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel ccache \
-                         gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
-                         texinfo libasan libubsan libubsan-static libasan-static compiler-rt
-          python3 -m pip install conan jinja2
+      - name: Setup Linux build environment
+        uses: ./.github/actions/setup-linux-build-env
 
       - name: Configure Conan
         run: |
