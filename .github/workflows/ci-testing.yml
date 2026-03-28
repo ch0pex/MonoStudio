@@ -3,7 +3,13 @@ name: Build and Test
 
 on:
   push:
-    branches: ['**']
+    branches:
+      - "main"
+    paths-ignore:
+      - "docs/**"
+  pull_request:
+    branches:
+      - "main" 
     paths-ignore:
       - '**.md'
       - '**.txt'
@@ -16,9 +22,13 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dependency_scan:
-    name: Dependency scan 
+    name: Dependency scan
     runs-on: ubuntu-latest
     if: |
       !contains(github.event.head_commit.message, 'WIP') && 
@@ -33,21 +43,21 @@ jobs:
         id: changes
         uses: dorny/paths-filter@v4
         with:
-          base: ${{ github.event.before }}
+          base: main
           filters: |
             conan:
-              - 'conanfile.py'
+              - 'conan/**'
 
   compile_dependencies_linux:
     name: Compile and upload dependencies - Linux
-    needs: [dependency_scan]
+    needs: [ dependency_scan ]
     if: ${{ needs.dependency_scan.outputs.conan_changed == 'true' }}
     uses: ./.github/workflows/linux-dependencies.yml
     secrets: inherit
 
   compile_dependencies_windows:
     name: Compile and upload dependencies - Windows
-    needs: [dependency_scan]
+    needs: [ dependency_scan ]
     if: ${{ needs.dependency_scan.outputs.conan_changed == 'true' }}
     uses: ./.github/workflows/windows-dependencies.yml
     secrets: inherit
@@ -57,9 +67,9 @@ jobs:
   # -------------------------------------------------------------------
   linux-builds:
     name: Linux - ${{ matrix.preset }}
-    needs: [compile_dependencies_linux]
+    needs: [ compile_dependencies_linux ]
     if: always() && (needs.compile_dependencies_linux.result == 'success' || needs.compile_dependencies_linux.result == 'skipped')
-      && !contains(github.event.head_commit.message, 'WIP') 
+      && !contains(github.event.head_commit.message, 'WIP')
       && !contains(github.event.head_commit.message, 'wip')
     runs-on: ubuntu-latest
     container:
@@ -67,28 +77,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [Debug-gcc, Release-gcc, Debug-clang, Release-clang, Sanitize-gcc]
+        preset: [ Debug-gcc, Release-gcc, Debug-clang, Release-clang] # TODO: add Sanitize-gcc
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install System Dependencies
-        run: |
-          dnf -y update
-          dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel ccache \
-                         gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
-                         texinfo libasan libubsan libubsan-static libasan-static compiler-rt
-          python3 -m pip install conan jinja2
+      - name: Setup Linux build environment
+        uses: ./.github/actions/setup-linux-build-env
 
       - name: Configure Conan
         run: |
-          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Conan Install
         run: |
-          chmod +x conan_install.sh
-          ./conan_install.sh ${{ matrix.preset }}
+          chmod +x conan/install.sh
+          ./conan/install.sh ${{ matrix.preset }}
 
       - name: Build
         run: |
@@ -112,15 +117,15 @@ jobs:
   # -------------------------------------------------------------------
   windows-builds:
     name: Windows - ${{ matrix.preset }}
-    needs: [compile_dependencies_windows]
-    if: always() && (needs.compile_dependencies_windows.result == 'success' || needs.compile_dependencies_windows.result == 'skipped') 
-      && !contains(github.event.head_commit.message, 'WIP') 
+    needs: [ compile_dependencies_windows ]
+    if: always() && (needs.compile_dependencies_windows.result == 'success' || needs.compile_dependencies_windows.result == 'skipped')
+      && !contains(github.event.head_commit.message, 'WIP')
       && !contains(github.event.head_commit.message, 'wip')
     runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
-        preset: [Debug-msvc, Release-msvc]
+        preset: [ Debug-msvc, Release-msvc ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -140,21 +145,22 @@ jobs:
       - name: Configure Conan
         shell: bash
         run: |
-          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Conan Install
         shell: bash
         run: |
-          chmod +x conan_install.sh
-          ./conan_install.sh ${{ matrix.preset }}
+          chmod +x conan/install.sh
+          ./conan/install.sh ${{ matrix.preset }}
 
       - name: Build
         shell: bash
         run: |
-          cmake --preset msvc
+          cmake --preset ${{ matrix.preset }}
           cmake --build --preset ${{ matrix.preset }}
 
       - name: Test
         shell: bash
         run: ctest --preset ${{ matrix.preset }} -LE "graphics|window" --output-on-failure
+

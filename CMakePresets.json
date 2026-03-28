@@ -14,18 +14,16 @@
       }
     },
     {
-      "name": "msvc",
+      "name": "base-msvc",
       "inherits": "base",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build/msvc",
+      "hidden": true,
+      "generator": "Ninja",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/generators/conan_toolchain.cmake",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
         "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc "
       },
       "vendor": {
@@ -35,12 +33,39 @@
       }
     },
     {
-      "name": "Sanitize-msvc",
-      "inherits": "msvc",
-      "binaryDir": "${sourceDir}/build/msvc_sanitize",
+      "name": "Debug-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/debug",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc_sanitize/generators/conan_toolchain.cmake",
-        "CMAKE_CONFIGURATION_TYPES": "Debug"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/debug/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Release-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/release",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "RelWithDebInfo-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/relwithdebinfo/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "Sanitize-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/sanitize",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -161,23 +186,19 @@
   "buildPresets": [
     {
       "name": "Debug-msvc",
-      "configurePreset": "msvc",
-      "configuration": "Debug"
+      "configurePreset": "Debug-msvc"
     },
     {
       "name": "Release-msvc",
-      "configurePreset": "msvc",
-      "configuration": "Release"
+      "configurePreset": "Release-msvc"
     },
     {
       "name": "RelWithDebInfo-msvc",
-      "configurePreset": "msvc",
-      "configuration": "RelWithDebInfo"
+      "configurePreset": "RelWithDebInfo-msvc"
     },
     {
       "name": "Sanitize-msvc",
-      "configurePreset": "Sanitize-msvc",
-      "configuration": "Debug"
+      "configurePreset": "Sanitize-msvc"
     },
     {
       "name": "Debug-gcc",
@@ -232,26 +253,22 @@
     {
       "name": "Debug-msvc",
       "inherits": "base-test",
-      "configurePreset": "msvc",
-      "configuration": "Debug"
+      "configurePreset": "Debug-msvc"
     },
     {
       "name": "Release-msvc",
       "inherits": "base-test",
-      "configurePreset": "msvc",
-      "configuration": "Release"
+      "configurePreset": "Release-msvc"
     },
     {
       "name": "RelWithDebInfo-msvc",
       "inherits": "base-test",
-      "configurePreset": "msvc",
-      "configuration": "RelWithDebInfo"
+      "configurePreset": "RelWithDebInfo-msvc"
     },
     {
       "name": "Sanitize-msvc",
       "inherits": "base-test",
-      "configurePreset": "Sanitize-msvc",
-      "configuration": "Debug"
+      "configurePreset": "Sanitize-msvc"
     },
     {
       "name": "Debug-gcc",
@@ -306,7 +323,7 @@
       "steps": [
         {
           "type": "configure",
-          "name": "msvc"
+          "name": "Debug-msvc"
         },
         {
           "type": "build",
@@ -324,7 +341,7 @@
       "steps": [
         {
           "type": "configure",
-          "name": "msvc"
+          "name": "Release-msvc"
         },
         {
           "type": "build",

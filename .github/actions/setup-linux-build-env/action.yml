@@ -1,0 +1,17 @@
+name: Setup Linux build environment
+description: Install system and Python dependencies needed for Fedora-based CI builds.
+
+runs:
+  using: composite
+  steps:
+    - name: Install system dependencies
+      shell: bash
+      run: |
+        dnf -y update
+        dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel ccache \
+                       gcc gcc-c++ clang python3-pip cmake ninja-build valgrind \
+                       texinfo libasan libubsan libubsan-static libasan-static compiler-rt
+
+    - name: Install Python dependencies
+      shell: bash
+      run: python3 -m pip install conan jinja2

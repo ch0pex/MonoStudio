@@ -31,12 +31,12 @@ jobs:
           echo "$PYTHON_BIN" >> $GITHUB_PATH
           echo "$PYTHON_BIN/Scripts" >> $GITHUB_PATH
 
-          "$PYTHON_BIN/Scripts/conan.exe" config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          "$PYTHON_BIN/Scripts/conan.exe" config install conan/config
           "$PYTHON_BIN/Scripts/conan.exe" remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
           "$PYTHON_BIN/Scripts/conan.exe" remote enable conancenter
 
       - name: Build and Upload
         run: |
-          chmod +x conan_install.sh
-          ./conan_install.sh ${{ matrix.preset }}
+          chmod +x conan/install.sh
+          ./conan/install.sh ${{ matrix.preset }}
           conan upload "*" -r monostudio-conan-local -c

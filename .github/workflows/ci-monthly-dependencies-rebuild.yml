@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Clean remote
         run: |
-          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
           conan remove '*' -r monostudio-conan-local -c
 
