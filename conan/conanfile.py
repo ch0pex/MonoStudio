@@ -28,10 +28,11 @@ class MonoGameRecipe(ConanFile):
         "boost/*:without_cobalt": True,
         "boost/*:without_stacktrace": True,
         "boost/*:without_locale": True,
-        "boost/*:with_stacktrace_backtrace": False 
+        "boost/*:with_stacktrace_backtrace": False
     }
 
     def layout(self):
+        self.folders.root = ".."
         compiler_name = str(self.settings.compiler).lower()
         build_type = str(self.settings.build_type).lower()
         base_path = f"build/{compiler_name}/{build_type}"

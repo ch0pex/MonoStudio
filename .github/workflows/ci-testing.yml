@@ -36,7 +36,7 @@ jobs:
           base: ${{ github.event.before }}
           filters: |
             conan:
-              - 'conanfile.py'
+              - 'conan/**'
 
   compile_dependencies_linux:
     name: Compile and upload dependencies - Linux
@@ -82,13 +82,13 @@ jobs:
 
       - name: Configure Conan
         run: |
-          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Conan Install
         run: |
-          chmod +x conan_install.sh
-          ./conan_install.sh ${{ matrix.preset }}
+          chmod +x conan/install.sh
+          ./conan/install.sh ${{ matrix.preset }}
 
       - name: Build
         run: |
@@ -140,14 +140,14 @@ jobs:
       - name: Configure Conan
         shell: bash
         run: |
-          conan config install https://github.com/ch0pex/dotfiles.git --type git -sf .conan
+          conan config install conan/config
           conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
 
       - name: Conan Install
         shell: bash
         run: |
-          chmod +x conan_install.sh
-          ./conan_install.sh ${{ matrix.preset }}
+          chmod +x conan/install.sh
+          ./conan/install.sh ${{ matrix.preset }}
 
       - name: Build
         shell: bash
