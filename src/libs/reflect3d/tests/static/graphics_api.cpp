@@ -14,7 +14,7 @@
 #include <reflect3d/graphics/api/surface.hpp>
 #include <reflect3d/graphics/api/texture.hpp>
 
-using namespace rf3d::gfx;
+using namespace rf3d;
 
 namespace {
 
@@ -65,6 +65,9 @@ static_assert(CommandListPushConstants<archetypes::CommandList>);
 static_assert(CommandListTransfer<archetypes::CommandList>);
 static_assert(CommandListCompute<archetypes::CommandList>);
 static_assert(CommandListDraw<archetypes::CommandList>);
+static_assert(CopyCommandList<archetypes::CommandList>);
+static_assert(ComputeCommandList<archetypes::CommandList>);
+static_assert(GraphicsCommandList<archetypes::CommandList>);
 static_assert(CommandList<archetypes::CommandList>);
 
 // Fence concept

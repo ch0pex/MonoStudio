@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/containers/span.hpp"
 #include "reflect3d/graphics/vk/utils/vk_native_types.hpp"
 
 namespace rf3d::gfx::vk::gpu {
@@ -7,10 +8,10 @@ namespace rf3d::gfx::vk::gpu {
 struct SubmitInfo {
   using native_type = core::SubmitInfo;
 
-  std::span<core::Semaphore const> wait_semaphores {}; // NOLINT
-  std::span<core::PipelineStageFlags const> wait_dst_stage_mask {}; // NOLINT
-  std::span<core::CommandBuffer const> command_buffers {}; // NOLINT
-  std::span<core::Semaphore const> signal_semaphores {}; // NOLINT
+  mono::span<core::Semaphore const> wait_semaphores {}; // NOLINT
+  mono::span<core::PipelineStageFlags const> wait_dst_stage_mask {}; // NOLINT
+  mono::span<core::CommandBuffer const> command_buffers {}; // NOLINT
+  mono::span<core::Semaphore const> signal_semaphores {}; // NOLINT
 };
 
 

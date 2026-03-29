@@ -4,9 +4,9 @@
 #include <span>
 #include <string>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
-using Bytecode = std::span<char const>;
+using Bytecode = mono::span<char const>;
 
 enum class Stage : std::uint8_t {
   vertex = 0,
@@ -36,4 +36,4 @@ inline std::string entry_point_name(Stage const stage) {
   }
 }
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

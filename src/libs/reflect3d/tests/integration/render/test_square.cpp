@@ -29,5 +29,5 @@ int main() {
     .indices  = std::vector<Index> {0, 1, 2, 2, 3, 0},
   };
 
-  test::renderer<rf3d::impl::vk>(1, mono::as_span(mesh));
+  test::renderer<rf3d::impl::vk>(1, {mesh});
 }

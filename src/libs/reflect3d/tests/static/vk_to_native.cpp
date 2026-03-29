@@ -2,8 +2,8 @@
 #include <reflect3d/graphics/core2/viewport.hpp>
 #include <reflect3d/graphics/vk2/detail/utils/vk_to_native.hpp>
 
-using namespace rf3d::gfx;
-using namespace rf3d::gfx::vk::detail;
+using namespace rf3d;
+using namespace rf3d::vk::detail;
 
 namespace {
 

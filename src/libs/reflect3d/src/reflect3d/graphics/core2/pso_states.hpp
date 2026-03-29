@@ -2,8 +2,9 @@
 
 #include <cmath>
 #include <cstdint>
+#include <string>
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 /*
  * This enum values are chosen to be compatible with
@@ -80,4 +81,12 @@ struct RasterizerState {
   std::uint32_t forced_sample_count      = 0;
 };
 
-} // namespace rf3d::gfx
+struct ShaderConfig {
+  std::string debug_name;
+  bool vs;
+  bool ps;
+  bool specialization_constants;
+};
+
+
+} // namespace rf3d

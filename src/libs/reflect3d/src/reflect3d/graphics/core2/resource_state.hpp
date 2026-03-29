@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 enum class ResourceState : std::uint8_t {
   undefined = 0,

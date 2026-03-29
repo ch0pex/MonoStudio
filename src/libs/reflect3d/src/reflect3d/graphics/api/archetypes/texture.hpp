@@ -7,7 +7,12 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace rf3d::gfx::archetypes {
+namespace rf3d::archetypes {
+
+struct TextureView {
+  std::uintptr_t gpu_handle;
+  std::uintptr_t view;
+};
 
 /**
  * Texture archetype that models a GPU texture resource.
@@ -18,7 +23,7 @@ namespace rf3d::gfx::archetypes {
 template<TextureUsage Usage>
 struct Texture {
   using handle_type = std::uintptr_t;
-  using view_type   = std::uintptr_t;
+  using view_type   = TextureView;
   using state_type  = ResourceState;
   using config_type = TextureInfo;
   using usage       = std::integral_constant<TextureUsage, Usage>;
@@ -56,4 +61,13 @@ using StorageTexture      = Texture<TextureUsage::unordered_access | TextureUsag
 using CopySourceTexture   = Texture<TextureUsage::copy_source>;
 using CopyDestTexture     = Texture<TextureUsage::copy_dest>;
 
-} // namespace rf3d::gfx::archetypes
+using AnyTexture = Texture< //
+  TextureUsage::shader_resource //
+| TextureUsage::render_target  //
+| TextureUsage::depth_stencil  //
+| TextureUsage::unordered_access  //
+| TextureUsage::copy_source  //
+| TextureUsage::copy_dest //
+>;
+
+} // namespace rf3d::archetypes

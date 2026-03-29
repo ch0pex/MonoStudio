@@ -40,8 +40,11 @@ target_sources(
         reflect3d/graphics/core/shader/types.hpp
 
         reflect3d/graphics/core2/buffer_info.hpp
+        reflect3d/graphics/core2/command_list_type.hpp
+        reflect3d/graphics/core2/defaults.hpp
         reflect3d/graphics/core2/enum_flags.hpp
         reflect3d/graphics/core2/pso_states.hpp
+        reflect3d/graphics/core2/primitive_types.hpp
         reflect3d/graphics/core2/resource_state.hpp
         reflect3d/graphics/core2/texture_info.hpp
         reflect3d/graphics/core2/viewport.hpp
@@ -96,6 +99,56 @@ target_sources(
         reflect3d/graphics/vk/vk_swapchain.hpp
         reflect3d/graphics/vk/vk_swapchain_detail.hpp
 
+        reflect3d/graphics/vk2/buffer.hpp
+        reflect3d/graphics/vk2/command_list.hpp
+        reflect3d/graphics/vk2/fence.hpp
+        reflect3d/graphics/vk2/fwd.hpp
+        reflect3d/graphics/vk2/gpu.hpp
+        reflect3d/graphics/vk2/pso.hpp
+        reflect3d/graphics/vk2/semaphore.hpp
+        reflect3d/graphics/vk2/surface.hpp
+        reflect3d/graphics/vk2/texture.hpp
+
+        reflect3d/graphics/vk2/detail/vk_barriers.hpp
+        reflect3d/graphics/vk2/detail/vk_gpu_detail.hpp
+        reflect3d/graphics/vk2/detail/vk_instance.hpp
+        reflect3d/graphics/vk2/detail/vk_pso_builder.hpp
+        reflect3d/graphics/vk2/detail/vk_pso_manager.hpp
+        reflect3d/graphics/vk2/detail/vk_shader.hpp
+        reflect3d/graphics/vk2/detail/vk_surface_info.hpp
+        reflect3d/graphics/vk2/detail/vk_swapchain.hpp
+        reflect3d/graphics/vk2/detail/vk_swapchain_detail.hpp
+
+        reflect3d/graphics/vk2/detail/gpu/vk_command_pool.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_gpu_families.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_gpu_families_detail.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_gpu_queues.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_logical_device.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_physical_device.hpp
+        reflect3d/graphics/vk2/detail/gpu/vk_submit_info.hpp
+
+        reflect3d/graphics/vk2/detail/instance/vk_debug_messenger.hpp
+        reflect3d/graphics/vk2/detail/instance/vk_extensions.hpp
+        reflect3d/graphics/vk2/detail/instance/vk_instance_profiles.hpp
+        reflect3d/graphics/vk2/detail/instance/vk_validation_layers.hpp
+
+        reflect3d/graphics/vk2/detail/memory/vk_buffer.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_buffer_allocation.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_dynamic_buffer.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_index_buffer.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_memory_allocator.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_staging_buffer.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_static_buffer.hpp
+        reflect3d/graphics/vk2/detail/memory/vk_vertex_buffer.hpp
+
+        reflect3d/graphics/vk2/detail/utils/vk_checker.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_debug_callback.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_defaults.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_exception.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_native_types.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_result.hpp
+        reflect3d/graphics/vk2/detail/utils/vk_to_native.hpp
+
         # Input
         reflect3d/input/input.hpp
 
@@ -128,6 +181,10 @@ target_sources(reflect3d-lib
         reflect3d/graphics/vk/utils/vk_vma_usage.cpp
         reflect3d/graphics/vk/vk_gpu.cpp
         reflect3d/graphics/vk/vk_instance.cpp
+        reflect3d/graphics/vk2/gpu.cpp
+        reflect3d/graphics/vk2/detail/vk_gpu_detail.cpp
+        reflect3d/graphics/vk2/detail/vk_instance.cpp
+        reflect3d/graphics/vk2/detail/utils/vk_vma_usage.cpp
 
         # Window
         reflect3d/window/utils/context.cpp
@@ -153,4 +210,3 @@ target_compile_definitions(reflect3d-lib PUBLIC
         VULKAN_HPP_NO_STRUCT_CONSTRUCTORS=1
         "VULKAN_HPP_HANDLE_ERROR_OUT_OF_DATE_AS_SUCCESS"
 )
-

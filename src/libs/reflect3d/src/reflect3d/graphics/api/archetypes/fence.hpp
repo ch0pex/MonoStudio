@@ -1,6 +1,6 @@
 #pragma once
 
-namespace rf3d::gfx::archetypes {
+namespace rf3d::archetypes {
 
 /**
  * Fence archetype that models a GPU synchronization primitive.
@@ -25,7 +25,7 @@ struct Fence {
 
   void reset();
 
-  bool is_signaled();
+  bool signaled();
 };
 
-} // namespace rf3d::gfx::archetypes
+} // namespace rf3d::archetypes

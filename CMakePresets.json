@@ -89,7 +89,8 @@
       "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/debug/generators/conan_toolchain.cmake",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0"
       }
     },
     {

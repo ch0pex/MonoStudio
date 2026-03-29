@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace rf3d::gfx::archetypes {
+namespace rf3d::archetypes {
 
 /**
  * PipelineState archetype that models a GPU pipeline state object.
@@ -32,4 +32,4 @@ struct PipelineState {
   [[nodiscard]] handle_type handle() const;
 };
 
-} // namespace rf3d::gfx::archetypes
+} // namespace rf3d::archetypes

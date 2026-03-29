@@ -2,11 +2,11 @@
 
 #include "reflect3d/math/math.hpp"
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 struct Rect2D {
-  math::vec2 offset;
-  math::vec2 extent;
+  math::uvec2 offset;
+  math::uvec2 extent;
 };
 
 struct Viewport {
@@ -15,4 +15,4 @@ struct Viewport {
   float max_depth;
 };
 
-} // namespace rf3d::gfx
+} // namespace rf3d
