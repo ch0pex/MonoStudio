@@ -34,7 +34,7 @@ inline std::string help_message(boost::program_options::options_description cons
 } // namespace detail
 
 template<config::Program T, config::OptionTag ConfigTag = config::tag::Mandatory>
-err::expected<T> parse_options(mono::span<char*> const args) try {
+expected<T> parse_options(mono::span<char*> const args) try {
   namespace po = boost::program_options;
   po::options_description desc("Allowed options");
   desc.add_options() //
@@ -57,7 +57,7 @@ err::expected<T> parse_options(mono::span<char*> const args) try {
     }
     else {
       std::println("No program options were provided");
-      return err::unexpected(detail::help_message<T>(desc));
+      return unexpected(detail::help_message<T>(desc));
     }
   }
 
@@ -65,7 +65,7 @@ err::expected<T> parse_options(mono::span<char*> const args) try {
   return config::parse_file<T>(config_file);
 }
 catch (boost::program_options::error const& e) {
-  return err::unexpected(std::format("Error parsing command line: {}\n", e.what()));
+  return unexpected(std::format("Error parsing command line: {}\n", e.what()));
 }
 
 } // namespace mono::program

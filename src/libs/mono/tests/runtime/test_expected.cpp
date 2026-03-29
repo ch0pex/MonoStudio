@@ -8,8 +8,8 @@
 
 TEST_SUITE_BEGIN("Error");
 
-using mono::err::expected;
-using mono::err::unexpected;
+using mono::expected;
+using mono::unexpected;
 
 TEST_CASE("unexpected() without format arguments returns plain message") {
   auto err = unexpected("simple error");

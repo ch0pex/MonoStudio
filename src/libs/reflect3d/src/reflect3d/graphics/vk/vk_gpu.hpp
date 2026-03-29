@@ -28,7 +28,7 @@ void submit_work(SubmitInfo const& submit_info, wait::fence_t wait);
 
 void submit_work(SubmitInfo const& submit_info, wait::idle_t wait);
 
-mono::err::expected<void> present(core::PresentInfoKHR const& present_info);
+mono::expected<void> present(core::PresentInfoKHR const& present_info);
 
 // -----------------------------
 // --- Gpu factory functions ---

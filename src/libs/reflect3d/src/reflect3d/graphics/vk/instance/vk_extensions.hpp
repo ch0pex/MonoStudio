@@ -78,12 +78,12 @@ inline std::vector<std::string_view> get_required_extensions() {
  * Ensures that all required extensions by glfw are supported by vulkan,
  * otherwise, throws an exception.
  */
-inline mono::err::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
+inline mono::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
   auto const required_extensions  = get_required_extensions();
   auto const supported_extensions = get_supported_extensions(context);
 
   if (not check_extensions_support(supported_extensions, required_extensions)) {
-    return mono::err::unexpected("Not all required Vulkan extensions are supported.");
+    return mono::unexpected("Not all required Vulkan extensions are supported.");
   }
 
   LOG_INFO("All required extensions are supported.");

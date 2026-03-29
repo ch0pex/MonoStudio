@@ -5,12 +5,12 @@
 #include <print>
 #include <stdexcept>
 
-namespace mono::err {
+namespace mono {
 
 template<typename T>
-inline constexpr auto log = [](std::runtime_error const& error) -> mono::err::expected<T> {
+inline constexpr auto print_error = [](std::runtime_error const& error) -> mono::expected<T> {
   std::println("\033[31m{}\033[0m", error.what()); // 31 = red, 0 = reset
-  return mono::err::unexpected(error.what());
+  return mono::unexpected(error.what());
 };
 
-} // namespace mono::err
+} // namespace mono
