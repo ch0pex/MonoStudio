@@ -13,11 +13,11 @@
 TEST_SUITE_BEGIN("Execution");
 
 
-mono::err::expected<int> expected_function(int const number) {
+mono::expected<int> expected_function(int const number) {
   if (number == 42) {
     return number + 1;
   }
-  return mono::err::unexpected("There was an error");
+  return mono::unexpected("There was an error");
 }
 
 std::optional<int> optional_function(int const number) {

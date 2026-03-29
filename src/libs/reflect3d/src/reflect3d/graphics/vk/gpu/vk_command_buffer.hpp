@@ -60,8 +60,8 @@ public:
 
   CommandBuffer const& bind_vertex_buffers( // NOLINT
       std::uint32_t const first_binding, //
-      std::span<core::Buffer const> buffers, //
-      std::span<core::DeviceSize const> offsets //
+      mono::span<core::Buffer const> buffers, //
+      mono::span<core::DeviceSize const> offsets //
   ) const {
     cmd_buffer.bindVertexBuffers(first_binding, buffers, offsets);
     return *this;

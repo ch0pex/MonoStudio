@@ -15,7 +15,7 @@ struct StagingBuffer : DynamicBuffer<Type> {
       },
     } { }
 
-  explicit StagingBuffer(std::span<Type const> elements) :
+  explicit StagingBuffer(mono::span<Type const> elements) :
     DynamicBuffer<Type> {
       core::BufferCreateInfo {
         .size  = elements.size_bytes(),

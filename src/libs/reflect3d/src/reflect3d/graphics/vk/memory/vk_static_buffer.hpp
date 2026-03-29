@@ -8,7 +8,7 @@ namespace rf3d::gfx::vk {
 
 template<mono::meta::trivially_copyable_value Type>
 struct StaticBufferCreateInfo {
-  std::span<Type const> data;
+  mono::span<Type const> data;
   core::BufferUsageFlags usage;
 };
 

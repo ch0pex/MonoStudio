@@ -50,8 +50,8 @@ TEST_CASE("Basic sender") {
   //
   // stdexec::sender auto async_inclusive_scan(
   //     stdexec::scheduler auto sch, // 2
-  //     std::span<double const> input, // 1
-  //     std::span<double> output, // 1
+  //     mono::span<double const> input, // 1
+  //     mono::span<double> output, // 1
   //     double init, // 1
   //     std::size_t tile_count
   // ) // 3

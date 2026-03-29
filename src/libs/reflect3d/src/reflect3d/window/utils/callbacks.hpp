@@ -8,7 +8,7 @@
 
 //
 #include <chrono>
-#include <span>
+#include <mono/containers/span.hpp>
 #include <string_view>
 
 namespace rf3d::callbacks {
@@ -127,7 +127,7 @@ inline constexpr Scroll scroll = [](GLFWwindow* handle [[maybe_unused]], double 
 };
 
 inline constexpr Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, char const** paths) {
-  std::span<char const* const> path_span {paths, static_cast<std::size_t>(count)};
+  mono::span<char const* const> path_span {paths, static_cast<std::size_t>(count)};
   LOG_INFO("File drop event on window '{}': {} file(s) dropped.", get_title(handle), count);
   for (int i = 0; i < count; ++i)
     LOG_INFO(" - {}", std::string_view(path_span[i]));

@@ -13,7 +13,7 @@ namespace vix::po {
 /**
  * Vixel may start without config argument
  */
-inline config::Vixel parse_options(std::span<char*> const args) {
+inline config::Vixel parse_options(mono::span<char*> const args) {
   if (args.size() <= 2) {
     LOG_WARNING("No arguments were provided using default Vixel configuration instead");
     return config::Vixel {};

@@ -7,10 +7,10 @@ namespace rf3d::gfx::vk::gpu {
 struct SubmitInfo {
   using native_type = core::SubmitInfo;
 
-  std::span<core::Semaphore const> wait_semaphores {}; // NOLINT(false redundant warning)
-  std::span<core::PipelineStageFlags const> wait_dst_stage_mask {}; // NOLINT(false redundant warning)
-  std::span<core::CommandBuffer const> command_buffers {}; // NOLINT(false redundant warning)
-  std::span<core::Semaphore const> signal_semaphores {}; // NOLINT(false redundant warning)
+  std::span<core::Semaphore const> wait_semaphores {}; // NOLINT
+  std::span<core::PipelineStageFlags const> wait_dst_stage_mask {}; // NOLINT
+  std::span<core::CommandBuffer const> command_buffers {}; // NOLINT
+  std::span<core::Semaphore const> signal_semaphores {}; // NOLINT
 };
 
 

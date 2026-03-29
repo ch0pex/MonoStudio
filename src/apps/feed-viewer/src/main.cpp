@@ -13,7 +13,7 @@
 int main(int argc, char** argv) {
   namespace exec = mono::ex;
 
-  auto run_program = exec::just(std::span(argv, argc)) //
+  auto run_program = exec::just(mono::span(argv, argc)) //
                      | exec::expect(mono::program::parse_options<feed::ProgramConfig, mono::config::tag::Default>) //
                      | exec::inspect(mono::config::init_logger<feed::ProgramConfig>) //
                      | exec::then(feed::run_viewer) //

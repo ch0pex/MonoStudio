@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 #include <ranges>
-#include <span>
+#include <mono/containers/span.hpp>
 #include <stdexcept>
 #include <vector>
 
@@ -18,7 +18,7 @@ namespace rf3d {
 
 namespace detail {
 
-inline std::span<NativeMonitor> get_native_monitors() {
+inline mono::span<NativeMonitor> get_native_monitors() {
   int count {0};
   auto* monitors = glfwGetMonitors(&count);
   if (count == 0) {

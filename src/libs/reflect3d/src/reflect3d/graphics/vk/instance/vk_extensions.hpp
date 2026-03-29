@@ -2,13 +2,14 @@
 
 #include "reflect3d/graphics/vk/instance/vk_validation_layers.hpp"
 
-#include <format>
+#include <mono/containers/span.hpp>
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
 
 #include <cstdint>
+#include <format>
 #include <vector>
 
 namespace rf3d::gfx::vk {
@@ -19,8 +20,8 @@ namespace rf3d::gfx::vk {
  * @return true if all required extensions are supported, false otherwise.
  */
 inline bool check_extensions_support(
-    std::span<core::ExtensionProperties const> supported_extensions, //
-    std::span<std::string_view const> required_extensions
+    mono::span<core::ExtensionProperties const> supported_extensions, //
+    mono::span<std::string_view const> required_extensions
 ) {
   auto const transform_name  = [](auto const& ext) { return std::string {&ext.extensionName[0]}; };
   auto const supported_names = supported_extensions | std::views::transform(transform_name);
@@ -56,7 +57,7 @@ inline std::vector<std::string_view> get_required_extensions() {
   std::uint32_t glfw_extension_count = 0;
   auto const* glfw_extensions_ptr    = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-  auto extensions = std::span {glfw_extensions_ptr, glfw_extension_count} //
+  auto extensions = mono::span {glfw_extensions_ptr, glfw_extension_count} //
                     | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
                     | std::ranges::to<std::vector>();
 
@@ -77,12 +78,12 @@ inline std::vector<std::string_view> get_required_extensions() {
  * Ensures that all required extensions by glfw are supported by vulkan,
  * otherwise, throws an exception.
  */
-inline mono::err::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
+inline mono::expected<std::vector<char const*>> get_extensions(raii::Context const& context) {
   auto const required_extensions  = get_required_extensions();
   auto const supported_extensions = get_supported_extensions(context);
 
   if (not check_extensions_support(supported_extensions, required_extensions)) {
-    return mono::err::unexpected("Not all required Vulkan extensions are supported.");
+    return mono::unexpected("Not all required Vulkan extensions are supported.");
   }
 
   LOG_INFO("All required extensions are supported.");

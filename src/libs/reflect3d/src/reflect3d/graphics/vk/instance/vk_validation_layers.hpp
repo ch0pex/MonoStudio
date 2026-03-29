@@ -3,6 +3,7 @@
 #include "reflect3d/graphics/vk/instance/vk_debug_messenger.hpp"
 
 // Mono library
+#include <mono/containers/span.hpp>
 #include <mono/logging/logger.hpp>
 
 // STD library
@@ -26,8 +27,8 @@ inline constexpr bool enable_validation_layers = true;
  * @return true if all requested validation layers are supported.
  */
 inline bool check_validation_layer_support( //
-  std::span<core::LayerProperties const>  supported_layers,  
-  std::span<std::string_view const> const& required_layers) {
+  mono::span<core::LayerProperties const>  supported_layers,  
+  mono::span<std::string_view const> const& required_layers) {
 
   auto const transform_name  = [](auto const& ext) { return std::string {&ext.layerName[0]}; };
   auto const supported_names = supported_layers | std::views::transform(transform_name);

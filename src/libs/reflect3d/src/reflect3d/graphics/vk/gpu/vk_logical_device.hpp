@@ -23,7 +23,7 @@ public:
 
   void wait_idle() const { handle.waitIdle(); }
 
-  void wait_for_fences(std::span<core::Fence const> fences, bool wait_all, std::chrono::milliseconds timeout) const {
+  void wait_for_fences(mono::span<core::Fence const> fences, bool wait_all, std::chrono::milliseconds timeout) const {
     handle.waitForFences(
         fences, //
         wait_all ? core::True : core::False, //
@@ -39,7 +39,7 @@ public:
     ) >> check::error;
   }
 
-  void reset_fences(std::span<core::Fence const> fences) const { handle.resetFences(fences); }
+  void reset_fences(mono::span<core::Fence const> fences) const { handle.resetFences(fences); }
 
   void reset_fence(core::Fence const& fence) const { handle.resetFences(fence); }
 

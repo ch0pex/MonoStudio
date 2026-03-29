@@ -25,7 +25,7 @@ public:
 
   using size_type          = std::size_t;
   using value_type         = Type;
-  using mapped_memory_type = std::span<value_type>;
+  using mapped_memory_type = mono::span<value_type>;
   using iterator           = mapped_memory_type::iterator;
   using const_iterator     = mapped_memory_type::const_iterator;
 
@@ -76,7 +76,7 @@ public:
   mapped_memory_type data() const { return mapped_memory; }
 
 private:
-  std::span<Type> mapped_memory;
+  mono::span<Type> mapped_memory;
 };
 
 } // namespace rf3d::gfx::vk

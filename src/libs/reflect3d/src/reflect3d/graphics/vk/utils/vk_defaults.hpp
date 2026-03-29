@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/containers/span.hpp"
 #include "reflect3d/graphics/core/vertex.hpp"
 #include "reflect3d/graphics/vk/vk_image.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
@@ -14,7 +15,7 @@ inline constexpr core::ClearColorValue clear_color {0.0F, 0.0F, 0.0F, 1.0F};
 
 
 inline constexpr core::VertexInputBindingDescription vertex_binding_description = {
-  0, sizeof(Vertex), core::VertexInputRate::eVertex
+  .binding = 0, .stride = sizeof(Vertex), .inputRate = core::VertexInputRate::eVertex
 };
 inline constexpr std::array vertex_attribute_description = {
   core::VertexInputAttributeDescription(0, 0, core::Format::eR32G32Sfloat, offsetof(Vertex, position)),
@@ -92,7 +93,7 @@ constexpr core::Viewport viewport(Resolution const resolution) {
 }
 
 inline core::RenderingInfo
-rendering_info(core::Rect2D const render_area, std::span<core::RenderingAttachmentInfo const> const attachment_info) {
+rendering_info(core::Rect2D const render_area, mono::span<core::RenderingAttachmentInfo const> const attachment_info) {
   return {
     .renderArea           = render_area,
     .layerCount           = 1,
@@ -111,6 +112,5 @@ attachament_info(Image::view_type const& image_view, core::ClearColorValue const
     .clearValue  = color,
   };
 }
-
 
 } // namespace rf3d::gfx::vk::defaults

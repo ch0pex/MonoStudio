@@ -92,13 +92,13 @@ void submit_work(SubmitInfo const& submit_info, [[maybe_unused]] wait::idle_t co
   wait_idle();
 }
 
-mono::err::expected<void> present(core::PresentInfoKHR const& present_info) {
+mono::expected<void> present(core::PresentInfoKHR const& present_info) {
   auto const result = get_gpu().queues.present().presentKHR(present_info);
   if (result == core::Result::eSuboptimalKHR or result == core::Result::eErrorOutOfDateKHR) {
-    return mono::err::unexpected("Swapchain is out of date or suboptimal");
+    return mono::unexpected("Swapchain is out of date or suboptimal");
   }
   assert(result == core::Result::eSuccess);
-  return mono::err::expected<void> {};
+  return mono::expected<void> {};
 }
 
 // --------------------------------------

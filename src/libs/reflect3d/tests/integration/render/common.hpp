@@ -26,7 +26,7 @@ rf3d::Window create_test_window(std::string_view title) {
 }
 
 template<rf3d::gfx::RenderHardwareInterface rhi>
-void renderer(std::uint8_t const num_surfaces, std::span<rf3d::gfx::Mesh const> meshes) try {
+void renderer(std::uint8_t const num_surfaces, mono::span<rf3d::gfx::Mesh const> meshes) try {
   using namespace rf3d;
 
   mono::ex::setup_signals();
