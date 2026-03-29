@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "reflect3d/graphics/core/shader/target_session.hpp"
-#include "reflect3d/graphics/core/shader/targets.hpp"
-#include "reflect3d/graphics/core/shader/types.hpp"
+#include "reflect3d/graphics/core2/shader/target_session.hpp"
+#include "reflect3d/graphics/core2/shader/targets.hpp"
+#include "reflect3d/graphics/core2/shader/types.hpp"
 
 #include <mono/logging/logger.hpp>
 
@@ -11,7 +11,7 @@
 
 #include <filesystem>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 namespace detail {
 
@@ -63,7 +63,7 @@ Bytecode compile_module(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  return std::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
+  return mono::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
 }
 
 template<ShaderTarget Target, Stage ShaderStage>
@@ -86,9 +86,9 @@ Bytecode compile(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  IComponentType* components[] = {module, entryPoint};
+  std::array<IComponentType*, 2> components = {module, entryPoint};
   Slang::ComPtr<IComponentType> program;
-  Session<Target>::instance()->createCompositeComponentType(components, 2, program.writeRef());
+  Session<Target>::instance()->createCompositeComponentType(components.data(), components.size(), program.writeRef());
 
   Slang::ComPtr<IBlob> code;
   program->getEntryPointCode(0, 0, code.writeRef(), diagnosticBlob.writeRef());
@@ -103,8 +103,8 @@ Bytecode compile(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  return std::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
+  return mono::span {static_cast<char const*>(code->getBufferPointer()), code->getBufferSize()};
 }
 
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

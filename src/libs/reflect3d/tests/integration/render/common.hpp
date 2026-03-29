@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <reflect3d/graphics/api/buffer.hpp>
 #include <reflect3d/graphics/concepts.hpp>
 #include <reflect3d/graphics/core/mesh.hpp>

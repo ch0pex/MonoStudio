@@ -1,6 +1,6 @@
 #pragma once
 
-#include "reflect3d/graphics/core/shader/global_session.hpp"
+#include "reflect3d/graphics/core2/shader/global_session.hpp"
 
 #include <slang-com-helper.h>
 #include <slang-com-ptr.h>
@@ -9,7 +9,7 @@
 #include <array>
 #include <ranges>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 struct ShaderTargetTag { };
 
@@ -65,4 +65,4 @@ struct WGSL : ShaderTargetTag { };
 struct CUDA : ShaderTargetTag { };
 
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

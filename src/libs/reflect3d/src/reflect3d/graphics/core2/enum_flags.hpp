@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace rf3d::gfx::detail {
+namespace rf3d::detail {
 
 template<typename T>
   requires(std::is_scoped_enum_v<T>)
@@ -14,4 +14,4 @@ consteval bool contains_flag(T const mask, T const flag) {
 template<auto Mask, auto Flag>
 concept ContainsFlag = detail::contains_flag(Mask, Flag);
 
-} // namespace rf3d::gfx::detail
+} // namespace rf3d::detail

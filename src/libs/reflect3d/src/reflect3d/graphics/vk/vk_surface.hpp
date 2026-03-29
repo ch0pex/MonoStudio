@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mono/logging/logger.hpp"
 #include "reflect3d/graphics/vk/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/vk_instance.hpp"
 #include "reflect3d/graphics/vk/vk_swapchain.hpp"
@@ -44,6 +45,7 @@ public:
   [[nodiscard]] std::optional<ImageProxy> next_image(FrameIndex const frame_index) {
     auto const image = swapchain.next_image(frame_index);
     if (not image) {
+      LOG_WARNING("Failed to acquire next image from swapchain, attempting to recreate it...");
       recreate_swapchain();
       return std::nullopt;
     }

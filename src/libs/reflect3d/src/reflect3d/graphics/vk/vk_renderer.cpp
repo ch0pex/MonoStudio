@@ -71,42 +71,15 @@ void Renderer::render_surface(Renderer::surface_handle const& surface, [[maybe_u
   FrameIndex const frame_index = gpu::next_frame();
   auto const opt_image         = surface->next_image(frame_index);
 
-  if (not opt_image) {
-    return;
-  }
-
-  auto image          = opt_image.value();
-  auto const commands = gpu::record_commands({}, [&image, surface](CommandBuffer const& cmd) {
-    std::array const attachment_info = {defaults::attachament_info(image->view(), defaults::clear_color)};
-    auto const render_area           = defaults::render_area(surface->resolution());
-    auto const rendering_info        = defaults::rendering_info(render_area, attachment_info);
-
-    transition_image_layout(cmd, *image, rendering_layout);
-
-    cmd.record_rendering(rendering_info, [surface, &render_area](CommandBuffer const& cmd_buffer) {
-      for (auto const& mesh: renderer_context().meshes) {
-        cmd_buffer.bind_pipeline(core::PipelineBindPoint::eGraphics, *renderer_context().pso_cache.at(0))
-            .bind_vertex_buffer(0, mesh.vertex_buffer.handle(), 0)
-            .bind_index_buffer(mesh.index_buffer.handle(), 0, core::IndexType::eUint16)
-            .set_viewport(0, defaults::viewport(surface->resolution()))
-            .set_scissor(0, render_area)
-            .set_cull_mode(core::CullModeFlagBits::eBack)
-            .set_front_face(core::FrontFace::eClockwise)
-            .set_primitive_topology(core::PrimitiveTopology::eTriangleList)
-            .set_line_width(1.0F)
-            .draw_indexed(mesh.index_buffer.size(), 1, 0, 0, 0);
-      }
-    });
-
-    transition_image_layout(cmd, *image, present_layout);
-  });
+  auto image [[maybe_unused]] = opt_image.value();
+  auto const commands         = gpu::record_commands({}, [](CommandBuffer const& cmd [[maybe_unused]]) { });
 
   core::PipelineStageFlags mask {core::PipelineStageFlagBits::eColorAttachmentOutput};
   auto submit_info = gpu::SubmitInfo {
-    .wait_semaphores     = mono::as_span(*surface->present_semaphore(frame_index)),
-    .wait_dst_stage_mask = mono::as_span(mask),
-    .command_buffers     = mono::as_span(commands),
-    .signal_semaphores   = mono::as_span(*surface->render_semaphore()),
+    .wait_semaphores     = {*surface->present_semaphore(frame_index)},
+    .wait_dst_stage_mask = {mask},
+    .command_buffers     = {commands},
+    .signal_semaphores   = {surface->render_semaphore()},
   };
 
   gpu::submit_work(submit_info, gpu::wait::fence);

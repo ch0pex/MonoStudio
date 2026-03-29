@@ -17,7 +17,7 @@ struct span : std::span<T, Extent> {
 
   constexpr explicit(Extent != std::dynamic_extent) span(std::initializer_list<std::remove_cv_t<T>> il) noexcept
     requires std::is_const_v<T>
-    : mono::span<T, Extent>(il.begin(), il.size()) { }
+    : span(il.begin(), il.size()) { }
 };
 
 template<typename Type, size_t ArrayExtent>

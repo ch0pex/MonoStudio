@@ -8,7 +8,7 @@
 #include <span>
 #include <type_traits>
 
-namespace rf3d::gfx::archetypes {
+namespace rf3d::archetypes {
 
 struct Any { };
 
@@ -47,19 +47,19 @@ struct Buffer {
 
   [[nodiscard]] handle_type handle() const;
 
-  [[nodiscard]] std::span<value_type> data() const
+  [[nodiscard]] mono::span<value_type> data() const
     requires(host_visible::value);
 
-  [[nodiscard]] std::span<value_type>::iterator begin() const
+  [[nodiscard]] mono::span<value_type>::iterator begin() const
     requires(host_visible::value);
 
-  [[nodiscard]] std::span<value_type>::iterator end() const
+  [[nodiscard]] mono::span<value_type>::iterator end() const
     requires(host_visible::value);
 
   void insert(value_type const& value) const
     requires(host_visible::value);
 
-  void insert_range(std::span<value_type const> range) const
+  void insert_range(mono::span<value_type const> range) const
     requires(host_visible::value);
 
   [[nodiscard]] state_type current_state() const
@@ -78,4 +78,4 @@ using StorageBuffer     = Buffer<Any, BufferUsage::storage>;
 using VertexBuffer      = Buffer<Any, BufferUsage::vertex>;
 using IndexBuffer       = Buffer<Any, BufferUsage::index>;
 
-} // namespace rf3d::gfx::archetypes
+} // namespace rf3d::archetypes

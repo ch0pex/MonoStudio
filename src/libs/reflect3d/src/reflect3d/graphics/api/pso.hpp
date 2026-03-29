@@ -2,7 +2,7 @@
 
 #include "reflect3d/graphics/core2/pso_states.hpp"
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 template<typename T>
 concept PipelineState = requires(T& pipeline) {
@@ -11,4 +11,4 @@ concept PipelineState = requires(T& pipeline) {
   { pipeline.handle() } -> std::convertible_to<typename T::handle_type>;
 };
 
-} // namespace rf3d::gfx
+} // namespace rf3d
