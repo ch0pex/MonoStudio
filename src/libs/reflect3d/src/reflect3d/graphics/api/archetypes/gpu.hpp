@@ -1,6 +1,8 @@
 #pragma once
 
-namespace rf3d::gfx::archetypes {
+#include "reflect3d/graphics/api/archetypes/surface.hpp"
+
+namespace rf3d::archetypes {
 
 /**
  * Gpu archetype that models a GPU device.
@@ -12,12 +14,13 @@ struct Gpu {
   struct FrameContext { };
 
   using frame_context_type = FrameContext;
+  using surface_type       = Surface;
 
-  Gpu()                          = delete;
-  Gpu(Gpu const&)                = delete;
-  Gpu(Gpu&&)                     = delete;
-  Gpu& operator=(Gpu const&)     = delete;
-  Gpu& operator=(Gpu&&)          = delete;
+  Gpu()                      = delete;
+  Gpu(Gpu const&)            = delete;
+  Gpu(Gpu&&)                 = delete;
+  Gpu& operator=(Gpu const&) = delete;
+  Gpu& operator=(Gpu&&)      = delete;
 
   ~Gpu() = default;
 
@@ -25,7 +28,7 @@ struct Gpu {
 
   static frame_context_type& new_frame();
 
-  static void submit_frame();
+  static void submit_frame(frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces);
 };
 
-} // namespace rf3d::gfx::archetypes
+} // namespace rf3d::archetypes

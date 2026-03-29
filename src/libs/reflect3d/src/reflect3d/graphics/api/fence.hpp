@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 template<typename T>
 concept Fence = requires(T& fence) {
@@ -11,7 +11,7 @@ concept Fence = requires(T& fence) {
 
   { fence.wait() };
   { fence.reset() };
-  { fence.is_signaled() };
+  { fence.signaled() } -> std::same_as<bool>;
 };
 
-} // namespace rf3d::gfx
+} // namespace rf3d

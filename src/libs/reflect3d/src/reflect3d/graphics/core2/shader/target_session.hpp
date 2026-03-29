@@ -12,11 +12,11 @@
  */
 #pragma once
 
-#include "reflect3d/graphics/core/shader/targets.hpp"
+#include "reflect3d/graphics/core2/shader/targets.hpp"
 
 #include <assets_path.hpp>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 namespace detail {
 
@@ -59,4 +59,4 @@ public:
   }
 };
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

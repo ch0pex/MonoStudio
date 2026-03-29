@@ -65,7 +65,7 @@ public:
       core::Buffer const& buffer, //
       core::DeviceSize const offset //
   ) const {
-    cmd_buffer.bindVertexBuffers(binding, mono::as_span(buffer), mono::as_span(offset));
+    cmd_buffer.bindVertexBuffers(binding, {buffer}, {offset});
     return *this;
   }
 

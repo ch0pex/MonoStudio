@@ -13,7 +13,6 @@
 
 namespace rf3d::gfx::vk {
 
-// TODO Number of present and render semaphores may differ, separate them
 struct Semaphores {
   raii::Semaphore present {gpu::make_semaphore()};
   raii::Semaphore render {gpu::make_semaphore()};
@@ -144,6 +143,5 @@ inline Swapchain::config_type create_swapchain_config(
     .clipped          = core::True,
   };
 }
-
 
 } // namespace rf3d::gfx::vk

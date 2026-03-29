@@ -7,7 +7,8 @@
 
 #include <concepts>
 
-namespace rf3d::gfx {
+namespace rf3d {
+
 
 template<typename T>
 concept Texture = requires(T& texture, typename T::config_type const& config, typename T::state_type state) {
@@ -22,11 +23,10 @@ concept Texture = requires(T& texture, typename T::config_type const& config, ty
   typename T::view_type;
 
   { T(config) };
-  { texture.handle() } -> std::same_as<typename T::handle_type>;
-  { texture.view() } -> std::same_as<typename T::view_type>;
+  { texture.view() } -> std::convertible_to<typename T::view_type const&>;
   { texture.resolution() } -> std::same_as<Resolution>;
   { texture.current_state() } -> std::same_as<typename T::state_type>;
-  { texture.set_state(state) } -> std::same_as<void>;
+  // { texture.set_state(state) } -> std::same_as<void>;
 };
 
 template<typename T>
@@ -47,4 +47,4 @@ concept CopyDestTexture = Texture<T> and detail::ContainsFlag<T::usage::value, T
 template<typename T>
 concept UnorderedAccessTexture = Texture<T> and detail::ContainsFlag<T::usage::value, TextureUsage::unordered_access>;
 
-} // namespace rf3d::gfx
+} // namespace rf3d

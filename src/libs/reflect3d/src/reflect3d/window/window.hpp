@@ -45,7 +45,7 @@ public:
 
   ~Window() {
     if (handle != nullptr) {
-      LOG_INFO("Destroying Window");
+      // LOG_INFO("Destroying Window");
       glfwDestroyWindow(handle);
     }
   }

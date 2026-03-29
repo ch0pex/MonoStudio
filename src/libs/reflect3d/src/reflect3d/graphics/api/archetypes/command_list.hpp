@@ -7,9 +7,11 @@
 #include "reflect3d/graphics/core2/resource_state.hpp"
 #include "reflect3d/graphics/core2/viewport.hpp"
 
+#include <mono/containers/span.hpp>
+
 #include <cstdint>
 
-namespace rf3d::gfx::archetypes {
+namespace rf3d::archetypes {
 
 /**
  * CommandList archetype that models a GPU command recording interface.
@@ -33,45 +35,53 @@ struct CommandList {
   ~CommandList() = default;
 
   // CommandListLifetime
-  [[nodiscard]] CommandList const& reset();
-  [[nodiscard]] CommandList const& begin();
-  [[nodiscard]] CommandList const& end();
+  [[nodiscard]] CommandList& reset();
+  [[nodiscard]] CommandList& begin();
+  [[nodiscard]] CommandList& end();
 
   // CommandListPass
-  [[nodiscard]] CommandList const& begin_pass();
-  [[nodiscard]] CommandList const& end_pass();
+  [[nodiscard]] CommandList& begin_pass();
+  [[nodiscard]] CommandList& end_pass();
 
   // CommandListSynchronization
-  [[nodiscard]] CommandList const& barrier(DedicatedBuffer const& buf, ResourceState new_state);
-  [[nodiscard]] CommandList const& flush_barriers();
+  [[nodiscard]] CommandList& barrier(DedicatedBuffer const& buf, ResourceState new_state);
+  [[nodiscard]] CommandList& barrier(AnyTexture const& texture, ResourceState new_state);
+  [[nodiscard]] CommandList& flush_barriers();
 
   // CommandListBinding
-  [[nodiscard]] CommandList const& bind_pipeline(pso_type const& pso);
-  [[nodiscard]] CommandList const& bind_vertex_buffer(VertexBuffer const& vb);
-  [[nodiscard]] CommandList const& bind_index_buffer(IndexBuffer const& ib);
+  [[nodiscard]] CommandList& bind_pipeline(pso_type const& pso);
+  [[nodiscard]] CommandList& bind_vertex_buffer(VertexBuffer const& vb);
+  [[nodiscard]] CommandList& bind_index_buffer(IndexBuffer const& ib);
 
   // CommandListState
-  [[nodiscard]] CommandList const& set_viewport(Viewport const& viewport);
-  [[nodiscard]] CommandList const& set_scissor(Rect2D const& scissor);
-  [[nodiscard]] CommandList const& primitive_topology(PrimitiveTopology topology);
+  [[nodiscard]] CommandList& set_viewport(Viewport const& viewport);
+  [[nodiscard]] CommandList& set_scissor(Rect2D const& scissor);
+  [[nodiscard]] CommandList& primitive_topology(PrimitiveTopology topology);
 
   // CommandListPushConstants
-  [[nodiscard]] CommandList const& push_constants();
+  [[nodiscard]] CommandList& push_constants(mono::span<std::byte const> bytes);
 
   // CommandListTransfer
-  [[nodiscard]] CommandList const& copy_buffer(SourceBuffer& src, DestinationBuffer& dst);
-  [[nodiscard]] CommandList const& copy_texture(CopySourceTexture& src, CopyDestTexture& dst);
-  [[nodiscard]] CommandList const& copy_texture_to_buffer(CopySourceTexture& src, DestinationBuffer& dst);
-  [[nodiscard]] CommandList const& copy_buffer_to_texture(SourceBuffer& src, CopyDestTexture& dst);
+  [[nodiscard]] CommandList& copy_buffer(SourceBuffer& src, DestinationBuffer& dst);
+  [[nodiscard]] CommandList& copy_texture(CopySourceTexture& src, CopyDestTexture& dst);
+  [[nodiscard]] CommandList& copy_texture_to_buffer(CopySourceTexture& src, DestinationBuffer& dst);
+  [[nodiscard]] CommandList& copy_buffer_to_texture(SourceBuffer& src, CopyDestTexture& dst);
 
   // CommandListCompute
-  [[nodiscard]] CommandList const& dispatch();
-  [[nodiscard]] CommandList const& dispatch_indirect();
+  [[nodiscard]] CommandList& dispatch(math::uvec3 const vec);
+  [[nodiscard]] CommandList& dispatch_indirect();
 
   // CommandListDraw
-  [[nodiscard]] CommandList const& draw(std::uint32_t vtx_count, std::uint32_t inst_count, std::uint32_t first_vtx, std::uint32_t first_inst);
-  [[nodiscard]] CommandList const& draw_indexed(std::uint32_t idx_count, std::uint32_t inst_count, std::uint32_t first_idx, std::uint32_t vtx_offset, std::uint32_t first_inst);
-  [[nodiscard]] CommandList const& draw_indirect();
+  [[nodiscard]] CommandList&
+  draw(std::uint32_t vtx_count, std::uint32_t inst_count, std::uint32_t first_vtx, std::uint32_t first_inst);
+  [[nodiscard]] CommandList& draw_indirect();
+  [[nodiscard]] CommandList& draw_indexed(
+      std::uint32_t idx_count, //
+      std::uint32_t inst_count, //
+      std::uint32_t first_idx, //
+      std::uint32_t vtx_offset, //
+      std::uint32_t first_inst //
+  );
 };
 
-} // namespace rf3d::gfx::archetypes
+} // namespace rf3d::archetypes

@@ -1,10 +1,12 @@
 #pragma once
 
+#include <mono/containers/span.hpp>
+
 #include <cstdint>
 #include <span>
 #include <string>
 
-namespace rf3d::gfx {
+namespace rf3d {
 
 enum class BufferUsage : std::uint8_t {
   source      = (1 << 0),
@@ -23,9 +25,13 @@ enum class MemoryProperty : std::uint8_t {
 template<typename T>
   requires std::is_trivially_copyable_v<T>
 struct BufferInfo {
-  std::string name;
-  std::span<T const> data;
+  std::string name {"Unnamed Buffer"};
+  mono::span<T const> data;
   std::size_t capacity = 0;
 };
 
-} // namespace rf3d::gfx
+constexpr BufferUsage operator|(BufferUsage lhs, BufferUsage rhs) {
+  return static_cast<BufferUsage>(static_cast<std::uint8_t>(lhs) | static_cast<std::uint8_t>(rhs));
+}
+
+} // namespace rf3d
