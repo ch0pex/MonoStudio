@@ -1,6 +1,7 @@
 
 # Containers
 create_test(initilizer_list_span test_il_span.cpp)
+create_test(tuple test_tuple.cpp)
 
 # Thread
 create_test(thread test_thread.cpp)
