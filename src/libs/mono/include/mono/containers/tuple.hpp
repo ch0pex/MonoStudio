@@ -19,8 +19,8 @@
 // --- External dependencies ---
 
 // --- STD ---
-#include <cstddef>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 
 // --- System ---
@@ -31,17 +31,36 @@ template<typename Tuple>
 concept empty = std::tuple_size_v<Tuple> == 0 and mono::meta::specialization_of<Tuple, std::tuple>;
 
 template<typename Tuple, std::size_t N>
-concept max_capacity = std::tuple_size_v<Tuple> <= N and mono::meta::specialization_of<Tuple, std::tuple>;
+concept max_capacity = std::tuple_size_v<std::decay_t<Tuple>> <= N and //
+                       mono::meta::specialization_of<std::decay_t<Tuple>, std::tuple>;
 
-template<mono::meta::specialization_of<std::tuple> Tuple, typename Func>
+template<meta::specialization_of<std::tuple> Tuple, typename Func>
 void for_each(Tuple&& t, Func&& f) {
-  constexpr auto n = std::tuple_size_v<std::decay_t<Tuple>>;
-  [&f, &t]<std::size_t... Idx>(std::index_sequence<Idx...>) {
-    (f(std::get<Idx>(std::forward<Tuple>(t))), ...);
-  }(std::make_index_sequence<n> {});
+  std::apply(
+      [&]<typename... Args>(Args&&... elements) { (f(std::forward<Args>(elements)), ...); }, //
+      std::forward<Tuple>(t) //
+  );
 }
 
-template<mono::meta::specialization_of<std::tuple> Tuple, typename Func>
+template<meta::specialization_of<std::tuple> Tuple, typename... Func>
+void visit(Tuple&& t, Func&&... f) {
+  auto apply_funcs_to_val = [&f...]<typename Arg>(Arg&& val) {
+    (
+        [&]<typename CurrentFunc>(CurrentFunc const& current_func) {
+          if constexpr (std::is_invocable_v<CurrentFunc, Arg>) {
+            current_func(std::forward<Arg>(val));
+          }
+        }(f),
+        ...
+    );
+  };
+  std::apply(
+      [&]<typename... Args>(Args&&... elements) { (apply_funcs_to_val(std::forward<Args>(elements)), ...); },
+      std::forward<Tuple>(t)
+  );
+}
+
+template<meta::specialization_of<std::tuple> Tuple, typename Func>
 auto transform(Tuple&& t, Func&& f) {
   constexpr auto n = std::tuple_size_v<std::decay_t<Tuple>>;
   return [&f, &t]<std::size_t... Idx>(std::index_sequence<Idx...>) {
