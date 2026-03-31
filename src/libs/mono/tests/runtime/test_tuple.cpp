@@ -1,3 +1,4 @@
+#include <concepts>
 #include <mono/containers/tuple.hpp>
 
 #include <string>
@@ -56,6 +57,35 @@ TEST_CASE("transform supports heterogenous tuples") {
   CHECK_EQ(std::get<0>(transformed), 15);
   CHECK_EQ(std::get<1>(transformed), "mono_studio");
 }
+
+TEST_CASE("For empty tuples, for_each does not call the function") {
+  auto const values = std::make_tuple();
+
+  bool called = false;
+  mono::tuple::for_each(values, [&called](auto) { called = true; });
+
+  CHECK_FALSE(called);
+}
+
+TEST_CASE("visit with concept constraints only calls matching functions for each element") {
+
+  std::vector<float> visited;
+  std::vector<int> visited_ints;
+  std::vector<std::string> visited_str;
+
+  auto const values = std::make_tuple(1.2F, "three", 2.0F, 42);
+  mono::tuple::visit(
+      values, //
+      [&visited](std::floating_point auto const& value) { visited.push_back(value); },
+      [&visited_str](std::convertible_to<std::string> auto const& value) { visited_str.emplace_back(value); },
+      [&visited_ints](std::same_as<int> auto const& number) { visited_ints.push_back(number); }
+  );
+
+  CHECK(visited == std::vector<float> {1.2F, 2.0F});
+  CHECK(visited_str == std::vector<std::string> {"three"});
+  CHECK(visited_ints == std::vector<int> {42});
+}
+
 
 TEST_SUITE_END();
 
