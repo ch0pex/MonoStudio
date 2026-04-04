@@ -7,6 +7,7 @@
 #include <mono/misc/as_span.hpp>
 
 //
+#include <boost/asio.hpp>
 #include <cstdint>
 #include <functional>
 
@@ -27,6 +28,16 @@ public:
     cmd_buffer.reset();
     cmd_buffer.begin(begin_info);
     record_function(*this);
+    cmd_buffer.end();
+    return *this;
+  }
+
+  CommandBuffer const& begin(begin_info const& begin_info) const { /// NOLINT
+    cmd_buffer.begin(begin_info);
+    return *this;
+  }
+
+  CommandBuffer const& end() const { /// NOLINT
     cmd_buffer.end();
     return *this;
   }
@@ -54,7 +65,7 @@ public:
       core::Buffer const& buffer, //
       core::DeviceSize const offset //
   ) const {
-    cmd_buffer.bindVertexBuffers(binding, mono::as_span(buffer), mono::as_span(offset));
+    cmd_buffer.bindVertexBuffers(binding, {buffer}, {offset});
     return *this;
   }
 
@@ -63,6 +74,7 @@ public:
       mono::span<core::Buffer const> buffers, //
       mono::span<core::DeviceSize const> offsets //
   ) const {
+    boost::asio::mutable_buffer mutable_buffers {};
     cmd_buffer.bindVertexBuffers(first_binding, buffers, offsets);
     return *this;
   }

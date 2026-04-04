@@ -18,6 +18,7 @@
 
 //
 #include <cassert>
+#include <vulkan/vulkan_core.h>
 
 namespace rf3d::gfx::vk::gpu {
 
@@ -177,7 +178,7 @@ void upload_buffer(core::Buffer dst_buffer, core::Buffer staging_buffer, core::B
     cmd.copy_buffer(staging_buffer, dst_buffer, copy_region);
   });
 
-  SubmitInfo const submit_info = {.command_buffers = mono::as_span(**cmd_copy_buffer)};
+  SubmitInfo const submit_info = {.command_buffers = {**cmd_copy_buffer}};
   submit_work(submit_info, wait::idle);
 }
 
