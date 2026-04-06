@@ -85,7 +85,7 @@ concept CommandListTransfer = requires(
     archetypes::CopySourceTexture& src_texture, //
     archetypes::CopyDestTexture& dst_texture //
 ) {
-  { cmd.copy_buffer(src_buffer, dst_buffer) } -> std::same_as<T&>;
+  // { cmd.copy_buffer(src_buffer, dst_buffer) } -> std::same_as<T&>;
   { cmd.copy_texture(src_texture, dst_texture) } -> std::same_as<T&>;
   { cmd.copy_texture_to_buffer(src_texture, dst_buffer) } -> std::same_as<T&>;
   { cmd.copy_buffer_to_texture(src_buffer, dst_texture) } -> std::same_as<T&>;

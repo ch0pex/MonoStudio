@@ -50,10 +50,12 @@ struct DrawCall {
 
 template<typename CallType = DrawCall<>>
 struct DrawArea {
-  using render_area_type = Rect2D;
-  using call_type        = CallType;
+  using viewport_type = Viewport;
+  using scissor_type  = Rect2D;
+  using call_type     = CallType;
 
-  render_area_type render_area;
+  viewport_type viewport {};
+  scissor_type scissor {};
   mono::span<call_type> draw_calls;
 };
 
@@ -61,14 +63,14 @@ template<DepthStencilTexture T>
 struct DepthTarget {
   using texture_type     = T;
   using clear_value_type = float;
-  using format_type      = TextureFormat;
+  using format_type      = Format;
   using load_op_type     = LoadOperation;
   using store_op_type    = StoreOperation;
   using final_state_type = ResourceState;
 
   mono::Ref<T> texture;
   float clear_value         = 1.0F;
-  TextureFormat format      = TextureFormat::d32_float;
+  Format format             = Format::d32_float;
   LoadOperation load_op     = LoadOperation::clear;
   StoreOperation store_op   = StoreOperation::store;
   ResourceState final_state = ResourceState::depth_read;
@@ -81,14 +83,14 @@ template<RenderTargetTexture T = archetypes::RenderTargetTexture>
 struct ColorTarget {
   using texture_type     = T;
   using clear_color_type = math::vec4;
-  using format_type      = TextureFormat;
+  using format_type      = Format;
   using load_op_type     = LoadOperation;
   using store_op_type    = StoreOperation;
   using final_state_type = ResourceState;
 
   mono::Ref<T> texture;
   math::vec4 clear_color    = {0.0F, 0.0F, 0.0F, 1.0F};
-  TextureFormat format      = TextureFormat::rgba8_srgb;
+  Format format             = Format::rgba8_srgb;
   LoadOperation load_op     = LoadOperation::clear;
   StoreOperation store_op   = StoreOperation::store;
   ResourceState final_state = ResourceState::shader_resource;

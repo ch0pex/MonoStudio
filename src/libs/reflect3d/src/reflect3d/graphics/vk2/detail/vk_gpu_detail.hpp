@@ -38,6 +38,8 @@ void signal_semaphore(core::Semaphore semaphore, std::uint64_t signalValue);
 
 void submit_work(SubmitInfo const& submit_info, core::Fence fence);
 
+void submit_work(SubmitInfo const& submit_info);
+
 mono::expected<void> present(core::PresentInfoKHR const& present_info);
 
 // -----------------------------

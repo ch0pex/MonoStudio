@@ -3,10 +3,14 @@
 #include <mono/containers/span.hpp>
 
 #include <cstdint>
-#include <span>
 #include <string>
 
 namespace rf3d {
+
+enum class MemoryProperty : std::uint8_t {
+  dedicated = (1 << 0),
+  mapped    = (1 << 1),
+};
 
 enum class BufferUsage : std::uint8_t {
   source      = (1 << 0),
@@ -17,10 +21,20 @@ enum class BufferUsage : std::uint8_t {
   index       = (1 << 5),
 };
 
-enum class MemoryProperty : std::uint8_t {
-  dedicated = (1 << 0),
-  mapped    = (1 << 1),
-};
+constexpr BufferUsage operator|(BufferUsage lhs, BufferUsage rhs) {
+  using T = std::underlying_type_t<BufferUsage>;
+  return static_cast<BufferUsage>(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
+
+constexpr BufferUsage operator&(BufferUsage lhs, BufferUsage rhs) {
+  using T = std::underlying_type_t<BufferUsage>;
+  return static_cast<BufferUsage>(static_cast<T>(lhs) & static_cast<T>(rhs));
+}
+
+constexpr BufferUsage& operator|=(BufferUsage& lhs, BufferUsage rhs) {
+  lhs = lhs | rhs;
+  return lhs;
+}
 
 template<typename T>
   requires std::is_trivially_copyable_v<T>
@@ -29,9 +43,5 @@ struct BufferInfo {
   mono::span<T const> data;
   std::size_t capacity = 0;
 };
-
-constexpr BufferUsage operator|(BufferUsage lhs, BufferUsage rhs) {
-  return static_cast<BufferUsage>(static_cast<std::uint8_t>(lhs) | static_cast<std::uint8_t>(rhs));
-}
 
 } // namespace rf3d

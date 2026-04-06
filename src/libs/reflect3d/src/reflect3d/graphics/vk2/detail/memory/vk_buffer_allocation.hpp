@@ -9,9 +9,9 @@ namespace rf3d::vk::detail {
  * this allocation is handled by VMA and should be freed using the allocator, not directly
  */
 struct BufferAllocation {
-  core::Buffer buffer_handle        = nullptr;
-  Allocation allocation_handle      = nullptr;
-  VmaAllocationInfo allocation_info = {};
+  core::Buffer buffer_handle     = nullptr;
+  Allocation allocation_handle   = nullptr;
+  AllocationInfo allocation_info = {};
 };
 
 inline constexpr AllocationCreateInfo mapped_allocation_create_info = {

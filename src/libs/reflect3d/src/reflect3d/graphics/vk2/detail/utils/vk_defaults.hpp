@@ -1,14 +1,15 @@
 #pragma once
 
+#include "reflect3d/graphics/core2/viewport.hpp"
 #include "reflect3d/graphics/vk2/detail/utils/vk_native_types.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <limits>
+#include <vulkan/vulkan_structs.hpp>
 
 namespace rf3d::vk::detail::defaults {
 
 inline constexpr std::size_t max_frames_in_flight = 2U;
-inline constexpr std::uint64_t wait_timeout       = std::numeric_limits<std::uint64_t>::max();
 inline constexpr core::ClearColorValue clear_color {0.0F, 0.0F, 0.0F, 1.0F};
 
 

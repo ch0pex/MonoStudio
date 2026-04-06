@@ -5,6 +5,7 @@
 #include "reflect3d/graphics/core2/shader/targets.hpp"
 #include "reflect3d/graphics/core2/shader/types.hpp"
 
+#include <mono/containers/span.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <assets_path.hpp>

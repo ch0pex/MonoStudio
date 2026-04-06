@@ -10,9 +10,6 @@
 
 #include <mono/containers/static_vector.hpp>
 
-#include <stdexcept>
-#include <vulkan/vulkan_structs.hpp>
-
 namespace rf3d::vk {
 
 namespace detail {
@@ -92,7 +89,7 @@ inline auto get_images(raii::SwapchainKHR const& swapchain, core::SwapchainCreat
   auto build_image = [&](core::Image const& img) { //
     view_info.image = img;
     return Image {
-      .back_buffer       = {img, detail::make_image_view(view_info), resolution},
+      .back_buffer       = {img, make_image_view(view_info), resolution},
       .render_semaphore  = {},
       .present_semaphore = {},
     };
@@ -108,15 +105,15 @@ inline core::SwapchainCreateInfoKHR create_swapchain_config(
     SurfaceInfo const& surface_details, //
     Resolution const& resolution //
 ) {
-  auto const [format, colorSpace] = detail::choose_surface_format(surface_details.formats);
-  auto const present_mode         = detail::choose_present_mode(surface_details.present_modes);
+  auto const [format, colorSpace] = choose_surface_format(surface_details.formats);
+  auto const present_mode         = choose_present_mode(surface_details.present_modes);
 
   return {
     .surface          = *surface,
-    .minImageCount    = detail::choose_swap_min_image_count(surface_details.capabilities),
+    .minImageCount    = choose_swap_min_image_count(surface_details.capabilities),
     .imageFormat      = format,
     .imageColorSpace  = colorSpace,
-    .imageExtent      = detail::choose_swap_extent(resolution, surface_details.capabilities),
+    .imageExtent      = choose_swap_extent(resolution, surface_details.capabilities),
     .imageArrayLayers = 1,
     .imageUsage       = core::ImageUsageFlagBits::eColorAttachment,
     .imageSharingMode = core::SharingMode::eExclusive,
@@ -130,13 +127,13 @@ inline core::SwapchainCreateInfoKHR create_swapchain_config(
 class Swapchain {
 public:
   using image_type  = Image*;
-  using handle_type = detail::raii::SwapchainKHR;
+  using handle_type = raii::SwapchainKHR;
   using config_type = core::SwapchainCreateInfoKHR;
   using extent_type = core::Extent2D;
 
   explicit Swapchain(config_type const& config) :
-    handle(detail::make_swapchain(config)), //
-    images(detail::get_images(handle, config)), //
+    handle(make_swapchain(config)), //
+    images(get_images(handle, config)), //
     extent(config.imageExtent) //
   { }
 
@@ -145,7 +142,7 @@ public:
   Swapchain& operator=(Swapchain const&) = delete;
 
   Swapchain(Swapchain&& other) noexcept :
-    handle((detail::wait_idle(), std::move(other.handle))), //
+    handle((wait_idle(), std::move(other.handle))), //
     images(std::move(other.images)), //
     current_image_index(other.current_image_index), //
     extent(other.extent) //
@@ -156,7 +153,7 @@ public:
       handle = std::move(other.handle);
       extent = other.extent;
       images = std::move(other.images);
-      detail::wait_idle();
+      wait_idle();
       current_image_index = other.current_image_index;
     }
     return *this;
@@ -164,14 +161,14 @@ public:
 
   ~Swapchain() { //
     if (handle != nullptr) {
-      detail::wait_idle();
+      wait_idle();
     }
   }
 
   // TODO: Not use exception for flow control
   [[nodiscard]] image_type next_image(FrameIndex const frame_index) try {
     auto [result, index] = handle.acquireNextImage( //
-      defaults::wait_timeout.count(),  //
+      rf3d::defaults::wait_timeout.count(),  //
       *images.at(frame_index).present_semaphore.handle(),  //
       nullptr //
     );
@@ -200,10 +197,10 @@ public:
 
   void recreate(config_type config) {
     config.oldSwapchain    = *handle;
-    handle_type new_handle = detail::make_swapchain(config);
+    handle_type new_handle = make_swapchain(config);
     handle                 = std::move(new_handle);
     extent                 = config.imageExtent;
-    images                 = detail::get_images(handle, config);
+    images                 = get_images(handle, config);
     current_image_index    = 0;
   }
 
@@ -289,6 +286,15 @@ public:
 
   [[nodiscard]] Resolution resolution() const { //
     return swapchain.resolution();
+  }
+
+  [[nodiscard]] Viewport viewport() const { //
+    auto res = resolution();
+    return Viewport {
+      .rect = {
+        .extent = {res.width, res.height},
+      },
+    };
   }
 
   [[nodiscard]] Semaphore const& render_semaphore() const { //
