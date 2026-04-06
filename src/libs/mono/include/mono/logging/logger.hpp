@@ -9,7 +9,19 @@
 
 namespace mono {
 
-enum class LogLevel : std::uint8_t { Debug = 0, Info, Error, Warning, Critical };
+enum class LogLevel : uint8_t {
+  trace_l3,
+  trace_l2,
+  trace_l1,
+  debug,
+  info,
+  notice,
+  warning,
+  error,
+  critical,
+  backtrace, /**< This is only used for backtrace logging. Should not be set by the user. */
+  none
+};
 
 void log_dynamic(LogLevel level, std::string_view message);
 void log_info(std::string_view message);
