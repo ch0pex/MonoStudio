@@ -9,7 +9,7 @@
 #include <array>
 #include <ranges>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 struct ShaderTargetTag { };
 
@@ -65,4 +65,4 @@ struct WGSL : ShaderTargetTag { };
 struct CUDA : ShaderTargetTag { };
 
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

@@ -5,13 +5,14 @@
 #include "reflect3d/graphics/core/shader/targets.hpp"
 #include "reflect3d/graphics/core/shader/types.hpp"
 
+#include <mono/containers/span.hpp>
 #include <mono/logging/logger.hpp>
 
 #include <assets_path.hpp>
 
 #include <filesystem>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 namespace detail {
 
@@ -86,9 +87,9 @@ Bytecode compile(std::filesystem::path const& shader_path) {
     return {};
   }
 
-  IComponentType* components[] = {module, entryPoint};
+  std::array<IComponentType*, 2> components = {module, entryPoint};
   Slang::ComPtr<IComponentType> program;
-  Session<Target>::instance()->createCompositeComponentType(components, 2, program.writeRef());
+  Session<Target>::instance()->createCompositeComponentType(components.data(), components.size(), program.writeRef());
 
   Slang::ComPtr<IBlob> code;
   program->getEntryPointCode(0, 0, code.writeRef(), diagnosticBlob.writeRef());
@@ -107,4 +108,4 @@ Bytecode compile(std::filesystem::path const& shader_path) {
 }
 
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

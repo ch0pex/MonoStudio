@@ -2,7 +2,7 @@
 
 #include <slang-com-ptr.h>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 namespace detail {
 
@@ -32,4 +32,4 @@ private:
 };
 
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader

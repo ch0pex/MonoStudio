@@ -3,9 +3,9 @@
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
 #include "reflect3d/graphics/api/pso.hpp"
-#include "reflect3d/graphics/core2/pso_states.hpp"
-#include "reflect3d/graphics/core2/resource_state.hpp"
-#include "reflect3d/graphics/core2/viewport.hpp"
+#include "reflect3d/graphics/core/pso_states.hpp"
+#include "reflect3d/graphics/core/resource_state.hpp"
+#include "reflect3d/graphics/core/viewport.hpp"
 
 #include <concepts>
 
