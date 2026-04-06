@@ -14,14 +14,14 @@ inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     [[maybe_unused]] void* user_data
 ) {
   static mono::unordered_flat_map<core::DebugUtilsMessageSeverityFlagBitsEXT, mono::LogLevel> const severity_map {
-    {core::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose, mono::LogLevel::Debug},
-    {core::DebugUtilsMessageSeverityFlagBitsEXT::eInfo, mono::LogLevel::Info},
-    {core::DebugUtilsMessageSeverityFlagBitsEXT::eWarning, mono::LogLevel::Warning},
-    {core::DebugUtilsMessageSeverityFlagBitsEXT::eError, mono::LogLevel::Error},
+    {core::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose, mono::LogLevel::debug},
+    {core::DebugUtilsMessageSeverityFlagBitsEXT::eInfo, mono::LogLevel::info},
+    {core::DebugUtilsMessageSeverityFlagBitsEXT::eWarning, mono::LogLevel::warning},
+    {core::DebugUtilsMessageSeverityFlagBitsEXT::eError, mono::LogLevel::error},
   };
 
   auto const it_sev          = severity_map.find(message_severity);
-  mono::LogLevel const level = (it_sev != severity_map.end()) ? it_sev->second : mono::LogLevel::Critical;
+  mono::LogLevel const level = (it_sev != severity_map.end()) ? it_sev->second : mono::LogLevel::critical;
 
   std::string type_string;
   if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::eGeneral)
