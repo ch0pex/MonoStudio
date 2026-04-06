@@ -1,19 +1,25 @@
 #pragma once
 
+#include "reflect3d/graphics/api/buffer.hpp"
+#include "reflect3d/graphics/api/command_list.hpp"
+#include "reflect3d/graphics/core2/buffer_info.hpp"
+#include "reflect3d/graphics/core2/command_list_type.hpp"
+#include "reflect3d/graphics/core2/enum_flags.hpp"
+#include "reflect3d/graphics/core2/resource_state.hpp"
+#include "reflect3d/graphics/vk2/command_list.hpp"
+#include "reflect3d/graphics/vk2/detail/memory/vk_buffer_allocation.hpp"
+#include "reflect3d/graphics/vk2/detail/utils/vk_to_native.hpp"
+#include "reflect3d/graphics/vk2/detail/vk_gpu_detail.hpp"
+
 #include "mono/meta/concepts.hpp"
 #include "mono/misc/passkey.hpp"
 #include "mono/misc/start_lifetime_as.hpp"
-#include "reflect3d/graphics/api/command_list.hpp"
-#include "reflect3d/graphics/core2/buffer_info.hpp"
-#include "reflect3d/graphics/core2/enum_flags.hpp"
-#include "reflect3d/graphics/core2/resource_state.hpp"
-#include "reflect3d/graphics/vk2/detail/memory/vk_buffer_allocation.hpp"
-#include "reflect3d/graphics/vk2/detail/vk_gpu_detail.hpp"
 
 #include <cstddef>
 #include <type_traits>
 
 namespace rf3d::vk {
+
 
 /**
  * Buffer class represents a GPU buffer resource that can be used for various
@@ -38,8 +44,18 @@ public:
 
   template<mono::meta::trivially_copyable_value T>
   explicit Buffer(BufferInfo<T> const& config) :
-    buffer_allocation(detail::allocate_buffer({}, {})), //
-    element_count(config.capacity) //,
+    buffer_allocation(
+        detail::allocate_buffer(
+            {
+              .size  = std::max(config.capacity, config.data.size_bytes()),
+              .usage = detail::to_native<usage::value>(),
+            },
+            Mem == MemoryProperty::mapped //
+                ? detail::mapped_allocation_create_info
+                : detail::device_local_allocation_create_info
+        )
+    ), //
+    element_count(std::max(config.capacity, config.data.size_bytes() / sizeof(T))) //,
   // name(std::format("Buffer<{}>-{}", to_string(usage::value)))  //
   { }
 
@@ -84,7 +100,7 @@ protected:
 private:
   detail::BufferAllocation buffer_allocation;
   size_type element_count;
-  std::string name {"TODO"};
+  // std::string name {}; TODO: add debug names to buffers
 };
 
 
@@ -97,7 +113,7 @@ private:
  * @tparam Usage The intended usage of the buffer, specified as a combination of BufferUsage
  */
 template<BufferUsage Usage>
-class MappedBuffer : Buffer<Usage, MemoryProperty::mapped> {
+class MappedBuffer : public Buffer<Usage, MemoryProperty::mapped> {
 public:
   using size_type    = typename Buffer<Usage, MemoryProperty::dedicated>::size_type;
   using handle_type  = typename Buffer<Usage, MemoryProperty::dedicated>::handle_type;
@@ -111,18 +127,18 @@ public:
   template<mono::meta::trivially_copyable_value T>
   explicit MappedBuffer(BufferInfo<T> const& config) : Buffer<Usage, MemoryProperty::mapped>(config) {
     assert(this->allocation().allocation_info.size > 0 && "Mapped memory size must be greater than zero");
-    assert(this->allocation().allocation_handle.pMappedData != nullptr && "Mapped memory pointer must not be null");
+    assert(this->allocation().allocation_info.pMappedData != nullptr && "Mapped memory pointer must not be null");
 
     auto mapped_data = this->template mapped_data<T>();
-    std::ranges::copy(config.data, mapped_data.begin());
+    std::ranges::copy(config.data, std::ranges::begin(mapped_data));
   }
 
   // --- Member functions ---
   template<typename T>
     requires std::is_trivially_copyable_v<T>
-  [[nodiscard]] mono::span<T const> mapped_data() const {
+  [[nodiscard]] mono::span<T> mapped_data() const {
     std::size_t const size = this->allocation().allocation_info.size / sizeof(T);
-    T* ptr                 = mono::start_lifetime_as_array<T>(this->allocation().allocation_handle.pMappedData, size);
+    T* ptr                 = mono::start_lifetime_as_array<T>(this->allocation().allocation_info.pMappedData, size);
     return {ptr, size};
   }
 };
@@ -148,17 +164,28 @@ public:
   // --- Constructors ---
   template<mono::meta::trivially_copyable_value T>
   explicit DedicatedBuffer(BufferInfo<T> const& config) : Buffer<Usage, MemoryProperty::dedicated>(config) {
-    // CopyCommandList cmd_list {};
-    //
-    // cmd_list.begin()
-    //     .copy_buffer(*this, config.data, config.capacity)
-    //     .end();
+    if (config.data.empty()) {
+      return;
+    }
+
+    // TODO: this is a patch for now, I should implement a proper asynchronous upload mechanism
+    MappedBuffer<BufferUsage::source> staging_buffer {BufferInfo<T> {.data = config.data}};
+    CopyCommandList command_list {};
+    detail::core::BufferCopy const copy_region {
+      .srcOffset = 0,
+      .dstOffset = 0,
+      .size      = config.data.size_bytes(),
+    };
+
+    command_list.begin().copy_buffer(staging_buffer, *this, copy_region).end();
+    detail::submit_work({.command_buffers = {*command_list.handle()}});
+    detail::wait_idle();
   }
 
   template<std::ranges::contiguous_range Range>
     requires mono::meta::trivially_copyable_value<std::ranges::range_value_t<Range>>
   explicit DedicatedBuffer(Range&& data) :
-    Buffer<Usage, MemoryProperty::dedicated>(BufferInfo<std::ranges::range_value_t<Range>> {
+    DedicatedBuffer<Usage>(BufferInfo<std::ranges::range_value_t<Range>> {
       .data = std::forward<Range>(data), .capacity = std::ranges::size(data)
     }) { }
 

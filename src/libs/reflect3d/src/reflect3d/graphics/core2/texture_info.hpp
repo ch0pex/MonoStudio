@@ -1,35 +1,12 @@
 #pragma once
 
+#include "reflect3d/graphics/core2/format.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
 #include <cstdint>
 #include <utility>
 
 namespace rf3d {
-
-enum class TextureFormat : std::uint8_t {
-  unknown,
-
-  // --- 8-bit Color (Linear) ---
-  rgba8_unorm,
-
-  // --- 8-bit Color (sRGB) ---
-  rgba8_srgb, // Albedo / Base Color textures
-  bgra8_srgb, // Swapchain alternative
-
-  // --- High Precision / G-Buffer ---
-  rgb10a2_unorm, // World Normals
-  rgba16_sfloat, // HDR Lighting / Emissive / Post-processing
-
-  // --- Data / Masks (Memory Optimization) ---
-  r8_unorm, // Single channel: Roughness, Metallic, AO
-  rg8_unorm, // Two channels: Optimized Motion Vectors or UVs
-  rg16_sfloat, // High precision two channels
-
-  // --- Depth & Stencil ---
-  d32_float,
-  d24_unorm_s8_uint // Required if you need Stencil masks
-};
 
 enum class TextureDimension : std::uint8_t {
   tex1d,
@@ -61,7 +38,7 @@ struct TextureInfo {
   std::uint32_t depth        = 1;
   std::uint32_t mip_levels   = 1;
   std::uint32_t array_layers = 1;
-  TextureFormat format       = TextureFormat::rgba8_unorm;
+  Format format              = Format::rgba8_unorm;
   TextureDimension dimension = TextureDimension::tex2d;
 };
 

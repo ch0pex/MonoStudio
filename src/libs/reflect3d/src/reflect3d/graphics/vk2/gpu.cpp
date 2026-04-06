@@ -1,5 +1,6 @@
 
 #include "reflect3d/graphics/vk2/gpu.hpp"
+#include <vulkan/vulkan_enums.hpp>
 #include "reflect3d/graphics/core2/defaults.hpp"
 #include "reflect3d/graphics/core2/primitive_types.hpp"
 #include "reflect3d/graphics/vk2/detail/vk_gpu_detail.hpp"
@@ -78,18 +79,51 @@ Gpu::frame_context_type& Gpu::new_frame() {
   return ctx;
 }
 
+// TODO: optimize this function
 void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
-  frame_ctx.command_list.end();
 
-  detail::core::PipelineStageFlags mask {detail::core::PipelineStageFlagBits::eColorAttachmentOutput};
-  detail::SubmitInfo submit_info {
-    .wait_semaphores     = {*surfaces[0]->present_semaphore(frame_ctx.index).handle()},
-    .wait_dst_stage_mask = {mask},
-    .command_buffers     = {frame_ctx.command_list.handle()},
-    .signal_semaphores   = {*surfaces[0]->render_semaphore().handle()},
+  auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
+  auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
+  auto to_present_semaphore = [&](surface_type const* surface) {
+    return *surface->present_semaphore(frame_ctx.index).handle();
   };
 
-  detail::submit_work(submit_info, *frame_ctx.fence.handle());
+  auto wait_semaphores = surfaces //
+                         | std::views::transform(to_present_semaphore) //
+                         | std::ranges::to<std::vector>();
+
+  auto signal_semaphores = surfaces //
+                           | std::views::transform(to_render_semaphore) //
+                           | std::ranges::to<std::vector>();
+
+  auto masks = std::views::iota(0U, static_cast<std::uint32_t>(surfaces.size())) //
+               | std::views::transform(to_stage_flag) //
+               | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
+
+  frame_ctx.command_list.end();
+  detail::submit_work(
+      {
+        .wait_semaphores     = wait_semaphores,
+        .wait_dst_stage_mask = masks,
+        .command_buffers     = {frame_ctx.command_list.handle()},
+        .signal_semaphores   = signal_semaphores,
+      },
+      *frame_ctx.fence.handle()
+  );
+}
+
+void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type const& surfaces) {
+  detail::core::PipelineStageFlags mask = detail::core::PipelineStageFlagBits::eColorAttachmentOutput;
+  frame_ctx.command_list.end();
+  detail::submit_work(
+      {
+        .wait_semaphores     = {*surfaces.present_semaphore(frame_ctx.index).handle()},
+        .wait_dst_stage_mask = {mask},
+        .command_buffers     = {frame_ctx.command_list.handle()},
+        .signal_semaphores   = {*surfaces.render_semaphore().handle()},
+      },
+      *frame_ctx.fence.handle()
+  );
 }
 
 } // namespace rf3d::vk

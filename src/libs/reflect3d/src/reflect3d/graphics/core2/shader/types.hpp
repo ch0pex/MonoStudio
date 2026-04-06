@@ -1,7 +1,8 @@
 #pragma once
 
+#include "mono/containers/span.hpp"
+
 #include <cstdint>
-#include <span>
 #include <string>
 
 namespace rf3d::shader {

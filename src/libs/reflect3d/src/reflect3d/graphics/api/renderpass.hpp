@@ -60,7 +60,8 @@ concept DrawCallDesc = requires(T& draw_call) {
 template<typename T>
 concept DrawAreaDesc = requires(T& draw_area) {
   { draw_area.draw_calls } -> std::ranges::range;
-  { draw_area.render_area } -> std::same_as<typename T::render_area_type&>;
+  { draw_area.viewport } -> std::same_as<typename T::viewport_type&>;
+  { draw_area.scissor } -> std::same_as<typename T::scissor_type&>;
 };
 
 template<typename T>

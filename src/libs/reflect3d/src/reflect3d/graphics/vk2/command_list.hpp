@@ -57,7 +57,7 @@ public:
   }
 
   CommandList& bind_pipeline(pso_type const& pso [[maybe_unused]]) {
-    // cmd_buffer.bindPipeline(pso.handle());
+    cmd_buffer.bindPipeline(detail::core::PipelineBindPoint::eGraphics, *pso.handle());
     return *this;
   }
 
@@ -144,12 +144,14 @@ public:
     return *this;
   }
 
-  CommandList& copy_buffer(SourceBuffer auto& src, DestinationBuffer auto& dst) {
-    cmd_buffer.copyBuffer(src.handle(), dst.handle());
+  CommandList&
+  copy_buffer(SourceBuffer auto& src, DestinationBuffer auto& dst, detail::core::BufferCopy const& copy_region) {
+    cmd_buffer.copyBuffer(src.handle(), dst.handle(), copy_region);
     return *this;
   }
 
   CommandList& copy_texture(CopySourceTexture auto& src, CopyDestTexture auto& dst) {
+    // TODO: missing copy region parameters
     cmd_buffer.copyImage(src.handle(), dst.handle());
     return *this;
   }
@@ -185,7 +187,7 @@ public:
     });
 
     detail::core::RenderingInfo rendering_info = {
-      .renderArea           = detail::to_native(rp.draw_area.render_area),
+      .renderArea           = detail::to_native(rp.draw_area.viewport.rect),
       .layerCount           = 1,
       .colorAttachmentCount = static_cast<std::uint32_t>(color_attachments.size()),
       .pColorAttachments    = color_attachments.data(),
@@ -292,6 +294,7 @@ public:
     cmd_list.reset();
     return *this;
   }
+
   CommandBuffer& render_pass(RenderPassDesc auto const& rp) {
     mono::tuple::visit(
         rp.render_targets,
@@ -306,8 +309,8 @@ public:
       cmd_list.bind_pipeline(draw_call.pso)
           .bind_vertex_buffer(draw_call.vertex_buffer.get())
           .bind_index_buffer(draw_call.index_buffer.get())
-          // .set_viewport(detail::defaults::viewport()) TODO:
-          // .set_scissor(rp.draw_area.render_area) TODO:
+          .set_viewport(rp.draw_area.viewport)
+          .set_scissor(rp.draw_area.viewport.rect) // TODO: separate scissor from viewport
           .primitive_topology(PrimitiveTopology::triangle_list)
           .draw_indexed(draw_call.draw_params);
     }
@@ -317,11 +320,12 @@ public:
     mono::tuple::for_each(rp.render_targets, [this](RenderTargetDesc auto const& target) {
       cmd_list.barrier(target.texture.get(), target.final_state);
     });
+
     cmd_list.flush_barriers();
     return *this;
   }
 
-  auto const& handle() const { return cmd_list.handle(); }
+  [[nodiscard]] auto const& handle() const { return cmd_list.handle(); }
 
 private:
   underlying_command_list cmd_list {};

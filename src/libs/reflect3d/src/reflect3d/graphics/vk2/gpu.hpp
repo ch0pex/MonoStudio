@@ -43,6 +43,8 @@ struct Gpu {
   static FrameIndex current_frame_index();
 
   static void submit_frame(frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces);
+
+  static void submit_frame(frame_context_type& frame_ctx, surface_type const& surfaces);
 };
 
 } // namespace rf3d::vk

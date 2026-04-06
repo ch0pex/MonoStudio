@@ -1,12 +1,14 @@
 #pragma once
 
+#include "mono/logging/logger.hpp"
+#include "reflect3d/graphics/api/renderpass.hpp"
+#include "reflect3d/graphics/core2/buffer_info.hpp"
+#include "reflect3d/graphics/core2/load_store_operation.hpp"
 #include "reflect3d/graphics/core2/pso_states.hpp"
-#include "reflect3d/graphics/core2/renderpass_descriptor.hpp"
 #include "reflect3d/graphics/core2/resource_state.hpp"
 #include "reflect3d/graphics/core2/viewport.hpp"
 #include "reflect3d/graphics/vk2/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk2/detail/vk_barriers.hpp"
-#include "reflect3d/graphics/vk2/renderpass.hpp"
 
 namespace rf3d::vk::detail {
 
@@ -170,6 +172,43 @@ constexpr BarrierInfo to_native(ResourceState const state) noexcept {
   }
 }
 
+
+constexpr core::BufferUsageFlags to_native(BufferUsage usage) {
+  if not consteval {
+    LOG_WARNING(
+        "Buffer usage translation from api to native might be inefficient when not used in a constexpr context."
+    );
+  }
+  core::BufferUsageFlags flags {};
+  auto has_flag = [](BufferUsage mask, BufferUsage flag) { return (mask & flag) == flag; };
+
+  if (has_flag(usage, BufferUsage::source)) {
+    flags |= core::BufferUsageFlagBits::eTransferSrc;
+  }
+  if (has_flag(usage, BufferUsage::destination)) {
+    flags |= core::BufferUsageFlagBits::eTransferDst;
+  }
+  if (has_flag(usage, BufferUsage::uniform)) {
+    flags |= core::BufferUsageFlagBits::eUniformBuffer;
+  }
+  if (has_flag(usage, BufferUsage::storage)) {
+    flags |= core::BufferUsageFlagBits::eStorageBuffer;
+  }
+  if (has_flag(usage, BufferUsage::vertex)) {
+    flags |= core::BufferUsageFlagBits::eVertexBuffer;
+  }
+  if (has_flag(usage, BufferUsage::index)) {
+    flags |= core::BufferUsageFlagBits::eIndexBuffer;
+  }
+
+  return flags;
+}
+
+template<BufferUsage Usage>
+consteval core::BufferUsageFlags to_native() {
+  return to_native(Usage);
+}
+
 constexpr core::AttachmentLoadOp to_native(LoadOperation const load_op) noexcept { //
   return static_cast<core::AttachmentLoadOp>(load_op);
 }
@@ -177,7 +216,6 @@ constexpr core::AttachmentLoadOp to_native(LoadOperation const load_op) noexcept
 constexpr core::AttachmentStoreOp to_native(StoreOperation const store_op) noexcept {
   return static_cast<core::AttachmentStoreOp>(store_op);
 }
-
 
 constexpr core::ClearColorValue to_native(math::vec4 const& clear_color) noexcept {
   return {clear_color.x, clear_color.y, clear_color.z, clear_color.w};
@@ -202,5 +240,34 @@ inline constexpr auto to_depth_attachment = [](DepthTargetDesc auto const& targe
     // .clearValue = target.clear_color
   };
 };
+
+constexpr core::PipelineInputAssemblyStateCreateInfo to_native_input_assembly(RasterizerState const& state) noexcept {
+  return {.topology = to_native(state.topology)};
+}
+
+constexpr core::PipelineRasterizationStateCreateInfo to_native_rasterizer(RasterizerState const& state) noexcept {
+  return {
+    .depthClampEnable        = core::False,
+    .rasterizerDiscardEnable = core::False,
+    .polygonMode             = to_native(state.fill_mode),
+    .cullMode                = to_native(state.cull_mode),
+    .frontFace               = to_native(state.front_face),
+    .depthBiasEnable         = core::False,
+    .lineWidth               = 1.0F,
+  };
+}
+
+constexpr core::PipelineDepthStencilStateCreateInfo to_native_depth_stencil(RasterizerState const& state) noexcept {
+  bool const depth_read  = state.depth_mode == DepthMode::read || state.depth_mode == DepthMode::read_write;
+  bool const depth_write = state.depth_mode == DepthMode::write || state.depth_mode == DepthMode::read_write;
+
+  return {
+    .depthTestEnable       = depth_read || depth_write ? core::True : core::False,
+    .depthWriteEnable      = depth_write ? core::True : core::False,
+    .depthCompareOp        = depth_read ? to_native(state.depth_test) : core::CompareOp::eAlways,
+    .depthBoundsTestEnable = core::False,
+    .stencilTestEnable     = core::False,
+  };
+}
 
 } // namespace rf3d::vk::detail

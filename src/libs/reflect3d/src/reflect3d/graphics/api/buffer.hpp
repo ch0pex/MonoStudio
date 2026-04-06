@@ -23,7 +23,7 @@ concept Buffer = requires(T& buffer) {
 
   // { T(config) };
   { buffer.size() } -> std::same_as<typename T::size_type>;
-  { buffer.size_bytes() } -> std::same_as<typename T::size_type>;
+  // { buffer.size_bytes() } -> std::same_as<typename T::size_type>; TODO:
   { buffer.handle() } -> std::same_as<typename T::handle_type>;
 };
 

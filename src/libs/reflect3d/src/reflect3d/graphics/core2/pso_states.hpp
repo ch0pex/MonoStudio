@@ -53,6 +53,14 @@ enum class FillMode : std::uint8_t {
   point,
 };
 
+enum class DepthMode : std::uint8_t {
+  none,
+  read,
+  write,
+  read_write,
+};
+
+
 enum class Blend : std::uint8_t {
 
 };
@@ -68,25 +76,12 @@ enum class PsoType : std::uint8_t {
 };
 
 struct RasterizerState {
-  FillMode fill_mode                     = FillMode::solid;
-  CullMode cull_mode                     = CullMode::back;
-  FrontFace front_face                   = FrontFace::counter_clockwise;
-  std::int32_t depth_bias                = 0;
-  float depth_bias_clamp                 = 0.0F;
-  float slope_scaled_depth_bias          = 0.0F;
-  bool depth_clip_enable                 = true;
-  bool multisample_enable                = false;
-  bool antialiased_line_enable           = false;
-  bool conservative_rasterization_enable = false;
-  std::uint32_t forced_sample_count      = 0;
+  FillMode fill_mode            = FillMode::solid;
+  CullMode cull_mode            = CullMode::back;
+  FrontFace front_face          = FrontFace::counter_clockwise;
+  DepthMode depth_mode          = DepthMode::none;
+  ComparisonFunction depth_test = ComparisonFunction::less_equal;
+  PrimitiveTopology topology    = PrimitiveTopology::triangle_list;
 };
-
-struct ShaderConfig {
-  std::string debug_name;
-  bool vs;
-  bool ps;
-  bool specialization_constants;
-};
-
 
 } // namespace rf3d

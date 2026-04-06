@@ -43,7 +43,7 @@ struct Buffer {
 
   [[nodiscard]] std::size_t size() const;
 
-  [[nodiscard]] std::size_t size_bytes() const;
+  // [[nodiscard]] std::size_t capacity() const;
 
   [[nodiscard]] handle_type handle() const;
 
