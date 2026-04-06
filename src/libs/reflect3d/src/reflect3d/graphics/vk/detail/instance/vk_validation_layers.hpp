@@ -1,0 +1,108 @@
+#pragma once
+
+#include "reflect3d/graphics/vk/detail/instance/vk_debug_messenger.hpp"
+
+// Mono library
+#include <mono/containers/span.hpp>
+#include <mono/logging/logger.hpp>
+
+// STD library
+#include <ranges>
+#include <string_view>
+#include <vector>
+
+namespace rf3d::vk::detail {
+
+#ifdef NDEBUG
+inline constexpr bool enable_validation_layers = false;
+#else
+inline constexpr bool enable_validation_layers = true;
+#endif
+
+
+/**
+ * Given a list of supported validation layers and required validation layers,
+ * returns true if all required layers are supported.
+ *
+ * @return true if all requested validation layers are supported.
+ */
+inline bool check_validation_layer_support( //
+  mono::span<core::LayerProperties const>  supported_layers,
+  mono::span<std::string_view const> const& required_layers) {
+
+  auto const transform_name  = [](auto const& ext) { return std::string {&ext.layerName[0]}; };
+  auto const supported_names = supported_layers | std::views::transform(transform_name);
+
+  // All requested layers must be found in the supported layers
+  return std::ranges::all_of(required_layers, [&](auto const& layer_name) {
+    auto const match_name = [&](std::string const& name) { return layer_name == name; };
+    if (not std::ranges::any_of(supported_names, match_name)) {
+      LOG_ERROR("Required Vulkan validation layer not supported: {}", layer_name);
+      return false;
+    }
+
+    return true;
+  });
+}
+
+/**
+ * @return a vector with all the supported validation layers by the system.
+ */
+inline std::vector<core::LayerProperties> get_supported_validation_layers(raii::Context const& context) {
+
+  auto const availableLayers = context.enumerateInstanceLayerProperties();
+
+  for (auto const& layer: availableLayers) {
+    LOG_INFO("Vulkan Validation Layer: {} (version {})", layer.layerName.data(), layer.specVersion);
+  }
+
+  return availableLayers;
+}
+
+/**
+ * Reflect3d validation layers setup.
+ *
+ * Verifies if the requested validation layers are supported by the current system
+ * and if they are not enabled, returns an empty vector.
+ *
+ * @return expected ValidationLayers if validation layers are enabled and supported.
+ * by the current system. Empty vector otherwise.
+ *
+ */
+inline std::vector<char const*> get_validation_layers(raii::Context const& context) {
+  LOG_INFO("Validation layers are enabled");
+
+  static std::vector<std::string_view> const validation_layers = {
+    "VK_LAYER_KHRONOS_validation",
+  };
+
+  if (not check_validation_layer_support(get_supported_validation_layers(context), validation_layers)) {
+    LOG_WARNING(
+        "Validation layers were requested, but not all are available. Program execution may continue without them"
+    );
+    return {};
+  }
+
+  return validation_layers //
+         | std::views::transform([](auto const& layer) { return layer.data(); }) //
+         | std::ranges::to<std::vector>();
+}
+
+/**
+ * Setups validation layers and debug utils info
+ */
+inline void setup_validation_layers(raii::Context const& context, core::InstanceCreateInfo& create_info) {
+  if constexpr (enable_validation_layers) {
+    // This needs to survive until vkCreateInstance is invoked thats why it has static storage
+    static auto const validation_layers = get_validation_layers(context);
+    create_info.enabledLayerCount       = static_cast<std::uint32_t>(validation_layers.size());
+    create_info.ppEnabledLayerNames     = not validation_layers.empty() ? validation_layers.data() : nullptr;
+    create_info.pNext                   = &debug_utils_messenger_create_info;
+  }
+  else {
+    LOG_INFO("Validation layers are disabled, skipping setup");
+  }
+}
+
+
+} // namespace rf3d::vk::detail

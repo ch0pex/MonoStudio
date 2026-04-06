@@ -1,6 +1,6 @@
-#include <reflect3d/graphics/core2/pso_states.hpp>
-#include <reflect3d/graphics/core2/viewport.hpp>
-#include <reflect3d/graphics/vk2/detail/utils/vk_to_native.hpp>
+#include <reflect3d/graphics/core/pso_states.hpp>
+#include <reflect3d/graphics/core/viewport.hpp>
+#include <reflect3d/graphics/vk/detail/utils/vk_to_native.hpp>
 
 using namespace rf3d;
 using namespace rf3d::vk::detail;

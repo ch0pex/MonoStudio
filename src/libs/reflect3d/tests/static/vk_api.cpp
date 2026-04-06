@@ -1,12 +1,12 @@
 #include <reflect3d/graphics/api/command_list.hpp>
 #include <reflect3d/graphics/api/pso.hpp>
 #include <reflect3d/graphics/api/texture.hpp>
-#include <reflect3d/graphics/vk2/command_list.hpp>
-#include <reflect3d/graphics/vk2/fence.hpp>
-#include <reflect3d/graphics/vk2/gpu.hpp>
-#include <reflect3d/graphics/vk2/pso.hpp>
-#include <reflect3d/graphics/vk2/surface.hpp>
-#include <reflect3d/graphics/vk2/texture.hpp>
+#include <reflect3d/graphics/vk/command_list.hpp>
+#include <reflect3d/graphics/vk/fence.hpp>
+#include <reflect3d/graphics/vk/gpu.hpp>
+#include <reflect3d/graphics/vk/pso.hpp>
+#include <reflect3d/graphics/vk/surface.hpp>
+#include <reflect3d/graphics/vk/texture.hpp>
 
 #include "reflect3d/graphics/api/fence.hpp"
 #include "reflect3d/graphics/api/gpu.hpp"

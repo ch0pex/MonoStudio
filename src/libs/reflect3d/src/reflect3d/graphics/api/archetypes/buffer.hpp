@@ -1,8 +1,8 @@
 #pragma once
 
-#include "reflect3d/graphics/core2/buffer_info.hpp"
-#include "reflect3d/graphics/core2/enum_flags.hpp"
-#include "reflect3d/graphics/core2/resource_state.hpp"
+#include "reflect3d/graphics/core/buffer_info.hpp"
+#include "reflect3d/graphics/core/enum_flags.hpp"
+#include "reflect3d/graphics/core/resource_state.hpp"
 
 #include <cstdint>
 #include <span>

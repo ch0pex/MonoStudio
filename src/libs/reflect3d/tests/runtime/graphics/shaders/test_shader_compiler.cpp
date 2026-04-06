@@ -7,7 +7,7 @@
 TEST_SUITE_BEGIN("Shaders");
 
 TEST_CASE("Compile entire module") {
-  using namespace rf3d::gfx::shader;
+  using namespace rf3d::shader;
 
   auto const bytecode =
       compile_module<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/hardcoded_triangle.slang");

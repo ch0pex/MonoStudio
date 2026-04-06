@@ -16,7 +16,7 @@
 
 #include <assets_path.hpp>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 namespace detail {
 
@@ -45,18 +45,18 @@ Slang::ComPtr<slang::ISession> create_session() {
 
 template<ShaderTarget Target>
 class Session {
-public:
-  static auto& instance() {
-    static auto session = detail::create_session<Target>();
-    return session;
-  }
+  Session()  = default;
+  ~Session() = default;
 
-private:
-  Session()                          = default;
+public:
   Session(Session const&)            = delete;
   Session(Session&&)                 = delete;
   Session& operator=(Session const&) = delete;
   Session& operator=(Session&&)      = delete;
+  static auto& instance() {
+    static auto session = detail::create_session<Target>();
+    return session;
+  }
 };
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader
