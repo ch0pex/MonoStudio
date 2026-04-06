@@ -10,7 +10,7 @@ namespace rf3d::vk {
 
 struct FrameContext {
   FrameIndex index {};
-  CommandBuffer command_list {};
+  GraphicsCommandList command_list {};
   Fence fence {};
 };
 

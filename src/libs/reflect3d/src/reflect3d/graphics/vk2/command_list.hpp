@@ -260,6 +260,38 @@ public:
     return *this;
   }
 
+  CommandList& render_pass(RenderPassDesc auto const& rp)
+    requires(list_type::value == CommandListType::graphics)
+  {
+    mono::tuple::visit(
+        rp.render_targets,
+        [&](ColorTargetDesc auto const& t) { barrier(t.texture.get(), ResourceState::render_target, true); },
+        [&](DepthTargetDesc auto const& t) { barrier(t.texture.get(), ResourceState::depth_write, true); }
+    );
+
+    flush_barriers();
+    begin_pass(rp);
+
+    for (DrawCallDesc auto const& draw_call: rp.draw_area.draw_calls) {
+      bind_pipeline(draw_call.pso)
+          .bind_vertex_buffer(draw_call.vertex_buffer.get())
+          .bind_index_buffer(draw_call.index_buffer.get())
+          .set_viewport(rp.draw_area.viewport)
+          .set_scissor(rp.draw_area.viewport.rect) // TODO: separate scissor from viewport
+          .primitive_topology(PrimitiveTopology::triangle_list)
+          .draw_indexed(draw_call.draw_params);
+    }
+
+    end_pass();
+
+    mono::tuple::for_each(rp.render_targets, [this](RenderTargetDesc auto const& target) {
+      barrier(target.texture.get(), target.final_state);
+    });
+
+    flush_barriers();
+    return *this;
+  }
+
   [[nodiscard]] auto const& handle() const { return cmd_buffer; }
 
 private:
@@ -275,60 +307,5 @@ using GraphicsCommandList = CommandList<CommandListType::graphics>;
 using ComputeCommandList = CommandList<compute>;
 
 using CopyCommandList = CommandList<copy>;
-
-class CommandBuffer {
-public:
-  using underlying_command_list = GraphicsCommandList; // TODO: select command list type based on Type
-
-  CommandBuffer& begin() {
-    cmd_list.begin();
-    return *this;
-  }
-
-  CommandBuffer& end() {
-    cmd_list.end();
-    return *this;
-  }
-
-  CommandBuffer& reset() {
-    cmd_list.reset();
-    return *this;
-  }
-
-  CommandBuffer& render_pass(RenderPassDesc auto const& rp) {
-    mono::tuple::visit(
-        rp.render_targets,
-        [&](ColorTargetDesc auto const& t) { cmd_list.barrier(t.texture.get(), ResourceState::render_target, true); },
-        [&](DepthTargetDesc auto const& t) { cmd_list.barrier(t.texture.get(), ResourceState::depth_write, true); }
-    );
-
-    cmd_list.flush_barriers();
-    cmd_list.begin_pass(rp);
-
-    for (DrawCallDesc auto const& draw_call: rp.draw_area.draw_calls) {
-      cmd_list.bind_pipeline(draw_call.pso)
-          .bind_vertex_buffer(draw_call.vertex_buffer.get())
-          .bind_index_buffer(draw_call.index_buffer.get())
-          .set_viewport(rp.draw_area.viewport)
-          .set_scissor(rp.draw_area.viewport.rect) // TODO: separate scissor from viewport
-          .primitive_topology(PrimitiveTopology::triangle_list)
-          .draw_indexed(draw_call.draw_params);
-    }
-
-    cmd_list.end_pass();
-
-    mono::tuple::for_each(rp.render_targets, [this](RenderTargetDesc auto const& target) {
-      cmd_list.barrier(target.texture.get(), target.final_state);
-    });
-
-    cmd_list.flush_barriers();
-    return *this;
-  }
-
-  [[nodiscard]] auto const& handle() const { return cmd_list.handle(); }
-
-private:
-  underlying_command_list cmd_list {};
-};
 
 } // namespace rf3d::vk
