@@ -3,29 +3,26 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file renderender_passass.hpp
- * @draw_areate 30/03/2026
- * @brief Short description
- *
- * Longer description
+ * @file renderpass.hpp
+ * @date 30/03/2026
+ * @brief Render-pass descriptor concepts
  */
 
 #pragma once
 
-// --- Includes ---
+#include "reflect3d/graphics/api/buffer.hpp"
+#include "reflect3d/graphics/api/pso.hpp"
 
-// --- Dependencies ---
 #include <mono/containers/tuple.hpp>
 #include <mono/meta/concepts.hpp>
+#include <mono/misc/reference.hpp>
 
-// --- External dependencies ---
-
-// --- STD ---
 #include <concepts>
+#include <ranges>
 #include <string_view>
-#include "mono/misc/reference.hpp"
-
-// --- System ---
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace rf3d {
 
@@ -50,7 +47,29 @@ concept DepthTargetDesc = requires(T& depth_target) {
 };
 
 template<typename T>
+concept RenderTargetDesc = ColorTargetDesc<T> or DepthTargetDesc<T>;
+
+namespace detail {
+
+template<typename Tuple, std::size_t... I>
+consteval bool tuple_elements_are_render_targets(std::index_sequence<I...> /*unused*/) {
+  return (RenderTargetDesc<std::tuple_element_t<I, Tuple>> and ...);
+}
+
+template<typename Tuple>
+concept RenderTargetsTuple = //
+    mono::meta::specialization_of<Tuple, std::tuple> //
+    and (std::tuple_size_v<Tuple> > 0) //
+    and mono::tuple::max_capacity<Tuple, 9> //
+    and tuple_elements_are_render_targets<Tuple>(std::make_index_sequence<std::tuple_size_v<Tuple>> {});
+
+} // namespace detail
+
+template<typename T>
 concept DrawCallDesc = requires(T& draw_call) {
+  requires PipelineState<typename T::pso_type>;
+  requires VertexBuffer<typename T::vertex_buffer_type>;
+  requires IndexBuffer<typename T::index_buffer_type>;
   { draw_call.pso } -> std::same_as<mono::Ref<typename T::pso_type>&>;
   { draw_call.vertex_buffer } -> std::same_as<mono::Ref<typename T::vertex_buffer_type>&>;
   { draw_call.index_buffer } -> std::same_as<mono::Ref<typename T::index_buffer_type>&>;
@@ -59,6 +78,7 @@ concept DrawCallDesc = requires(T& draw_call) {
 
 template<typename T>
 concept DrawAreaDesc = requires(T& draw_area) {
+  requires DrawCallDesc<std::remove_cvref_t<std::ranges::range_value_t<decltype(draw_area.draw_calls)>>>;
   { draw_area.draw_calls } -> std::ranges::range;
   { draw_area.viewport } -> std::same_as<typename T::viewport_type&>;
   { draw_area.scissor } -> std::same_as<typename T::scissor_type&>;
@@ -66,10 +86,11 @@ concept DrawAreaDesc = requires(T& draw_area) {
 
 template<typename T>
 concept RenderPassDesc = requires(T& render_pass) {
+  requires detail::RenderTargetsTuple<typename T::render_targets_type>;
+  requires DrawAreaDesc<typename T::draw_area_type>;
   { render_pass.debug_name } -> std::convertible_to<std::string_view>;
-  { render_pass.render_targets } -> mono::tuple::max_capacity<8 + 1>; // TODO: max color targets
+  { render_pass.render_targets } -> std::same_as<typename T::render_targets_type&>;
   { render_pass.draw_area } -> std::same_as<typename T::draw_area_type&>;
 };
-
 
 } // namespace rf3d
