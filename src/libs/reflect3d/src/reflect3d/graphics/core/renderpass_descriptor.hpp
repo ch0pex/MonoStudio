@@ -10,7 +10,6 @@
 #include "reflect3d/graphics/api/texture.hpp"
 #include "reflect3d/graphics/core/load_store_operation.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
-#include "reflect3d/graphics/core/texture_info.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 //
 #include <mono/containers/span.hpp>
@@ -98,9 +97,6 @@ struct ColorTarget {
 
 template<typename T, typename... Args>
 ColorTarget(T&, Args&&...) -> ColorTarget<T>;
-
-template<typename T>
-concept RenderTargetDesc = ColorTargetDesc<T> or DepthTargetDesc<T>;
 
 template<RenderTargetDesc... Args>
   requires(sizeof...(Args) <= 9 and sizeof...(Args) > 0)

@@ -4,6 +4,7 @@
 #include <reflect3d/graphics/api/archetypes/fence.hpp>
 #include <reflect3d/graphics/api/archetypes/gpu.hpp>
 #include <reflect3d/graphics/api/archetypes/pso.hpp>
+#include <reflect3d/graphics/api/archetypes/renderpass.hpp>
 #include <reflect3d/graphics/api/archetypes/surface.hpp>
 #include <reflect3d/graphics/api/archetypes/texture.hpp>
 #include <reflect3d/graphics/api/buffer.hpp>
@@ -11,6 +12,7 @@
 #include <reflect3d/graphics/api/fence.hpp>
 #include <reflect3d/graphics/api/gpu.hpp>
 #include <reflect3d/graphics/api/pso.hpp>
+#include <reflect3d/graphics/api/renderpass.hpp>
 #include <reflect3d/graphics/api/surface.hpp>
 #include <reflect3d/graphics/api/texture.hpp>
 
@@ -78,5 +80,14 @@ static_assert(Gpu<archetypes::Gpu>);
 
 // Surface concept
 static_assert(Surface<archetypes::Surface>);
+
+// RenderPass concepts
+static_assert(ColorTargetDesc<archetypes::ColorTarget<>>);
+static_assert(DepthTargetDesc<archetypes::DepthTarget<>>);
+static_assert(RenderTargetDesc<archetypes::ColorTarget<>>);
+static_assert(RenderTargetDesc<archetypes::DepthTarget<>>);
+static_assert(DrawCallDesc<archetypes::DrawCall<>>);
+static_assert(DrawAreaDesc<archetypes::DrawArea<>>);
+static_assert(RenderPassDesc<archetypes::RenderPass<>>);
 
 } // namespace
