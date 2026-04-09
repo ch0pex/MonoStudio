@@ -2,14 +2,13 @@
 
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/pso.hpp"
+#include "reflect3d/graphics/api/archetypes/renderpass.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
 #include "reflect3d/graphics/core/pso_states.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 
 #include <mono/containers/span.hpp>
-
-#include <cstdint>
 
 namespace rf3d::archetypes {
 
@@ -40,7 +39,8 @@ struct CommandList {
   [[nodiscard]] CommandList& end();
 
   // CommandListPass
-  [[nodiscard]] CommandList& begin_pass();
+  [[nodiscard]] CommandList& begin_pass(archetypes::RenderPass<> const& render_pass);
+  [[nodiscard]] CommandList& render_pass(archetypes::RenderPass<> const& render_pass);
   [[nodiscard]] CommandList& end_pass();
 
   // CommandListSynchronization
@@ -68,20 +68,13 @@ struct CommandList {
   [[nodiscard]] CommandList& copy_buffer_to_texture(SourceBuffer& src, CopyDestTexture& dst);
 
   // CommandListCompute
-  [[nodiscard]] CommandList& dispatch(math::uvec3 const vec);
+  [[nodiscard]] CommandList& dispatch(math::uvec3 vec);
   [[nodiscard]] CommandList& dispatch_indirect();
 
   // CommandListDraw
-  [[nodiscard]] CommandList&
-  draw(std::uint32_t vtx_count, std::uint32_t inst_count, std::uint32_t first_vtx, std::uint32_t first_inst);
+  [[nodiscard]] CommandList& draw(DrawParameters const& params);
   [[nodiscard]] CommandList& draw_indirect();
-  [[nodiscard]] CommandList& draw_indexed(
-      std::uint32_t idx_count, //
-      std::uint32_t inst_count, //
-      std::uint32_t first_idx, //
-      std::uint32_t vtx_offset, //
-      std::uint32_t first_inst //
-  );
+  [[nodiscard]] CommandList& draw_indexed(DrawParameters const& params);
 };
 
 } // namespace rf3d::archetypes
