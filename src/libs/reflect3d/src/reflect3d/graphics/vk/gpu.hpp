@@ -1,9 +1,8 @@
 #pragma once
 
+#include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/command_list.hpp"
 #include "reflect3d/graphics/vk/fence.hpp"
-
-#include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/fwd.hpp"
 
 namespace rf3d::vk {
