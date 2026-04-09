@@ -30,18 +30,4 @@ inline core::SubmitInfo to_native(SubmitInfo const& submit_info) {
   return info;
 }
 
-namespace wait {
-
-struct idle_t { };
-
-struct fence_t { };
-
-inline constexpr idle_t idle {};
-
-inline constexpr fence_t fence {};
-
-
-} // namespace wait
-
-
 } // namespace rf3d::vk::detail

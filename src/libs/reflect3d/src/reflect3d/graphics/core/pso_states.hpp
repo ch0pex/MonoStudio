@@ -1,15 +1,9 @@
 #pragma once
 
-#include <cmath>
 #include <cstdint>
-#include <string>
 
 namespace rf3d {
 
-/*
- * This enum values are chosen to be compatible with
- * Vulkan's VkPrimitiveTopology, but this is not a requirement for the API.
- */
 enum class PrimitiveTopology : std::uint8_t {
   point_list     = 0,
   line_list      = 1,
@@ -17,6 +11,17 @@ enum class PrimitiveTopology : std::uint8_t {
   triangle_list  = 3,
   triangle_strip = 4,
   triangle_fan   = 5
+};
+
+enum class PsoStage : std::uint8_t {
+  vertex_input,
+  vertex_shader,
+  hull_shader,
+  domain_shader,
+  geometry_shader,
+  pixel_shader,
+  compute_shader,
+  color_attachment_output,
 };
 
 enum class ComparisonFunction : std::uint8_t {

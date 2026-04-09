@@ -8,7 +8,6 @@ target_sources(
 
         # Graphics
         reflect3d/graphics/backends.hpp
-        reflect3d/graphics/rhi2.hpp
 
         reflect3d/graphics/api/archetypes/buffer.hpp
         reflect3d/graphics/api/archetypes/command_list.hpp

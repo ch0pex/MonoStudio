@@ -37,13 +37,11 @@ concept DedicatedBuffer = requires(T& buffer, typename T::state_type const state
 };
 
 template<typename T>
-concept MappedBuffer = requires(T& buf, typename T::value_type const& val, mono::span<typename T::value_type const> r) {
+concept MappedBuffer = requires(T& buf) {
   requires Buffer<T>;
   requires detail::ContainsFlag<T::memory::value, MemoryProperty::mapped>;
-  requires std::ranges::contiguous_range<T>;
-  { buf.data() } -> std::same_as<mono::span<typename T::value_type>>;
-  { buf.insert(val) };
-  { buf.insert_range(r) };
+  // requires std::ranges::contiguous_range<T>;
+  { buf.template mapped_data<int>() } -> std::same_as<mono::span<int>>; // mock
 };
 
 template<typename T>

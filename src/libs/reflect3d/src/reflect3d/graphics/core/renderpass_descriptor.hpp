@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glm/fwd.hpp>
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/pso.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"

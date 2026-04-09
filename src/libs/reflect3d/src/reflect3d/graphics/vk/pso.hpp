@@ -112,7 +112,11 @@ public:
   using config_type = PipelineCreateInfo;
   using handle_type = detail::raii::Pipeline;
 
-  PipelineState(config_type const& config) : pso_handle(detail::create_pipeline(config)) { }
+  explicit PipelineState(config_type const& config) : pso_handle(detail::create_pipeline(config)) { }
+
+  PipelineState(PipelineState const& other) = delete;
+
+  PipelineState& operator=(PipelineState const& other) = delete;
 
   [[nodiscard]] PsoType type() const { // NOLINT
     return PsoType::graphics; // TODO: support compute pipelines

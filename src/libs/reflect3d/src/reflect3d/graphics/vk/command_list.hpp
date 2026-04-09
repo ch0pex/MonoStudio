@@ -143,9 +143,13 @@ public:
     return *this;
   }
 
-  CommandList&
-  copy_buffer(SourceBuffer auto& src, DestinationBuffer auto& dst, detail::core::BufferCopy const& copy_region) {
-    cmd_buffer.copyBuffer(src.handle(), dst.handle(), copy_region);
+  CommandList& copy_buffer(SourceBuffer auto& src, DestinationBuffer auto& dst, BufferCopyRegion const& copy_region) {
+    detail::core::BufferCopy const region {
+      .srcOffset = copy_region.src_offset,
+      .dstOffset = copy_region.dst_offset,
+      .size      = copy_region.size,
+    };
+    cmd_buffer.copyBuffer(src.handle(), dst.handle(), region);
     return *this;
   }
 

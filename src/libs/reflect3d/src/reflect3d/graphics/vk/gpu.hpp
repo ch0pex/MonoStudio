@@ -1,9 +1,11 @@
 #pragma once
 
 #include "reflect3d/graphics/core/primitive_types.hpp"
+#include "reflect3d/graphics/core/submit_info.hpp"
 #include "reflect3d/graphics/vk/command_list.hpp"
 #include "reflect3d/graphics/vk/fence.hpp"
 #include "reflect3d/graphics/vk/fwd.hpp"
+#include "reflect3d/graphics/vk/semaphore.hpp"
 
 namespace rf3d::vk {
 
@@ -12,6 +14,8 @@ struct FrameContext {
   GraphicsCommandList command_list {};
   Fence fence {};
 };
+
+using SubmitInfo = SubmitInfo<GraphicsCommandList, Semaphore, Fence>;
 
 struct Gpu {
   // --- Type Traits ---
@@ -43,7 +47,11 @@ struct Gpu {
 
   static void submit_frame(frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces);
 
-  static void submit_frame(frame_context_type& frame_ctx, surface_type const& surfaces);
+  static void submit_frame(frame_context_type& frame_ctx, surface_type& surface);
+
+  static void submit_work(SubmitInfo const& submit_info);
+
+  static void present(mono::span<surface_type* const> surfaces);
 };
 
 } // namespace rf3d::vk

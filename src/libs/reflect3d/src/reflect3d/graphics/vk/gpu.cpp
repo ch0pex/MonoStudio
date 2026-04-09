@@ -123,6 +123,37 @@ void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type const& surfac
       },
       *frame_ctx.fence.handle()
   );
+  surface.present();
 }
+
+// TODO: measure performance of this function and optimize if necessary
+void Gpu::submit_work(SubmitInfo const& submit_info) {
+  auto wait_semaphores = submit_info.wait_semaphores //
+                         | std::views::transform([](auto& sem) { return *sem.get().handle(); }) //
+                         | std::ranges::to<std::vector>();
+
+  auto signal_semaphores = submit_info.signal_semaphores //
+                           | std::views::transform([](auto& sem) { return *sem.get().handle(); }) //
+                           | std::ranges::to<std::vector>();
+  auto command_buffers = submit_info.command_buffers //
+                         | std::views::transform([](auto& cmd) { return *cmd.get().handle(); }) //
+                         | std::ranges::to<std::vector>();
+
+  auto wait_stages = submit_info.wait_stages //
+                     | std::views::transform(detail::to_native_stage) //
+                     | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
+
+  detail::submit_work(
+      detail::SubmitInfo {
+        .wait_semaphores     = wait_semaphores,
+        .wait_dst_stage_mask = wait_stages,
+        .command_buffers     = command_buffers,
+        .signal_semaphores   = signal_semaphores,
+      },
+      *submit_info.signal_fence->get().handle()
+  );
+}
+
+void Gpu::present(mono::span<surface_type* const>) { }
 
 } // namespace rf3d::vk
