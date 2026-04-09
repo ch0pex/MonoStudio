@@ -1,6 +1,5 @@
 
 #include "reflect3d/graphics/vk/gpu.hpp"
-#include <vulkan/vulkan_enums.hpp>
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
