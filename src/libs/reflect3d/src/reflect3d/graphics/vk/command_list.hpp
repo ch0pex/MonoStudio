@@ -1,8 +1,5 @@
 #pragma once
 
-#include "mono/containers/static_vector.hpp"
-#include "mono/containers/tuple.hpp"
-#include "mono/misc/passkey.hpp"
 #include "reflect3d/graphics/api/buffer.hpp"
 #include "reflect3d/graphics/api/renderpass.hpp"
 #include "reflect3d/graphics/api/texture.hpp"
@@ -15,10 +12,12 @@
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 #include "reflect3d/graphics/vk/pso.hpp"
 
+#include <mono/containers/static_vector.hpp>
+#include <mono/containers/tuple.hpp>
 #include <mono/logging/logger.hpp>
+#include <mono/misc/passkey.hpp>
 
 #include <cstdint>
-#include <ranges>
 
 namespace rf3d::vk {
 
@@ -95,7 +94,7 @@ public:
                .baseMipLevel   = 0,
                .levelCount     = detail::core::RemainingMipLevels,
                .baseArrayLayer = 0,
-               .layerCount     = detail::core::RemainingArrayLayers
+               .layerCount     = detail::core::RemainingArrayLayers,
           }
         }
     );
@@ -169,7 +168,7 @@ public:
   // --- Compute and Graphics ---
 
   CommandList& dispatch(math::uvec3 const vec)
-    requires(list_type::value == CommandListType::compute or Type == CommandListType::graphics)
+    requires(list_type::value == compute or Type == graphics)
   {
     cmd_buffer.dispatch(vec.x, vec.y, vec.z);
     return *this;
@@ -177,8 +176,40 @@ public:
 
   // --- Graphics Only ---
 
+  CommandList& render_pass(RenderPassDesc auto const& rp)
+    requires(list_type::value == graphics)
+  {
+    mono::tuple::visit(
+        rp.render_targets,
+        [this](ColorTargetDesc auto const& t) { this->barrier(t.texture.get(), ResourceState::render_target, true); },
+        [this](DepthTargetDesc auto const& t) { this->barrier(t.texture.get(), ResourceState::depth_write, true); }
+    );
+
+    flush_barriers();
+    begin_pass(rp);
+
+    for (DrawCallDesc auto const& draw_call: rp.draw_area.draw_calls) {
+      bind_pipeline(draw_call.pso)
+          .bind_vertex_buffer(draw_call.vertex_buffer.get())
+          .bind_index_buffer(draw_call.index_buffer.get())
+          .set_viewport(rp.draw_area.viewport)
+          .set_scissor(rp.draw_area.scissor)
+          .primitive_topology(PrimitiveTopology::triangle_list)
+          .draw_indexed(draw_call.draw_params);
+    }
+
+    end_pass();
+
+    mono::tuple::for_each(rp.render_targets, [this](RenderTargetDesc auto const& target) {
+      this->barrier(target.texture.get(), target.final_state);
+    });
+
+    flush_barriers();
+    return *this;
+  }
+
   CommandList& begin_pass(RenderPassDesc auto const& rp)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     mono::static_vector<detail::core::RenderingAttachmentInfo, 8> color_attachments {};
 
@@ -198,56 +229,56 @@ public:
   }
 
   CommandList& end_pass()
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.endRendering();
     return *this;
   }
 
   CommandList& set_viewport(Viewport const& viewport)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.setViewport(0, detail::to_native(viewport));
     return *this;
   }
 
   CommandList& set_scissor(Rect2D const& scissor)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.setScissor(0, detail::to_native(scissor));
     return *this;
   }
 
   CommandList& primitive_topology(PrimitiveTopology const topology)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.setPrimitiveTopology(static_cast<detail::core::PrimitiveTopology>(topology));
     return *this;
   }
 
-  CommandList& bind_vertex_buffer(rf3d::VertexBuffer auto const& vb)
-    requires(list_type::value == CommandListType::graphics)
+  CommandList& bind_vertex_buffer(VertexBuffer auto const& vb)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.bindVertexBuffers(0, {vb.handle()}, {0});
     return *this;
   }
 
-  CommandList& bind_index_buffer(rf3d::IndexBuffer auto const& ib)
-    requires(list_type::value == CommandListType::graphics)
+  CommandList& bind_index_buffer(IndexBuffer auto const& ib)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.bindIndexBuffer(ib.handle(), 0, detail::core::IndexType::eUint16);
     return *this;
   }
 
   CommandList& draw(DrawParameters const& params)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.draw(params.vertex_count, params.instance_count, params.first_vertex, params.first_instance);
     return *this;
   }
 
   CommandList& draw_indexed(DrawParameters const& params)
-    requires(list_type::value == CommandListType::graphics)
+    requires(list_type::value == graphics)
   {
     cmd_buffer.drawIndexed(
         params.index_count, //
@@ -260,37 +291,6 @@ public:
     return *this;
   }
 
-  CommandList& render_pass(RenderPassDesc auto const& rp)
-    requires(list_type::value == CommandListType::graphics)
-  {
-    mono::tuple::visit(
-        rp.render_targets,
-        [this](ColorTargetDesc auto const& t) { this->barrier(t.texture.get(), ResourceState::render_target, true); },
-        [this](DepthTargetDesc auto const& t) { this->barrier(t.texture.get(), ResourceState::depth_write, true); }
-    );
-
-    flush_barriers();
-    begin_pass(rp);
-
-    for (DrawCallDesc auto const& draw_call: rp.draw_area.draw_calls) {
-      bind_pipeline(draw_call.pso)
-          .bind_vertex_buffer(draw_call.vertex_buffer.get())
-          .bind_index_buffer(draw_call.index_buffer.get())
-          .set_viewport(rp.draw_area.viewport)
-          .set_scissor(rp.draw_area.viewport.rect) // TODO: separate scissor from viewport
-          .primitive_topology(PrimitiveTopology::triangle_list)
-          .draw_indexed(draw_call.draw_params);
-    }
-
-    end_pass();
-
-    mono::tuple::for_each(rp.render_targets, [this](RenderTargetDesc auto const& target) {
-      this->barrier(target.texture.get(), target.final_state);
-    });
-
-    flush_barriers();
-    return *this;
-  }
 
   [[nodiscard]] auto const& handle() const { return cmd_buffer; }
 
@@ -302,7 +302,7 @@ private:
 
 // --- Type aliases ---
 
-using GraphicsCommandList = CommandList<CommandListType::graphics>;
+using GraphicsCommandList = CommandList<>;
 
 using ComputeCommandList = CommandList<compute>;
 

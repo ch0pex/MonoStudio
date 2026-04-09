@@ -1,9 +1,11 @@
 #pragma once
 
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
+#include "reflect3d/graphics/api/archetypes/renderpass.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
 #include "reflect3d/graphics/api/pso.hpp"
 #include "reflect3d/graphics/core/pso_states.hpp"
+#include "reflect3d/graphics/core/renderpass_descriptor.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 
@@ -19,8 +21,9 @@ concept CommandListLifetime = requires(T& cmd) {
 };
 
 template<typename T>
-concept CommandListPass = requires(T& cmd) {
-  { cmd.begin_pass() } -> std::same_as<T&>;
+concept CommandListPass = requires(T& cmd, archetypes::RenderPass<> const& render_pass) {
+  { cmd.begin_pass(render_pass) } -> std::same_as<T&>;
+  { cmd.render_pass(render_pass) } -> std::same_as<T&>;
   { cmd.end_pass() } -> std::same_as<T&>;
 };
 
@@ -100,17 +103,11 @@ concept CommandListCompute = requires(T& cmd, math::uvec3 const vec) {
 template<typename T>
 concept CommandListDraw = requires(
     T& cmd,
-    std::uint32_t vtx_count, //
-    std::uint32_t vtx_offset, //
-    std::uint32_t idx_count, //
-    std::uint32_t inst_count, //
-    std::uint32_t first_vtx, //
-    std::uint32_t first_idx, //
-    std::uint32_t first_inst //
+    DrawParameters const& p
 ) //
 {
-  { cmd.draw(vtx_count, inst_count, first_vtx, first_inst) } -> std::same_as<T&>;
-  { cmd.draw_indexed(idx_count, inst_count, first_idx, vtx_offset, first_inst) } -> std::same_as<T&>;
+  { cmd.draw(p) } -> std::same_as<T&>;
+  { cmd.draw_indexed(p) } -> std::same_as<T&>;
   // { cmd.draw_indirect() } -> std::same_as<T&>; // TODO: add indirect draw parameters
 };
 
