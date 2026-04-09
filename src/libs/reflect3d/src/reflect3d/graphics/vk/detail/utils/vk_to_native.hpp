@@ -66,10 +66,11 @@ constexpr core::Rect2D to_native(Rect2D const& scissor) noexcept {
           .x = static_cast<std::int32_t>(scissor.offset.x),
           .y = static_cast<std::int32_t>(scissor.offset.y),
         },
-    .extent = core::Extent2D {
-      .width  = static_cast<std::uint32_t>(scissor.extent.x),
-      .height = static_cast<std::uint32_t>(scissor.extent.y),
-    },
+    .extent =
+        core::Extent2D {
+          .width  = static_cast<std::uint32_t>(scissor.extent.x),
+          .height = static_cast<std::uint32_t>(scissor.extent.y),
+        },
   };
 }
 
@@ -173,14 +174,9 @@ constexpr BarrierInfo to_native(ResourceState const state) noexcept {
 }
 
 
-constexpr core::BufferUsageFlags to_native(BufferUsage usage) {
-  if not consteval {
-    LOG_WARNING(
-        "Buffer usage translation from api to native might be inefficient when not used in a constexpr context."
-    );
-  }
+constexpr core::BufferUsageFlags to_native(BufferUsage const usage) {
   core::BufferUsageFlags flags {};
-  auto has_flag = [](BufferUsage mask, BufferUsage flag) { return (mask & flag) == flag; };
+  auto has_flag = [](BufferUsage const mask, BufferUsage const flag) { return (mask & flag) == flag; };
 
   if (has_flag(usage, BufferUsage::source)) {
     flags |= core::BufferUsageFlagBits::eTransferSrc;
@@ -200,7 +196,6 @@ constexpr core::BufferUsageFlags to_native(BufferUsage usage) {
   if (has_flag(usage, BufferUsage::index)) {
     flags |= core::BufferUsageFlagBits::eIndexBuffer;
   }
-
   return flags;
 }
 
@@ -233,9 +228,8 @@ inline constexpr auto to_color_attachment = [](ColorTargetDesc auto const& targe
 
 inline constexpr auto to_depth_attachment = [](DepthTargetDesc auto const& target) -> core::RenderingAttachmentInfo {
   return {
-    .imageView   = target.texture.view,
-    .imageLayout = core::ImageLayout::eDepthAttachmentOptimal,
-    // .loadOp      = target.load_op,
+    .imageView = target.texture.view, .imageLayout = core::ImageLayout::eDepthAttachmentOptimal,
+    // .loadOp      = target.load_op, TODO: native depth attachment
     // .stopreOp    = target.store_op,
     // .clearValue = target.clear_color
   };
