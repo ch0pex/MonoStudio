@@ -1,10 +1,8 @@
 #pragma once
 
-
 #include "reflect3d/graphics/api/command_list.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/texture_info.hpp"
-#include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/texture_view.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
@@ -27,7 +25,8 @@ public:
 
   // --- Constructors ---
 
-  Texture(config_type const& config);
+  // TODO: implement this function
+  explicit Texture(config_type const& config);
 
   Texture(handle_type handle, detail::raii::ImageView&& view, Resolution const& res)
     requires(not owning)

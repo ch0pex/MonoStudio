@@ -33,9 +33,9 @@ static_assert(rf3d::CopyDestTexture<rf3d::vk::StaticTexture>);
 static_assert(rf3d::PipelineState<rf3d::vk::PipelineState>);
 
 // CommandList concepts
-// static_assert(rf3d::CopyCommandList<rf3d::vk::GraphicsCommandList>);
-// static_assert(rf3d::ComputeCommandList<rf3d::vk::GraphicsCommandList>);
-// static_assert(rf3d::GraphicsCommandList<rf3d::vk::GraphicsCommandList>);
+static_assert(rf3d::CopyCommandList<rf3d::vk::GraphicsCommandList>);
+static_assert(rf3d::ComputeCommandList<rf3d::vk::GraphicsCommandList>);
+static_assert(rf3d::GraphicsCommandList<rf3d::vk::GraphicsCommandList>);
 
 // // Fence concept
 static_assert(rf3d::Fence<rf3d::vk::Fence>);
@@ -44,6 +44,6 @@ static_assert(rf3d::Fence<rf3d::vk::Fence>);
 static_assert(rf3d::Gpu<rf3d::vk::Gpu>);
 //
 // // Surface concept
-// static_assert(rf3d::Surface<rf3d::vk::Surface>);
+static_assert(rf3d::Surface<rf3d::vk::Surface>);
 
 } // namespace

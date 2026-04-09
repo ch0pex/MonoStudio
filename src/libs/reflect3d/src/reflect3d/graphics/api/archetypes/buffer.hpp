@@ -8,6 +8,8 @@
 #include <span>
 #include <type_traits>
 
+#include "mono/meta/concepts.hpp"
+
 namespace rf3d::archetypes {
 
 struct Any { };
@@ -20,16 +22,14 @@ struct Any { };
  */
 template<typename T, BufferUsage Usage, MemoryProperty Mem = MemoryProperty::dedicated>
 struct Buffer {
-  using value_type   = T;
   using size_type    = std::size_t;
   using handle_type  = std::uintptr_t;
   using state_type   = ResourceState;
-  using config_type  = BufferInfo<value_type>;
   using usage        = std::integral_constant<BufferUsage, Usage>;
   using memory       = std::integral_constant<MemoryProperty, Mem>;
   using host_visible = std::bool_constant<detail::contains_flag(Mem, MemoryProperty::mapped)>;
 
-  Buffer(config_type const& config);
+  // Buffer(config_type const& config);
 
   Buffer(Buffer const&) = delete;
 
@@ -47,19 +47,8 @@ struct Buffer {
 
   [[nodiscard]] handle_type handle() const;
 
-  [[nodiscard]] mono::span<value_type> data() const
-    requires(host_visible::value);
-
-  [[nodiscard]] mono::span<value_type>::iterator begin() const
-    requires(host_visible::value);
-
-  [[nodiscard]] mono::span<value_type>::iterator end() const
-    requires(host_visible::value);
-
-  void insert(value_type const& value) const
-    requires(host_visible::value);
-
-  void insert_range(mono::span<value_type const> range) const
+  template<mono::meta::trivially_copyable_value U>
+  [[nodiscard]] mono::span<U> mapped_data() const
     requires(host_visible::value);
 
   [[nodiscard]] state_type current_state() const

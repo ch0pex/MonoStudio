@@ -114,12 +114,12 @@ private:
 template<BufferUsage Usage>
 class MappedBuffer : public Buffer<Usage, MemoryProperty::mapped> {
 public:
-  using size_type    = typename Buffer<Usage, MemoryProperty::dedicated>::size_type;
-  using handle_type  = typename Buffer<Usage, MemoryProperty::dedicated>::handle_type;
-  using state_type   = typename Buffer<Usage, MemoryProperty::dedicated>::state_type;
-  using usage        = typename Buffer<Usage, MemoryProperty::dedicated>::usage;
-  using memory       = typename Buffer<Usage, MemoryProperty::dedicated>::memory;
-  using host_visible = typename Buffer<Usage, MemoryProperty::dedicated>::host_visible;
+  using size_type    = Buffer<Usage, MemoryProperty::mapped>::size_type;
+  using handle_type  = Buffer<Usage, MemoryProperty::mapped>::handle_type;
+  using state_type   = Buffer<Usage, MemoryProperty::mapped>::state_type;
+  using usage        = Buffer<Usage, MemoryProperty::mapped>::usage;
+  using memory       = Buffer<Usage, MemoryProperty::mapped>::memory;
+  using host_visible = Buffer<Usage, MemoryProperty::mapped>::host_visible;
 
   // --- Constructors ---
 
@@ -133,8 +133,7 @@ public:
   }
 
   // --- Member functions ---
-  template<typename T>
-    requires std::is_trivially_copyable_v<T>
+  template<mono::meta::trivially_copyable_value T>
   [[nodiscard]] mono::span<T> mapped_data() const {
     std::size_t const size = this->allocation().allocation_info.size / sizeof(T);
     T* ptr                 = mono::start_lifetime_as_array<T>(this->allocation().allocation_info.pMappedData, size);
@@ -150,34 +149,31 @@ public:
  * @tparam Usage The intended usage of the buffer, specified as a combination of BufferUsage
  */
 template<BufferUsage Usage>
-class DedicatedBuffer : public Buffer<Usage, MemoryProperty::dedicated> {
+class DedicatedBuffer : public Buffer<Usage> {
 public:
   // --- Type traits ---
-  using size_type    = typename Buffer<Usage, MemoryProperty::dedicated>::size_type;
-  using handle_type  = typename Buffer<Usage, MemoryProperty::dedicated>::handle_type;
-  using state_type   = typename Buffer<Usage, MemoryProperty::dedicated>::state_type;
-  using usage        = typename Buffer<Usage, MemoryProperty::dedicated>::usage;
-  using memory       = typename Buffer<Usage, MemoryProperty::dedicated>::memory;
-  using host_visible = typename Buffer<Usage, MemoryProperty::dedicated>::host_visible;
+  using size_type    = Buffer<Usage>::size_type;
+  using handle_type  = Buffer<Usage>::handle_type;
+  using state_type   = Buffer<Usage>::state_type;
+  using usage        = Buffer<Usage>::usage;
+  using memory       = Buffer<Usage>::memory;
+  using host_visible = Buffer<Usage>::host_visible;
 
   // --- Constructors ---
   template<mono::meta::trivially_copyable_value T>
   explicit DedicatedBuffer(BufferInfo<T> const& config) : Buffer<Usage, MemoryProperty::dedicated>(config) {
+    // TODO: this is a patch for now, I should implement a proper asynchronous upload mechanism
     if (config.data.empty()) {
       return;
     }
-
-    // TODO: this is a patch for now, I should implement a proper asynchronous upload mechanism
+    BufferCopyRegion const copy_region {.size = config.data.size_bytes()};
     MappedBuffer<BufferUsage::source> staging_buffer {BufferInfo<T> {.data = config.data}};
-    CopyCommandList command_list {};
-    detail::core::BufferCopy const copy_region {
-      .srcOffset = 0,
-      .dstOffset = 0,
-      .size      = config.data.size_bytes(),
-    };
 
+    CopyCommandList command_list {};
     command_list.begin().copy_buffer(staging_buffer, *this, copy_region).end();
+
     detail::submit_work({.command_buffers = {*command_list.handle()}});
+
     detail::wait_idle();
   }
 
@@ -196,7 +192,7 @@ public:
    * because they are responsible for synchronizing access to the buffer
    * and ensuring that the correct barriers are in place when transitioning between states.
    *
-   * @tparam T the type of the command list that is changing the state of the texture
+   * @tparam CmdList the type of the command list that is changing the state of the texture
    */
   template<rf3d::CopyCommandList CmdList>
   void set_state(state_type const new_state, mono::PassKey<CmdList> /*key*/) {
@@ -215,4 +211,5 @@ using IndexBuffer         = DedicatedBuffer<BufferUsage::index | BufferUsage::de
 using TransferBuffer      = MappedBuffer<BufferUsage::source>;
 using UniformBuffer       = MappedBuffer<BufferUsage::uniform | BufferUsage::destination>;
 using StorageBuffer       = DedicatedBuffer<BufferUsage::storage | BufferUsage::destination>;
+
 }; // namespace rf3d::vk

@@ -13,6 +13,19 @@
 
 namespace rf3d::callbacks {
 
+// Window event callback enum
+enum class WindowEvent : std::uint8_t {
+  close,
+  focus,
+  refresh,
+  pos,
+  size,
+  iconify,
+  maximize,
+  framebuffer_size,
+  content_scale,
+};
+
 // Window event callback typedefs
 using WindowClose        = GLFWwindowclosefun;
 using WindowFocus        = GLFWwindowfocusfun;
@@ -31,11 +44,41 @@ using Char        = GLFWcharfun;
 using CharMods    = GLFWcharmodsfun;
 using MouseButton = GLFWmousebuttonfun;
 using CursorPos   = GLFWcursorposfun;
-
 using CursorEnter = GLFWcursorenterfun;
+using Scroll      = GLFWscrollfun;
+using Drop        = GLFWdropfun;
 
-using Scroll = GLFWscrollfun;
-using Drop   = GLFWdropfun;
+
+template<WindowEvent Event>
+void set_callback(GLFWwindow* window, auto callback) {
+  if constexpr (Event == WindowEvent::close) {
+    glfwSetWindowCloseCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::focus) {
+    glfwSetWindowFocusCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::refresh) {
+    glfwSetWindowRefreshCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::pos) {
+    glfwSetWindowPosCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::size) {
+    glfwSetWindowSizeCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::iconify) {
+    glfwSetWindowIconifyCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::maximize) {
+    glfwSetWindowMaximizeCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::framebuffer_size) {
+    glfwSetFramebufferSizeCallback(window, callback);
+  }
+  else if constexpr (Event == WindowEvent::content_scale) {
+    glfwSetWindowContentScaleCallback(window, callback);
+  }
+}
 
 namespace defaults {
 
@@ -58,15 +101,18 @@ inline constexpr WindowFocus window_focus = [](GLFWwindow* handle [[maybe_unused
 };
 
 inline constexpr WindowRefresh window_refresh = [](GLFWwindow* handle [[maybe_unused]]) {
-  LOG_INFO_LIMIT(1000, "Window '{}' requested refresh.", get_title(handle));
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Window '{}' requested refresh.", get_title(handle));
 };
 
 inline constexpr WindowPos window_pos = [](GLFWwindow* handle [[maybe_unused]], int x, int y) {
-  LOG_INFO_LIMIT(1000, "Window '{}' moved to position ({}, {}).", get_title(handle), x, y);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Window '{}' moved to position ({}, {}).", get_title(handle), x, y);
 };
 
 inline constexpr WindowSize window_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
-  LOG_INFO_LIMIT(1000, "Window '{}' resized to {}x{}.", get_title(handle), width, height);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Window '{}' resized to {}x{}.", get_title(handle), width, height);
 };
 
 inline constexpr WindowIconify window_iconify = [](GLFWwindow* handle [[maybe_unused]], int iconified) {
@@ -83,12 +129,14 @@ inline constexpr WindowMaximize window_maximize = [](GLFWwindow* handle [[maybe_
 };
 
 inline constexpr FramebufferSize framebuffer_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
-  LOG_INFO_LIMIT(1000, "Framebuffer for window '{}' resized to {}x{}.", get_title(handle), width, height);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Framebuffer for window '{}' resized to {}x{}.", get_title(handle), width, height);
 };
 
 inline constexpr WindowContentScale window_content_scale = [](GLFWwindow* handle [[maybe_unused]], float xscale,
                                                               float yscale) {
-  LOG_INFO_LIMIT(500, "Content scale for window '{}' changed: x = {}, y = {}.", get_title(handle), xscale, yscale);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(500ms, "Content scale for window '{}' changed: x = {}, y = {}.", get_title(handle), xscale, yscale);
 };
 
 // --- Input callbacks ---
@@ -113,7 +161,8 @@ inline constexpr MouseButton mouse_button = [](GLFWwindow* handle [[maybe_unused
 };
 
 inline constexpr CursorPos cursor_pos = [](GLFWwindow* handle [[maybe_unused]], double xpos, double ypos) {
-  LOG_INFO_LIMIT(1000, "Cursor moved on window '{}': position = ({}, {}).", get_title(handle), xpos, ypos);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Cursor moved on window '{}': position = ({}, {}).", get_title(handle), xpos, ypos);
 };
 
 
@@ -123,11 +172,12 @@ inline constexpr CursorEnter cursor_enter = [](GLFWwindow* handle [[maybe_unused
 };
 
 inline constexpr Scroll scroll = [](GLFWwindow* handle [[maybe_unused]], double xoffset, double yoffset) {
-  LOG_INFO_LIMIT(1000, "Scroll event on window '{}': offset = ({}, {}).", get_title(handle), xoffset, yoffset);
+  using namespace std::chrono_literals;
+  LOG_INFO_LIMIT(1000ms, "Scroll event on window '{}': offset = ({}, {}).", get_title(handle), xoffset, yoffset);
 };
 
 inline constexpr Drop drop = [](GLFWwindow* handle [[maybe_unused]], int count, char const** paths) {
-  mono::span<char const* const> path_span {paths, static_cast<std::size_t>(count)};
+  mono::span<char const* const> const path_span {paths, static_cast<std::size_t>(count)};
   LOG_INFO("File drop event on window '{}': {} file(s) dropped.", get_title(handle), count);
   for (int i = 0; i < count; ++i)
     LOG_INFO(" - {}", std::string_view(path_span[i]));

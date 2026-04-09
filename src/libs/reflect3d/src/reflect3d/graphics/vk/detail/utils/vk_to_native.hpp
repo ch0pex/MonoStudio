@@ -66,11 +66,10 @@ constexpr core::Rect2D to_native(Rect2D const& scissor) noexcept {
           .x = static_cast<std::int32_t>(scissor.offset.x),
           .y = static_cast<std::int32_t>(scissor.offset.y),
         },
-    .extent =
-        core::Extent2D {
-          .width  = static_cast<std::uint32_t>(scissor.extent.x),
-          .height = static_cast<std::uint32_t>(scissor.extent.y),
-        },
+    .extent = core::Extent2D {
+      .width  = static_cast<std::uint32_t>(scissor.extent.x),
+      .height = static_cast<std::uint32_t>(scissor.extent.y),
+    },
   };
 }
 
@@ -228,7 +227,8 @@ inline constexpr auto to_color_attachment = [](ColorTargetDesc auto const& targe
 
 inline constexpr auto to_depth_attachment = [](DepthTargetDesc auto const& target) -> core::RenderingAttachmentInfo {
   return {
-    .imageView = target.texture.view, .imageLayout = core::ImageLayout::eDepthAttachmentOptimal,
+    .imageView   = target.texture.view,
+    .imageLayout = core::ImageLayout::eDepthAttachmentOptimal,
     // .loadOp      = target.load_op, TODO: native depth attachment
     // .stopreOp    = target.store_op,
     // .clearValue = target.clear_color
@@ -263,5 +263,28 @@ constexpr core::PipelineDepthStencilStateCreateInfo to_native_depth_stencil(Rast
     .stencilTestEnable     = core::False,
   };
 }
+
+constexpr core::PipelineStageFlags to_native_stage(PsoStage const stage) noexcept {
+  switch (stage) {
+    case PsoStage::vertex_input:
+      return core::PipelineStageFlagBits::eVertexInput;
+    case PsoStage::vertex_shader:
+      return core::PipelineStageFlagBits::eVertexShader;
+    case PsoStage::hull_shader:
+      return core::PipelineStageFlagBits::eTessellationControlShader;
+    case PsoStage::domain_shader:
+      return core::PipelineStageFlagBits::eTessellationEvaluationShader;
+    case PsoStage::geometry_shader:
+      return core::PipelineStageFlagBits::eGeometryShader;
+    case PsoStage::pixel_shader:
+      return core::PipelineStageFlagBits::eFragmentShader;
+    case PsoStage::compute_shader:
+      return core::PipelineStageFlagBits::eComputeShader;
+    case PsoStage::color_attachment_output:
+      return core::PipelineStageFlagBits::eColorAttachmentOutput;
+  }
+  return core::PipelineStageFlagBits::eAllCommands;
+}
+
 
 } // namespace rf3d::vk::detail

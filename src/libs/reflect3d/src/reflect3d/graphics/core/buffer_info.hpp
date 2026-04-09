@@ -44,4 +44,10 @@ struct BufferInfo {
   std::size_t capacity = 0;
 };
 
+struct BufferCopyRegion {
+  std::size_t src_offset = 0;
+  std::size_t dst_offset = 0;
+  std::size_t size       = 0;
+};
+
 } // namespace rf3d

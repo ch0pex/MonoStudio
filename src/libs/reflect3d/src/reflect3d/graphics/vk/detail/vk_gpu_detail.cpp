@@ -82,13 +82,15 @@ void submit_work(SubmitInfo const& submit_info) { //
   get_gpu().queues.graphics().submit(to_native(submit_info));
 }
 
-mono::expected<void> present(core::PresentInfoKHR const& present_info) {
+mono::expected<void> present(core::PresentInfoKHR const& present_info) try {
   auto const result = get_gpu().queues.present().presentKHR(present_info);
   if (result == core::Result::eSuboptimalKHR or result == core::Result::eErrorOutOfDateKHR) {
     return mono::unexpected("Swapchain is out of date or suboptimal");
   }
-  assert(result == core::Result::eSuccess);
   return mono::expected<void> {};
+}
+catch (std::exception const& e) {
+  return mono::unexpected(e.what());
 }
 
 // ----------------------------------------------------------------------------

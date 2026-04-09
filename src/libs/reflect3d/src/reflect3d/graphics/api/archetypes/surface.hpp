@@ -1,5 +1,6 @@
 #pragma once
 
+#include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 
@@ -32,7 +33,7 @@ struct Surface {
 
   ~Surface() = default;
 
-  [[nodiscard]] image_type next_image();
+  [[nodiscard]] image_type next_image(FrameIndex frame_index);
 
   void present();
 

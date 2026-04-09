@@ -11,7 +11,7 @@ namespace vix {
 inline rf3d::Window main_window([[maybe_unused]] rf3d::config::Window const& config = {}) {
   return rf3d::Window {  
     rf3d::WindowBuilder() 
-      .on_close([](rf3d::Window::native_type) { 
+      .on_close([](rf3d::Window::handle_type) { 
         LOG_INFO("Closing window was requested by user");
       mono::ex::request_stop(); 
       })

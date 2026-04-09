@@ -5,6 +5,7 @@
 #include "reflect3d/graphics/vk/detail/vk_instance.hpp"
 #include "reflect3d/graphics/vk/semaphore.hpp"
 #include "reflect3d/graphics/vk/texture.hpp"
+#include "reflect3d/window/utils/callbacks.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 
@@ -70,15 +71,14 @@ choose_swap_extent(Resolution const resolution, core::SurfaceCapabilitiesKHR con
 
 inline auto get_images(raii::SwapchainKHR const& swapchain, core::SwapchainCreateInfoKHR const& config) {
   core::ImageViewCreateInfo view_info {
-    .viewType         = core::ImageViewType::e2D,
-    .format           = config.imageFormat,
-    .subresourceRange = {
-      .aspectMask     = core::ImageAspectFlagBits::eColor,
-      .baseMipLevel   = 0,
-      .levelCount     = 1,
-      .baseArrayLayer = 0,
-      .layerCount     = 1
-    }
+    .viewType = core::ImageViewType::e2D,
+    .format   = config.imageFormat,
+    .subresourceRange =
+        {.aspectMask     = core::ImageAspectFlagBits::eColor,
+         .baseMipLevel   = 0,
+         .levelCount     = 1,
+         .baseArrayLayer = 0,
+         .layerCount     = 1}
   };
 
   Resolution const resolution {
@@ -246,14 +246,27 @@ public:
 
   explicit Surface(window_type&& window_surface) :
     window(std::move(window_surface)), //
-    surface_handle(detail::create_surface(window.native_handle())), //
+    surface_handle(detail::create_surface(window.handle())), //
     swapchain(
         detail::create_swapchain_config(
             surface_handle, //
             detail::get_surface_info(surface_handle), //
             window.resolution() //
         )
-    ) { }
+    ) //
+  {
+    // glfwSetWindowUserPointer(window.handle(), this);
+    // window.set_callback<callbacks::WindowEvent::size>( //
+    //     [](Window::handle_type handle [[maybe_unused]], int width,
+    //        int height) { //
+    //       auto* self = static_cast<Surface*>(glfwGetWindowUserPointer(handle));
+    //       self->resize({
+    //         .width  = static_cast<uint16_t>(width),
+    //         .height = static_cast<uint16_t>(height),
+    //       });
+    //     }
+    // );
+  }
 
   Surface(Surface const&) = delete;
 
@@ -280,6 +293,13 @@ public:
     return nullptr;
   }
 
+  void resize(resolution_type const& new_resolution) {
+    if (new_resolution != window_size()) {
+      window.resize(new_resolution);
+      recreate_swapchain();
+    }
+  }
+
   [[nodiscard]] Resolution window_size() const { //
     return window.resolution();
   }
@@ -289,11 +309,9 @@ public:
   }
 
   [[nodiscard]] Viewport viewport() const { //
-    auto res = resolution();
+    auto const [width, height] = resolution();
     return Viewport {
-      .rect = {
-        .extent = {res.width, res.height},
-      },
+      .rect = {.extent = {width, height}},
     };
   }
 

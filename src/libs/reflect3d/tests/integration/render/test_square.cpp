@@ -1,76 +1,44 @@
 
+#include "common.hpp"
+
 #include <reflect3d/graphics/core/renderpass_descriptor.hpp>
 #include <reflect3d/graphics/core/resource_state.hpp>
 #include <reflect3d/graphics/core/shader/compiler.hpp>
 #include <reflect3d/graphics/core/shader/targets.hpp>
-#include <reflect3d/graphics/vk/buffer.hpp>
-#include <reflect3d/graphics/vk/draw_stream.hpp>
+#include <reflect3d/graphics/rhi.hpp>
 #include <reflect3d/graphics/vk/gpu.hpp>
 #include <reflect3d/graphics/vk/pso.hpp>
-#include <reflect3d/graphics/vk/surface.hpp>
 #include <reflect3d/input/input.hpp>
 #include <reflect3d/window/window.hpp>
 #include <reflect3d/window/window_builder.hpp>
 
-#include <mono/error/expected.hpp>
+#include <assets_path.hpp>
 #include <mono/execution/signals.hpp>
 #include <mono/execution/stop_token.hpp>
 #include <mono/logging/logger.hpp>
-#include "assets_path.hpp"
-
-struct Vertex {
-  rf3d::math::vec3 position {0.0F, 0.0F, 0.0F};
-  rf3d::math::vec4 color {0.4F, 0.4F, 0.4F, 0.0F};
-};
-
-std::array constexpr vertices = {
-  Vertex {.position = {-0.5F, -0.5F, 0.F}, .color {1.0F, 0.0F, 0.0F, 0.0F}},
-  Vertex {.position = {0.5F, -0.5F, 0.F}, .color = {0.0F, 1.0F, 0.0F, 0.F}},
-  Vertex {.position = {0.5F, 0.5F, 0.F}, .color = {0.0F, 0.0F, 1.0F, 0.F}},
-  Vertex {.position = {-0.5F, 0.5F, 0.F}, .color = {1.0F, 1.0F, 1.0F, 0.F}}
-};
-inline constexpr std::array<std::uint16_t, 6> indices = {0, 1, 2, 2, 3, 0};
-
-int main() try {
-  auto const shader_path     = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
-  auto const shader_bytecode = rf3d::shader::compile_module<rf3d::shader::SpirV>(shader_path);
-
-  rf3d::vk::VertexBuffer vertex_buffer {vertices};
-  rf3d::vk::IndexBuffer index_buffer {indices};
-
-  rf3d::vk::PipelineState pso {{
-    .debug_name      = "Triangle PSO",
-    .vertex_shader   = {.bytecode = shader_bytecode},
-    .fragment_shader = {.bytecode = shader_bytecode},
-    .rasterizer_state =
-        {
-          .cull_mode = rf3d::CullMode::none,
-        },
-    .vertex_buffer_bindings = {
-      {
-        .byte_stride = sizeof(Vertex),
-        .attributes  = {
-          {.offset = offsetof(Vertex, position), .format = rf3d::Format::rgb32_sfloat},
-          {.offset = offsetof(Vertex, color), .format = rf3d::Format::rgba32_sfloat},
-        },
-      },
-    },
-  }};
 
 
-  rf3d::vk::Surface surface {rf3d::WindowBuilder().default_callbacks().build()};
-  std::stop_token token = mono::ex::setup_signals();
+template<rf3d::RenderHardwareInterface Impl>
+void test_square() {
+  rf3d::rhi::vertex_buffer_t<Impl> vertex_buffer {test::square::vertices};
+  rf3d::rhi::index_buffer_t<Impl> index_buffer {test::square::indices};
+
+  auto pso = test::create_basic_pso<Impl>();
+
+  rf3d::rhi::surface_t<Impl> surface {rf3d::WindowBuilder().default_callbacks().build()};
+  std::stop_token const token = mono::ex::setup_signals();
+
   while (not token.stop_requested()) {
     rf3d::input::poll_events();
 
-    auto& frame_ctx = rf3d::vk::Gpu::new_frame();
+    auto& frame_ctx = rf3d::rhi::gpu_t<Impl>::new_frame();
     auto* image     = surface.next_image(frame_ctx.index);
 
     if (image == nullptr) {
       continue;
     }
 
-    rf3d::vk::DrawStreamBuilder draw_stream {};
+    rf3d::rhi::draw_stream_builder_t<Impl> draw_stream {};
     draw_stream.draw({
       .pso           = pso,
       .vertex_buffer = vertex_buffer,
@@ -89,14 +57,20 @@ int main() try {
               },
           .draw_area = rf3d::DrawArea {
             .viewport   = surface.viewport(),
+            .scissor    = surface.viewport().rect,
             .draw_calls = draw_stream.get_stream(),
           },
         }
     );
 
-    rf3d::vk::Gpu::submit_frame(frame_ctx, surface);
+    frame_ctx.command_list.end();
+    rf3d::rhi::gpu_t<Impl>::submit_work(rf3d::rhi::default_submit_info(frame_ctx, surface));
     surface.present();
   }
+}
+
+int main() try { //
+  test_square<rf3d::impl::vk>();
 }
 catch (std::exception const& e) {
   LOG_ERROR("Program execution terminated with an unhandled exception: {}", e.what());
