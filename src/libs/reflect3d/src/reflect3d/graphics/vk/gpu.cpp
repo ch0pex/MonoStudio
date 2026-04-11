@@ -2,6 +2,8 @@
 #include "reflect3d/graphics/vk/gpu.hpp"
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
+#include "reflect3d/graphics/vk/detail/gpu/vk_submit_info.hpp"
+#include "reflect3d/graphics/vk/detail/utils/vk_to_native.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 #include "reflect3d/graphics/vk/surface.hpp"
 
@@ -82,7 +84,9 @@ Gpu::frame_context_type& Gpu::new_frame() {
 void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
 
   auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
-  auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
+  auto to_render_semaphore = [&](surface_type const* surface) {
+    return *surface->render_semaphore(frame_ctx.index).handle();
+  };
   auto to_present_semaphore = [&](surface_type const* surface) {
     return *surface->present_semaphore(frame_ctx.index).handle();
   };
@@ -111,19 +115,18 @@ void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_ty
   );
 }
 
-void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type const& surfaces) {
+void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type& surface) {
   detail::core::PipelineStageFlags mask = detail::core::PipelineStageFlagBits::eColorAttachmentOutput;
   frame_ctx.command_list.end();
   detail::submit_work(
       {
-        .wait_semaphores     = {*surfaces.present_semaphore(frame_ctx.index).handle()},
+        .wait_semaphores     = {*surface.present_semaphore(frame_ctx.index).handle()},
         .wait_dst_stage_mask = {mask},
         .command_buffers     = {frame_ctx.command_list.handle()},
-        .signal_semaphores   = {*surfaces.render_semaphore().handle()},
+        .signal_semaphores   = {*surface.render_semaphore(frame_ctx.index).handle()},
       },
       *frame_ctx.fence.handle()
   );
-  surface.present();
 }
 
 // TODO: measure performance of this function and optimize if necessary
