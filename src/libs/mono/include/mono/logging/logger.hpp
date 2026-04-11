@@ -2,11 +2,8 @@
 
 #include "mono/logging/logger_config.hpp"
 
-#include <quill/Backend.h>
 #include <quill/Frontend.h>
 #include <quill/LogMacros.h>
-#include <quill/sinks/FileSink.h>
-#include <quill/sinks/StreamSink.h>
 
 #include <cstdint>
 #include <print>

@@ -11,14 +11,19 @@
 
 #include <mono/containers/static_vector.hpp>
 
+#include <array>
+
 namespace rf3d::vk {
 
 namespace detail {
 
 struct Image {
   BackBufferTexture back_buffer;
-  Semaphore render_semaphore;
-  Semaphore present_semaphore;
+};
+
+struct FrameSync {
+  Semaphore render_semaphore {};
+  Semaphore present_semaphore {};
 };
 
 inline uint32_t choose_swap_min_image_count(core::SurfaceCapabilitiesKHR const& surfaceCapabilities) {
@@ -71,14 +76,15 @@ choose_swap_extent(Resolution const resolution, core::SurfaceCapabilitiesKHR con
 
 inline auto get_images(raii::SwapchainKHR const& swapchain, core::SwapchainCreateInfoKHR const& config) {
   core::ImageViewCreateInfo view_info {
-    .viewType = core::ImageViewType::e2D,
-    .format   = config.imageFormat,
-    .subresourceRange =
-        {.aspectMask     = core::ImageAspectFlagBits::eColor,
-         .baseMipLevel   = 0,
-         .levelCount     = 1,
-         .baseArrayLayer = 0,
-         .layerCount     = 1}
+    .viewType         = core::ImageViewType::e2D,
+    .format           = config.imageFormat,
+    .subresourceRange = {
+      .aspectMask     = core::ImageAspectFlagBits::eColor,
+      .baseMipLevel   = 0,
+      .levelCount     = 1,
+      .baseArrayLayer = 0,
+      .layerCount     = 1
+    }
   };
 
   Resolution const resolution {
@@ -89,9 +95,7 @@ inline auto get_images(raii::SwapchainKHR const& swapchain, core::SwapchainCreat
   auto build_image = [&](core::Image const& img) { //
     view_info.image = img;
     return Image {
-      .back_buffer       = {img, make_image_view(view_info), resolution},
-      .render_semaphore  = {},
-      .present_semaphore = {},
+      .back_buffer = {img, make_image_view(view_info), resolution},
     };
   };
 
@@ -144,7 +148,9 @@ public:
   Swapchain(Swapchain&& other) noexcept :
     handle((wait_idle(), std::move(other.handle))), //
     images(std::move(other.images)), //
+    frame_sync(std::move(other.frame_sync)), //
     current_image_index(other.current_image_index), //
+    current_frame_index(other.current_frame_index), //
     extent(other.extent) //
   { }
 
@@ -154,7 +160,9 @@ public:
       extent = other.extent;
       images = std::move(other.images);
       wait_idle();
+      frame_sync          = std::move(other.frame_sync);
       current_image_index = other.current_image_index;
+      current_frame_index = other.current_frame_index;
     }
     return *this;
   }
@@ -169,10 +177,11 @@ public:
   [[nodiscard]] image_type next_image(FrameIndex const frame_index) try {
     auto [result, index] = handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
-      *images.at(frame_index).present_semaphore.handle(),  //
+      *frame_sync.at(frame_index).present_semaphore.handle(),  //
       nullptr //
     );
     current_image_index = index;
+    current_frame_index = frame_index;
     return std::addressof(images.at(index));
   }
   catch (std::exception const& e) {
@@ -181,11 +190,11 @@ public:
   }
 
   [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const noexcept {
-    return images.at(frame_index).present_semaphore;
+    return frame_sync.at(frame_index).present_semaphore;
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore() const noexcept {
-    return images.at(current_image_index).render_semaphore;
+  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const noexcept {
+    return frame_sync.at(frame_index).render_semaphore;
   }
 
   [[nodiscard]] Resolution resolution() const noexcept {
@@ -207,7 +216,7 @@ public:
   [[nodiscard]] core::PresentInfoKHR present_info() const {
     return core::PresentInfoKHR {
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores    = std::addressof(*render_semaphore().handle()),
+      .pWaitSemaphores    = std::addressof(*render_semaphore(current_frame_index).handle()),
       .swapchainCount     = 1,
       .pSwapchains        = std::addressof(*handle),
       .pImageIndices      = std::addressof(current_image_index),
@@ -217,12 +226,13 @@ public:
 private:
   handle_type handle;
   std::vector<Image> images;
+  std::array<FrameSync, rf3d::defaults::max_frames_in_flight> frame_sync {};
   ImageIndex current_image_index {};
+  FrameIndex current_frame_index {};
   extent_type extent;
 };
 
 } // namespace detail
-
 
 /**
  * @brief The Surface class encapsulates the Vulkan surface and swapchain management for a given window.
@@ -236,7 +246,7 @@ class Surface {
 public:
   // --- Type traits ---
 
-  using resolution_type = rf3d::Resolution;
+  using resolution_type = Resolution;
   using image_type      = BackBufferTexture*;
   using window_type     = Window;
   using handle_type     = detail::raii::SurfaceKHR;
@@ -244,7 +254,7 @@ public:
 
   // --- Constructors ---
 
-  explicit Surface(window_type&& window_surface) :
+  explicit Surface(window_type&& window_surface) : //
     window(std::move(window_surface)), //
     surface_handle(detail::create_surface(window.handle())), //
     swapchain(
@@ -277,9 +287,10 @@ public:
   Surface& operator=(Surface&&) = default;
 
   ~Surface() {
-    if (surface_handle != nullptr) {
-      detail::wait_idle();
-    }
+    // TODO: think about this wait_idle
+    // if (surface_handle != nullptr) {
+    //   detail::wait_idle();
+    // }
   }
 
   // --- Member functions ---
@@ -315,8 +326,8 @@ public:
     };
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore() const { //
-    return swapchain.render_semaphore();
+  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const { //
+    return swapchain.render_semaphore(frame_index);
   }
 
   [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const {
@@ -324,20 +335,20 @@ public:
   }
 
   void present() { //
-    std::ignore = detail::present(swapchain.present_info()).or_else([&](auto const& e) -> mono::expected<void> {
+    std::ignore = detail::present(swapchain.present_info()).or_else([&](auto const& /*error*/) -> mono::expected<void> {
       recreate_swapchain();
-      LOG_WARNING("Failed to present swapchain image: {}", e.what());
       return {};
     });
   }
 
 private:
   void recreate_swapchain() {
-    LOG_INFO("Recreating swapchain");
+    // TODO: Refactor busy waiting
     while (window_size() == null_resolution) {
       glfwWaitEvents();
     }
     detail::wait_idle();
+    LOG_INFO("Recreating swapchain");
     swapchain.recreate(
         detail::create_swapchain_config(
             surface_handle, //

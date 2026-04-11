@@ -1,3 +1,0 @@
-
-
-namespace mono { } // namespace mono
