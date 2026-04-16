@@ -25,7 +25,7 @@ int main() try {
     rf3d::input::poll_events();
 
     auto& frame_ctx   = rf3d::rhi::gpu::new_frame();
-    auto* back_buffer = surface.next_image(frame_ctx.index);
+    auto* back_buffer = surface.next_image();
 
     if (back_buffer == nullptr) {
       continue;

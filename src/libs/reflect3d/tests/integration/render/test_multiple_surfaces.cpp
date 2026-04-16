@@ -29,7 +29,7 @@ void test_surfaces() {
 
     mono::static_vector<surface_type*, surface_count> active {};
     for (auto& surface: surfaces) {
-      if (surface.next_image(frame_ctx.index) != nullptr) {
+      if (surface.next_image() != nullptr) {
         active.emplace_back(std::addressof(surface));
       }
     }

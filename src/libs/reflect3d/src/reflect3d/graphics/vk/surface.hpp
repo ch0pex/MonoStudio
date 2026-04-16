@@ -150,7 +150,6 @@ public:
     images(std::move(other.images)), //
     frame_sync(std::move(other.frame_sync)), //
     current_image_index(other.current_image_index), //
-    current_frame_index(other.current_frame_index), //
     extent(other.extent) //
   { }
 
@@ -162,7 +161,6 @@ public:
       wait_idle();
       frame_sync          = std::move(other.frame_sync);
       current_image_index = other.current_image_index;
-      current_frame_index = other.current_frame_index;
     }
     return *this;
   }
@@ -174,14 +172,13 @@ public:
   }
 
   // TODO: Not use exception for flow control
-  [[nodiscard]] image_type next_image(FrameIndex const frame_index) try {
+  [[nodiscard]] image_type next_image() try {
     auto [result, index] = handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
-      *frame_sync.at(frame_index).present_semaphore.handle(),  //
+      *frame_sync.at(frame_index().value()).present_semaphore.handle(),  //
       nullptr //
     );
     current_image_index = index;
-    current_frame_index = frame_index;
     return std::addressof(images.at(index));
   }
   catch (std::exception const& e) {
@@ -189,12 +186,12 @@ public:
     return nullptr;
   }
 
-  [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const noexcept {
-    return frame_sync.at(frame_index).present_semaphore;
+  [[nodiscard]] Semaphore const& present_semaphore() const noexcept {
+    return frame_sync.at(frame_index().value()).present_semaphore;
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const noexcept {
-    return frame_sync.at(frame_index).render_semaphore;
+  [[nodiscard]] Semaphore const& render_semaphore() const noexcept {
+    return frame_sync.at(frame_index().value()).render_semaphore;
   }
 
   [[nodiscard]] Resolution resolution() const noexcept {
@@ -216,7 +213,7 @@ public:
   [[nodiscard]] core::PresentInfoKHR present_info() const {
     return core::PresentInfoKHR {
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores    = std::addressof(*render_semaphore(current_frame_index).handle()),
+      .pWaitSemaphores    = std::addressof(*render_semaphore().handle()),
       .swapchainCount     = 1,
       .pSwapchains        = std::addressof(*handle),
       .pImageIndices      = std::addressof(current_image_index),
@@ -228,7 +225,6 @@ private:
   std::vector<Image> images;
   std::array<FrameSync, rf3d::defaults::max_frames_in_flight> frame_sync {};
   ImageIndex current_image_index {};
-  FrameIndex current_frame_index {};
   extent_type extent;
 };
 
@@ -264,19 +260,7 @@ public:
             window.resolution() //
         )
     ) //
-  {
-    // glfwSetWindowUserPointer(window.handle(), this);
-    // window.set_callback<callbacks::WindowEvent::size>( //
-    //     [](Window::handle_type handle [[maybe_unused]], int width,
-    //        int height) { //
-    //       auto* self = static_cast<Surface*>(glfwGetWindowUserPointer(handle));
-    //       self->resize({
-    //         .width  = static_cast<uint16_t>(width),
-    //         .height = static_cast<uint16_t>(height),
-    //       });
-    //     }
-    // );
-  }
+  { }
 
   Surface(Surface const&) = delete;
 
@@ -295,9 +279,8 @@ public:
 
   // --- Member functions ---
 
-  [[nodiscard]] image_type next_image(FrameIndex const frame_index) {
-    assert(frame_index < defaults::max_frames_in_flight);
-    if (auto* image = swapchain.next_image(frame_index)) {
+  [[nodiscard]] image_type next_image() {
+    if (auto* image = swapchain.next_image()) {
       return std::addressof(image->back_buffer);
     }
     recreate_swapchain();
@@ -326,13 +309,11 @@ public:
     };
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const { //
-    return swapchain.render_semaphore(frame_index);
+  [[nodiscard]] Semaphore const& render_semaphore() const { //
+    return swapchain.render_semaphore();
   }
 
-  [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const {
-    return swapchain.present_semaphore(frame_index);
-  }
+  [[nodiscard]] Semaphore const& present_semaphore() const { return swapchain.present_semaphore(); }
 
   void present() { //
     std::ignore = detail::present(swapchain.present_info()).or_else([&](auto const& /*error*/) -> mono::expected<void> {

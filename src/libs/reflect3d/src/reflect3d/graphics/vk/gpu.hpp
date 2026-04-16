@@ -10,9 +10,11 @@
 namespace rf3d::vk {
 
 struct FrameContext {
-  FrameIndex index {};
-  GraphicsCommandList command_list {};
-  Fence fence {};
+  using command_list_type = GraphicsCommandList;
+  using fence_type        = Fence;
+
+  command_list_type command_list {};
+  fence_type fence {};
 };
 
 using SubmitInfo = SubmitInfo<GraphicsCommandList, Semaphore, Fence>;
@@ -43,7 +45,7 @@ struct Gpu {
 
   static frame_context_type& new_frame();
 
-  static FrameIndex current_frame_index();
+  static FrameIndex2::counter_type current_frame_index();
 
   static void submit_frame(frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces);
 

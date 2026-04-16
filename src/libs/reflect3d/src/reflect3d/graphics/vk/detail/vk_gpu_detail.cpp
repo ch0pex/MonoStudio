@@ -54,14 +54,14 @@ void wait_fences(mono::span<core::Fence> fences, bool const wait_all, std::chron
   get_gpu().logical.wait_for_fences(fences, wait_all, timeout);
 }
 
-void reset_fences(mono::span<core::Fence const> fences) { //
+void reset_fences(mono::span<core::Fence const> const fences) { //
   get_gpu().logical.reset_fences(fences);
 }
 
 void wait_semaphores(
-    mono::span<core::Semaphore const> semaphore, //
-    mono::span<std::uint64_t const> wait_values, //
-    std::chrono::milliseconds timeout //
+    mono::span<core::Semaphore const> const semaphore, //
+    mono::span<std::uint64_t const> const wait_values, //
+    std::chrono::milliseconds const timeout //
 ) {
   get_gpu().logical.wait_semaphores(semaphore, wait_values, timeout);
 }

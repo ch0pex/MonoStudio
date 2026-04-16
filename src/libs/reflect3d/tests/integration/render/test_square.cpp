@@ -32,7 +32,7 @@ void test_square() {
     rf3d::input::poll_events();
 
     auto& frame_ctx = rf3d::rhi::gpu_t<Impl>::new_frame();
-    auto* image     = surface.next_image(frame_ctx.index);
+    auto* image     = surface.next_image();
 
     if (image == nullptr) {
       continue;
