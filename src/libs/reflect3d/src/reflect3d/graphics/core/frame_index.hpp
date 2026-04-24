@@ -27,7 +27,9 @@ public:
     return *this;
   }
 
-  counter_type value() const { return counter.load(std::memory_order_acquire) % defaults::max_frames_in_flight; }
+  [[nodiscard]] counter_type value() const {
+    return counter.load(std::memory_order_acquire) % defaults::max_frames_in_flight;
+  }
 
   counter_type operator*() const { return value(); }
 

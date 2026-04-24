@@ -17,6 +17,9 @@
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/frame_index.hpp"
 
+//
+#include <thread>
+
 TEST_CASE("FrameIndex2 increments and wraps around correctly") {
   rf3d::FrameIndex2 index;
 
@@ -37,6 +40,7 @@ TEST_CASE("Concurrent increments of FrameIndex2 are thread-safe") {
   rf3d::FrameIndex2 index;
   {
     std::vector<std::jthread> threads;
+    threads.reserve(10);
     for (int i = 0; i < 10; ++i) {
       threads.emplace_back([&index]() {
         for (int j = 0; j < 1000; ++j) {

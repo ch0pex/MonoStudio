@@ -17,7 +17,7 @@ class FrameContextManager {
 public:
   using context_type = FrameContext;
 
-  FrameContextManager() { }
+  FrameContextManager() = default;
 
   FrameContext& next_frame() { //
     return frames_context.at((++detail::frame_index()).value());
