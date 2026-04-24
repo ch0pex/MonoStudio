@@ -23,11 +23,11 @@ public:
   FrameIndex2() = default;
 
   FrameIndex2& operator++() {
-    counter.fetch_add(1, std::memory_order_seq_cst);
+    counter.fetch_add(1, std::memory_order_release);
     return *this;
   }
 
-  counter_type value() const { return counter.load(std::memory_order_relaxed) % defaults::max_frames_in_flight; }
+  counter_type value() const { return counter.load(std::memory_order_acquire) % defaults::max_frames_in_flight; }
 
   counter_type operator*() const { return value(); }
 
