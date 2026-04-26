@@ -145,6 +145,28 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
   );
 }
 
-void Gpu::present(mono::span<surface_type* const>) { }
+void Gpu::present(mono::span<surface_type* const> const surfaces) {
+  auto wait_semaphores = surfaces //
+                         | std::views::transform([](auto* surface) { return *surface->render_semaphore().handle(); }) //
+                         | std::ranges::to<std::vector>();
+
+  auto swapchains = surfaces //
+                    | std::views::transform([](auto* surface) { return *surface->swapchain().handle(); }) //
+                    | std::ranges::to<std::vector>();
+
+  auto image_indices = surfaces //
+                       | std::views::transform([](auto* surface) { return surface->image_index(); }) //
+                       | std::ranges::to<std::vector>();
+
+  auto result = detail::present(
+      detail::core::PresentInfoKHR {
+        .waitSemaphoreCount = static_cast<std::uint32_t>(surfaces.size()),
+        .pWaitSemaphores    = wait_semaphores.data(),
+        .swapchainCount     = static_cast<std::uint32_t>(surfaces.size()),
+        .pSwapchains        = swapchains.data(),
+        .pImageIndices      = image_indices.data(),
+      }
+  );
+}
 
 } // namespace rf3d::vk

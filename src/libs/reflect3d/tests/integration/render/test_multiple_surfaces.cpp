@@ -29,7 +29,8 @@ void test_surfaces() {
 
     mono::static_vector<surface_type*, surface_count> active {};
     for (auto& surface: surfaces) {
-      if (surface.next_image() != nullptr) {
+      if (auto* bb = surface.next_image(); bb != nullptr) {
+        frame_ctx.command_list.barrier(*bb, rf3d::ResourceState::present);
         active.emplace_back(std::addressof(surface));
       }
     }
@@ -39,10 +40,7 @@ void test_surfaces() {
     }
 
     Backend::gpu::submit_frame(frame_ctx, active);
-
-    for (auto* surface: active) {
-      surface->present();
-    }
+    Backend::gpu::present(active);
   }
 }
 
