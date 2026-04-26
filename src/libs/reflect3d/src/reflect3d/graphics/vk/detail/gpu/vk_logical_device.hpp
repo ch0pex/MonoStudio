@@ -19,7 +19,7 @@ public:
   }
 
   [[nodiscard]] queue_type create_present_queue(queue_config_type const& queue_config) const {
-    return {logical_device, queue_config.queueFamilyIndex, queue_config.queueCount > 1U ? 1U : 0U};
+    return {logical_device, queue_config.queueFamilyIndex, 0U};
   }
 
   void wait_idle() const { logical_device.waitIdle(); }

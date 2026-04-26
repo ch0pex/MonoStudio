@@ -35,7 +35,7 @@ struct SubmitInfo {
   std::vector<std::reference_wrapper<SemaphoreType const>> wait_semaphores {};
   std::vector<std::reference_wrapper<SemaphoreType const>> signal_semaphores {};
   std::vector<PsoStage> wait_stages {};
-  std::optional<std::reference_wrapper<FenceType const>> signal_fence {};
+  std::optional<std::reference_wrapper<FenceType>> signal_fence {};
 };
 
 } // namespace rf3d

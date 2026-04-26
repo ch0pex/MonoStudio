@@ -1,5 +1,6 @@
 
 #include "reflect3d/graphics/vk/gpu.hpp"
+#include <tuple>
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_submit_info.hpp"
@@ -17,7 +18,7 @@ class FrameContextManager {
 public:
   using context_type = FrameContext;
 
-  FrameContextManager() = default;
+  FrameContextManager() { ++detail::frame_index(); }
 
   FrameContext& next_frame() { //
     return frames_context.at((++detail::frame_index()).value());
@@ -62,50 +63,20 @@ FrameIndex2::counter_type Gpu::current_frame_index() { //
 Gpu::frame_context_type& Gpu::new_frame() {
   // assert(); TODO: check if frame was submitted before starting a new one
   auto& ctx = frame_manager().next_frame();
-  ctx.fence.wait();
+  ctx.fence.wait(std::chrono::milliseconds(10));
 
   // TODO: collect garbage resources from previous frame and free them here
 
-  ctx.fence.reset();
   ctx.command_list.reset();
   ctx.command_list.begin();
   return ctx;
 }
 
-// TODO: optimize this function
-void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
-
-  auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
-  auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
-  auto to_present_semaphore = [&](surface_type const* surface) { return *surface->present_semaphore().handle(); };
-
-  auto wait_semaphores = surfaces //
-                         | std::views::transform(to_present_semaphore) //
-                         | std::ranges::to<std::vector>();
-
-  auto signal_semaphores = surfaces //
-                           | std::views::transform(to_render_semaphore) //
-                           | std::ranges::to<std::vector>();
-
-  auto masks = std::views::iota(0U, static_cast<std::uint32_t>(surfaces.size())) //
-               | std::views::transform(to_stage_flag) //
-               | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
-
-  frame_ctx.command_list.end();
-  detail::submit_work(
-      {
-        .wait_semaphores     = wait_semaphores,
-        .wait_dst_stage_mask = masks,
-        .command_buffers     = {frame_ctx.command_list.handle()},
-        .signal_semaphores   = signal_semaphores,
-      },
-      *frame_ctx.fence.handle()
-  );
-}
 
 void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type& surface) {
   detail::core::PipelineStageFlags mask = detail::core::PipelineStageFlagBits::eColorAttachmentOutput;
   frame_ctx.command_list.end();
+  frame_ctx.fence.reset();
   detail::submit_work(
       {
         .wait_semaphores     = {*surface.present_semaphore().handle()},
@@ -134,6 +105,7 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
                      | std::views::transform(detail::to_native_stage) //
                      | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
 
+  submit_info.signal_fence->get().reset();
   detail::submit_work(
       detail::SubmitInfo {
         .wait_semaphores     = wait_semaphores,
@@ -142,6 +114,45 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
         .signal_semaphores   = signal_semaphores,
       },
       *submit_info.signal_fence->get().handle()
+  );
+}
+
+void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
+
+  auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
+  auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
+  auto to_present_semaphore = [&](surface_type const* surface) { return *surface->present_semaphore().handle(); };
+
+  auto wait_semaphores = surfaces //
+                         | std::views::transform(to_present_semaphore) //
+                         | std::ranges::to<std::vector>();
+
+  auto signal_semaphores = surfaces //
+                           | std::views::transform(to_render_semaphore) //
+                           | std::ranges::to<std::vector>();
+
+  auto masks = std::views::iota(0U, static_cast<std::uint32_t>(surfaces.size())) //
+               | std::views::transform(to_stage_flag) //
+               | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
+
+  auto image_indices = surfaces //
+                       | std::views::transform([](auto* surface) { return surface->image_index(); }) //
+                       | std::ranges::to<std::vector>();
+
+  // LOG_INFO(
+  //     "Submiting frame {}, waiting for present semaporhes {}, signaling rendering semaphores {}",
+  //     detail::frame_index().value().load(), detail::frame_index().value().load(), std::format("{}", image_indices)
+  // );
+  frame_ctx.command_list.end();
+  frame_ctx.fence.reset();
+  detail::submit_work(
+      {
+        .wait_semaphores     = wait_semaphores,
+        .wait_dst_stage_mask = masks,
+        .command_buffers     = {frame_ctx.command_list.handle()},
+        .signal_semaphores   = signal_semaphores,
+      },
+      *frame_ctx.fence.handle()
   );
 }
 
@@ -158,15 +169,30 @@ void Gpu::present(mono::span<surface_type* const> const surfaces) {
                        | std::views::transform([](auto* surface) { return surface->image_index(); }) //
                        | std::ranges::to<std::vector>();
 
-  auto result = detail::present(
+  std::vector<detail::core::Result> results(surfaces.size());
+  // LOG_INFO(
+  //     "Presenting frame {} waiting to render semaporhes {}", detail::frame_index().value().load(),
+  //     std::format("{}", image_indices)
+  // );
+  std::ignore = detail::present(
       detail::core::PresentInfoKHR {
         .waitSemaphoreCount = static_cast<std::uint32_t>(surfaces.size()),
         .pWaitSemaphores    = wait_semaphores.data(),
         .swapchainCount     = static_cast<std::uint32_t>(surfaces.size()),
         .pSwapchains        = swapchains.data(),
         .pImageIndices      = image_indices.data(),
+        .pResults           = results.data(),
       }
   );
+
+  for (auto [surf, res]: std::views::zip(surfaces, results)) {
+    if (res == detail::core::Result::eSuboptimalKHR or res == detail::core::Result::eErrorOutOfDateKHR) {
+      surf->recreate_swapchain();
+    }
+    else if (res != detail::core::Result::eSuccess) {
+      throw std::runtime_error {"Failed to present surface"};
+    }
+  }
 }
 
 } // namespace rf3d::vk

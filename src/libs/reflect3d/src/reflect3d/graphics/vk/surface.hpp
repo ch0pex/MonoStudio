@@ -9,6 +9,7 @@
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 
+#include <chrono>
 #include <mono/containers/static_vector.hpp>
 
 #include <array>
@@ -21,9 +22,7 @@ struct Image {
   BackBufferTexture back_buffer;
 };
 
-struct FrameSync {
-  Semaphore present_semaphore {}; // image-available semaphore, indexed by frame-in-flight
-};
+struct FrameSync { };
 
 inline uint32_t choose_swap_min_image_count(core::SurfaceCapabilitiesKHR const& surfaceCapabilities) {
   auto minImageCount = std::max(3U, surfaceCapabilities.minImageCount);
@@ -148,7 +147,7 @@ public:
   Swapchain(Swapchain&& other) noexcept :
     swapchain_handle((wait_idle(), std::move(other.swapchain_handle))), //
     images(std::move(other.images)), //
-    frame_sync(std::move(other.frame_sync)), //
+    present_semaphores(std::move(other.present_semaphores)), //
     render_semaphores(std::move(other.render_semaphores)), //
     current_image_index(other.current_image_index), //
     extent(other.extent) //
@@ -160,7 +159,7 @@ public:
       extent           = other.extent;
       images           = std::move(other.images);
       wait_idle();
-      frame_sync          = std::move(other.frame_sync);
+      present_semaphores  = std::move(other.present_semaphores);
       render_semaphores   = std::move(other.render_semaphores);
       current_image_index = other.current_image_index;
     }
@@ -177,9 +176,12 @@ public:
   [[nodiscard]] image_type next_image() try {
     auto [result, index] = swapchain_handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
-      *frame_sync.at(frame_index().value()).present_semaphore.handle(),  //
+      *present_semaphores.at(frame_index().value()).handle(),  //
       nullptr //
     );
+    if (result != core::Result::eSuccess && result != core::Result::eSuboptimalKHR) {
+      return nullptr;
+    }
     current_image_index = index;
     return std::addressof(images.at(index));
   }
@@ -189,7 +191,7 @@ public:
   }
 
   [[nodiscard]] Semaphore const& present_semaphore() const noexcept {
-    return frame_sync.at(frame_index().value()).present_semaphore;
+    return present_semaphores.at(frame_index().value());
   }
 
   [[nodiscard]] Semaphore const& render_semaphore() const noexcept { return render_semaphores.at(current_image_index); }
@@ -228,7 +230,7 @@ public:
 private:
   handle_type swapchain_handle;
   std::vector<Image> images;
-  std::array<FrameSync, rf3d::defaults::max_frames_in_flight> frame_sync {};
+  std::array<Semaphore, rf3d::defaults::max_frames_in_flight> present_semaphores {};
   std::vector<Semaphore> render_semaphores {};
   ImageIndex current_image_index {};
   extent_type extent;
@@ -284,7 +286,10 @@ public:
   // --- Member functions ---
 
   [[nodiscard]] image_type next_image() {
-    if (auto* image = sc.next_image()) {
+    if (window_size() == null_resolution) {
+      return nullptr;
+    }
+    if (auto* image = sc.next_image(); image != nullptr) {
       return std::addressof(image->back_buffer);
     }
     recreate_swapchain();
@@ -332,11 +337,9 @@ public:
 
   [[nodiscard]] swapchain_type const& swapchain() const noexcept { return sc; }
 
-private:
   void recreate_swapchain() {
-    // TODO: Refactor busy waiting
-    while (window_size() == null_resolution) {
-      glfwWaitEvents();
+    if (window_size() == null_resolution) {
+      return;
     }
     detail::wait_idle();
     LOG_INFO("Recreating swapchain");
@@ -349,6 +352,7 @@ private:
     );
   }
 
+private:
   window_type window;
   handle_type surface_handle;
   swapchain_type sc;
