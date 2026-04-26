@@ -118,6 +118,10 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
 }
 
 void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
+  if (surfaces.empty()) {
+    frame_ctx.command_list.end();
+    return;
+  }
 
   auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
   auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
@@ -157,6 +161,10 @@ void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_ty
 }
 
 void Gpu::present(mono::span<surface_type* const> const surfaces) {
+  if (surfaces.empty()) {
+    return;
+  }
+
   auto wait_semaphores = surfaces //
                          | std::views::transform([](auto* surface) { return *surface->render_semaphore().handle(); }) //
                          | std::ranges::to<std::vector>();

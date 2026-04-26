@@ -45,7 +45,7 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
     return presentMode == core::PresentModeKHR::eFifo;
   }));
 
-  // return core::PresentModeKHR::eFifo; // FIFO is guaranteed to be supported
+  // return core::PresentModeKHR::eImmediate; // FIFO is guaranteed to be supported
 
   bool const support_mailbox = std::ranges::any_of(availablePresentModes, [](core::PresentModeKHR const value) {
     return core::PresentModeKHR::eMailbox == value;
@@ -182,6 +182,7 @@ public:
       nullptr //
     );
     if (result != core::Result::eSuccess && result != core::Result::eSuboptimalKHR) {
+      LOG_INFO("Failed to acquire image: {}", to_string(result));
       return nullptr;
     }
     current_image_index = index;

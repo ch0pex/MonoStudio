@@ -18,7 +18,7 @@ void test_surfaces() {
   mono::static_vector<surface_type, surface_count> surfaces {};
 
   for (std::uint8_t i = 0; i < surface_count; ++i) {
-    surfaces.emplace_back(rf3d::WindowBuilder().default_callbacks().build());
+    surfaces.emplace_back(rf3d::WindowBuilder().build());
   }
 
   std::stop_token const token = mono::ex::setup_signals();
