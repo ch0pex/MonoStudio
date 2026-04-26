@@ -63,7 +63,7 @@ FrameIndex2::counter_type Gpu::current_frame_index() { //
 Gpu::frame_context_type& Gpu::new_frame() {
   // assert(); TODO: check if frame was submitted before starting a new one
   auto& ctx = frame_manager().next_frame();
-  ctx.fence.wait(std::chrono::milliseconds(10));
+  ctx.fence.wait();
 
   // TODO: collect garbage resources from previous frame and free them here
 

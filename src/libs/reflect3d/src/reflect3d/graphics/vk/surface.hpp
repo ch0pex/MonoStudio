@@ -45,6 +45,8 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
     return presentMode == core::PresentModeKHR::eFifo;
   }));
 
+  // return core::PresentModeKHR::eFifo; // FIFO is guaranteed to be supported
+
   bool const support_mailbox = std::ranges::any_of(availablePresentModes, [](core::PresentModeKHR const value) {
     return core::PresentModeKHR::eMailbox == value;
   });
