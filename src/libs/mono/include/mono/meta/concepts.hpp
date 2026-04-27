@@ -15,7 +15,7 @@ template<typename T>
 concept movable_value = std::move_constructible<std::decay_t<T>> and std::constructible_from<std::decay_t<T>, T>;
 
 template<typename Type, template<typename...> class Template>
-concept specialization_of = detail::SpecializationOf<Type, Template>::value;
+concept specialization_of = detail::SpecializationOf<std::decay_t<Type>, Template>::value;
 
 template<typename T, typename... Ts>
 concept in_pack = detail::ContainsType<T, Ts...>;

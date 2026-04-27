@@ -24,7 +24,7 @@
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc "
+        "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc"
       },
       "vendor": {
         "jetbrains.com/clion": {
@@ -80,7 +80,7 @@
       },
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion"
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -fconcepts-diagnostics-depth=2"
       }
     },
     {
@@ -89,7 +89,8 @@
       "binaryDir": "${sourceDir}/build/gcc/debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/debug/generators/conan_toolchain.cmake",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0"
       }
     },
     {

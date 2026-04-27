@@ -4,6 +4,8 @@
 
 #include <thread>
 
+void make_context_current(rf3d::Window& window) { glfwMakeContextCurrent(window.handle()); }
+
 int main() { //
   rf3d::config::Window window_spec {.mode = rf3d::WindowMode::windowed};
   rf3d::Window window {rf3d::WindowBuilder(window_spec).default_callbacks().build()};
@@ -11,7 +13,7 @@ int main() { //
   mono::ex::setup_signals();
   rf3d::log_monitors();
 
-  window.make_context_current();
+  make_context_current(window);
 
   // -------- Initial State --------
   rf3d::input::poll_events();

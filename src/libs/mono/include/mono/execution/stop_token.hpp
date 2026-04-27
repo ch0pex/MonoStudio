@@ -18,7 +18,7 @@ inline std::stop_source stop_source {}; // NOLINT
 
 
 inline auto const request_stop = [](int = {}) {
-  LOG_INFO("Program execution stop was requested");
+  // LOG_INFO("Program execution stop was requested");
   detail::stop_source.request_stop();
 };
 
