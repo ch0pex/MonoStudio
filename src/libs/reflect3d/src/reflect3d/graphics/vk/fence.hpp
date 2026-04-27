@@ -39,6 +39,7 @@ public:
   }
 
   void reset() { //
+    assert(signaled() && "Cannot reset a fence that is not signaled");
     detail::reset_fences({*fence});
   }
 

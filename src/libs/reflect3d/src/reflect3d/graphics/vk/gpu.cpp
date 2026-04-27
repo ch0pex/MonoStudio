@@ -117,9 +117,11 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
   );
 }
 
-void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
+void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces) {
   if (surfaces.empty()) {
+    LOG_WARNING("No surfaces to submit for frame {}, skipping submission", detail::frame_index().value().load());
     frame_ctx.command_list.end();
+    frame_ctx.fence.reset();
     return;
   }
 
@@ -143,10 +145,10 @@ void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_ty
                        | std::views::transform([](auto* surface) { return surface->image_index(); }) //
                        | std::ranges::to<std::vector>();
 
-  // LOG_INFO(
-  //     "Submiting frame {}, waiting for present semaporhes {}, signaling rendering semaphores {}",
-  //     detail::frame_index().value().load(), detail::frame_index().value().load(), std::format("{}", image_indices)
-  // );
+  LOG_INFO(
+      "Submiting frame {}, waiting for present semaporhes {}, signaling rendering semaphores {}",
+      detail::frame_index().value().load(), detail::frame_index().value().load(), std::format("{}", image_indices)
+  );
   frame_ctx.command_list.end();
   frame_ctx.fence.reset();
   detail::submit_work(
@@ -178,10 +180,11 @@ void Gpu::present(mono::span<surface_type* const> const surfaces) {
                        | std::ranges::to<std::vector>();
 
   std::vector<detail::core::Result> results(surfaces.size());
-  // LOG_INFO(
-  //     "Presenting frame {} waiting to render semaporhes {}", detail::frame_index().value().load(),
-  //     std::format("{}", image_indices)
-  // );
+  LOG_INFO(
+      "Presenting frame {} waiting to render semaporhes {}", detail::frame_index().value().load(),
+      std::format("{}", image_indices)
+  );
+  //
   std::ignore = detail::present(
       detail::core::PresentInfoKHR {
         .waitSemaphoreCount = static_cast<std::uint32_t>(surfaces.size()),

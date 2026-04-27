@@ -45,12 +45,14 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
     return presentMode == core::PresentModeKHR::eFifo;
   }));
 
-  // return core::PresentModeKHR::eImmediate; // FIFO is guaranteed to be supported
-
+  // return core::PresentModeKHR::eFifo; // FIFO is guaranteed to be available, so we can return it immediately if
+  // mailbox
+  //                                     // is not supported
   bool const support_mailbox = std::ranges::any_of(availablePresentModes, [](core::PresentModeKHR const value) {
     return core::PresentModeKHR::eMailbox == value;
   });
 
+  LOG_INFO("Present mode: {}", support_mailbox ? "mailbox" : "fifo");
   return support_mailbox ? core::PresentModeKHR::eMailbox : core::PresentModeKHR::eFifo;
 }
 
@@ -181,10 +183,6 @@ public:
       *present_semaphores.at(frame_index().value()).handle(),  //
       nullptr //
     );
-    if (result != core::Result::eSuccess && result != core::Result::eSuboptimalKHR) {
-      LOG_INFO("Failed to acquire image: {}", to_string(result));
-      return nullptr;
-    }
     current_image_index = index;
     return std::addressof(images.at(index));
   }
@@ -197,7 +195,9 @@ public:
     return present_semaphores.at(frame_index().value());
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore() const noexcept { return render_semaphores.at(current_image_index); }
+  [[nodiscard]] Semaphore const& render_semaphore() const noexcept { //
+    return render_semaphores.at(current_image_index);
+  }
 
   [[nodiscard]] Resolution resolution() const noexcept {
     return Resolution {
@@ -292,11 +292,15 @@ public:
     if (window_size() == null_resolution) {
       return nullptr;
     }
-    if (auto* image = sc.next_image(); image != nullptr) {
-      return std::addressof(image->back_buffer);
+
+    auto* image = sc.next_image();
+
+    if (image == nullptr) {
+      recreate_swapchain();
+      return nullptr;
     }
-    recreate_swapchain();
-    return nullptr;
+
+    return std::addressof(image->back_buffer);
   }
 
   void resize(resolution_type const& new_resolution) {
