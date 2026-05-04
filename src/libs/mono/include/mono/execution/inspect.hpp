@@ -1,5 +1,6 @@
 #pragma once
 
+#include <exec/completion_signatures.hpp>
 #include <stdexec/execution.hpp>
 
 #include <exception>
@@ -40,19 +41,21 @@ private:
   F func;
 };
 
-template<stdexec::sender S, class F>
+template<stdexec::sender Child, class F>
 struct InspectSender {
   using sender_concept = stdexec::sender_t;
 
-  template<class... Args>
-  using set_value_t    = stdexec::completion_signatures<stdexec::set_value_t(Args...)>;
-  using except_ptr_sig = stdexec::completion_signatures<stdexec::set_error_t(std::exception_ptr)>;
+  template<class Self, class... Env>
+  static consteval auto get_completion_signatures() noexcept {
+    auto child_completions = exec::get_child_completion_signatures<Self, Child, Env...>();
+    auto value_fn          = []<class... Args>() {
+      return stdexec::completion_signatures<
+                   stdexec::set_value_t(Args...), //
+                   stdexec::set_error_t(std::exception_ptr) //
+                   >();
+    };
 
-  template<class Env>
-  static constexpr auto get_completion_signatures(Env&& env [[maybe_unused]]) noexcept
-      -> stdexec::transform_completion_signatures_of<S, Env, except_ptr_sig, set_value_t> //
-  {
-    return {};
+    return exec::transform_completion_signatures(child_completions, value_fn);
   }
 
   template<stdexec::receiver R>
@@ -62,7 +65,7 @@ struct InspectSender {
 
   decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
 
-  S sender;
+  Child sender;
   F func;
 };
 

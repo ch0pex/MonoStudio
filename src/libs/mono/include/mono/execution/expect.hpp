@@ -1,8 +1,9 @@
 #pragma once
 
 #include "mono/meta/concepts.hpp"
-#include "stdexec/__detail/__execution_fwd.hpp"
 
+#include <exec/completion_signatures.hpp>
+#include <stdexec/__detail/__completion_signatures.hpp>
 #include <stdexec/execution.hpp>
 
 #include <exception>
@@ -42,7 +43,7 @@ public:
     auto result = std::invoke(func, std::forward<As>(as)...);
 
     if (not result) {
-      throw std::make_exception_ptr("Expected function returned empty optional");
+      throw std::runtime_error("Expected function returned empty optional");
     }
 
     stdexec::set_value(std::move(receiver), result.value());
@@ -65,20 +66,21 @@ private:
   F func;
 };
 
-template<stdexec::sender S, class F>
+template<stdexec::sender Child, class F>
 struct ExpectSender {
   using sender_concept = stdexec::sender_t;
 
-  template<class... Args>
-  using set_value_t =
-      stdexec::completion_signatures<stdexec::set_value_t(typename std::invoke_result_t<F, Args...>::value_type)>;
-  using except_ptr_sig = stdexec::completion_signatures<stdexec::set_error_t(std::exception_ptr)>;
+  template<typename Self, class... Env>
+  static consteval auto get_completion_signatures() noexcept {
+    auto child_completions = exec::get_child_completion_signatures<ExpectSender, Child, Env...>();
+    auto value_fn          = []<class... Args>() {
+      return stdexec::completion_signatures<
+                   stdexec::set_value_t(typename std::invoke_result_t<F, Args...>::value_type), //
+                   stdexec::set_error_t(std::exception_ptr) //
+                   >();
+    };
 
-  template<class Env>
-  static constexpr auto get_completion_signatures(Env&& env [[maybe_unused]]) noexcept
-      -> stdexec::transform_completion_signatures_of<S, Env, except_ptr_sig, set_value_t> //
-  {
-    return {};
+    return exec::transform_completion_signatures(child_completions, value_fn);
   }
 
   template<stdexec::receiver R>
@@ -88,7 +90,7 @@ struct ExpectSender {
 
   decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
 
-  S sender;
+  Child sender;
   F func;
 };
 

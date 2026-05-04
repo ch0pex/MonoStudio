@@ -17,7 +17,7 @@ set(STDEXEC_BUILD_EXAMPLES OFF CACHE BOOL "Disable stdexec examples" FORCE)
 CPMAddPackage(
         NAME stdexec
         GITHUB_REPOSITORY NVIDIA/stdexec
-        GIT_TAG 044d43bdc6aefc38bfd1c1cee867225d2d5aec35
+        GIT_TAG 3ccbe56d646db55c7f94c2467f012a9647d6fa23
         SYSTEM YES
 )
 
