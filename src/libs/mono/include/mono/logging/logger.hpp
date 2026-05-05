@@ -2,33 +2,45 @@
 
 #include "mono/logging/logger_config.hpp"
 
-#include <cstdint>
-#include <string_view>
+#include <quill/Frontend.h>
+#include <quill/LogMacros.h>
 
-// Forward declaration de Quill para no incluir sus headers aquí
+#include <cstdint>
+#include <print>
 
 namespace mono {
 
-enum class LogLevel : std::uint8_t { Debug = 0, Info, Error, Warning, Critical };
+enum class LogLevel : uint8_t {
+  trace_l3,
+  trace_l2,
+  trace_l1,
+  debug,
+  info,
+  notice,
+  warning,
+  error,
+  critical,
+  backtrace, /**< This is only used for backtrace logging. Should not be set by the user. */
+  none
+};
 
-void log_dynamic(LogLevel level, std::string_view message);
-void log_info(std::string_view message);
-void log_warning(std::string_view message);
-void log_error(std::string_view message);
-
-void log_info_limit(std::uint64_t min_interval_ms, std::string_view message);
-void log_warning_limit(std::uint64_t min_interval_ms, std::string_view message);
-void log_error_limit(std::uint64_t min_interval_ms, std::string_view message);
+inline quill::Logger*& get_global_logger() noexcept try {
+  static auto* logger = create_logger({.name = "Rflect", .path = std::filesystem::temp_directory_path()});
+  return logger;
+}
+catch (std::exception& e) {
+  std::println("Something went wrong while accessing to the logger. {}", e.what());
+  std::exit(-1);
+}
 
 // clang-format off
-#define LOG_DYNAMIC(level, fmt, ...)  mono::log_dynamic(level, std::format(fmt, ##__VA_ARGS__))
-#define LOG_INFO(fmt, ...)            mono::log_info(std::format(fmt, ##__VA_ARGS__))
-#define LOG_WARNING(fmt, ...)         mono::log_warning(std::format(fmt, ##__VA_ARGS__))
-#define LOG_ERROR(fmt, ...)           mono::log_error(std::format(fmt, ##__VA_ARGS__))
-
-#define LOG_INFO_LIMIT(min, fmt, ...)    mono::log_info_limit(min, std::format(fmt, ##__VA_ARGS__))
-#define LOG_WARNING_LIMIT(min, fmt, ...) mono::log_warning_limit(min, std::format(fmt, ##__VA_ARGS__))
-#define LOG_ERROR_LIMIT(min, fmt, ...)   mono::log_error_limit(min, std::format(fmt, ##__VA_ARGS__))
+#define LOG_DYNAMIC(level, fmt, ...)      QUILL_LOG_DYNAMIC(mono::get_global_logger(), static_cast<quill::LogLevel>(level), fmt, ## __VA_ARGS__)
+#define LOG_INFO(fmt, ...)                QUILL_LOG_INFO(mono::get_global_logger(), fmt, ## __VA_ARGS__)
+#define LOG_WARNING(fmt, ...)             QUILL_LOG_WARNING(mono::get_global_logger(), fmt, ## __VA_ARGS__)
+#define LOG_ERROR(fmt, ...)               QUILL_LOG_ERROR(mono::get_global_logger(), fmt, ## __VA_ARGS__)
+#define LOG_INFO_LIMIT(min,fmt, ...)      QUILL_LOG_INFO_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
+#define LOG_WARNING_LIMIT(min,fmt, ...)   QUILL_LOG_WARNING_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
+#define LOG_ERROR_LIMIT(min, fmt, ...)    QUILL_LOG_ERROR_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
 // clang-format on
 
 } // namespace mono

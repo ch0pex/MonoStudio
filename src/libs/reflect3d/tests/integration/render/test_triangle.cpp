@@ -1,30 +1,74 @@
-#include "common.hpp"
 
-#include "reflect3d/graphics/rhi.hpp"
-#include "reflect3d/input/input.hpp"
+#include <reflect3d/graphics/core/renderpass_descriptor.hpp>
+#include <reflect3d/graphics/core/resource_state.hpp>
+#include <reflect3d/graphics/core/shader/compiler.hpp>
+#include <reflect3d/graphics/core/shader/targets.hpp>
+#include <reflect3d/graphics/rhi.hpp>
+#include <reflect3d/input/input.hpp>
+#include <reflect3d/window/window.hpp>
+#include <reflect3d/window/window_builder.hpp>
 
-#include <mono/error/expected.hpp>
 #include <mono/execution/signals.hpp>
-#include <mono/execution/stop_token.hpp>
 #include <mono/logging/logger.hpp>
 
-#include <iostream>
+#include "common.hpp"
 
-using namespace rf3d;
-using namespace rf3d::gfx;
-using namespace rf3d::gfx::vk;
 
-inline constexpr Vertex vertex1 {.position = {0.0F, -0.5F, 0.0F}, .color = {1.0F, 0.0F, 0.0F, 1.0F}};
-inline constexpr Vertex vertex2 {.position = {0.5F, 0.5F, 0.0F}, .color = {0.0F, 1.0F, 0.0F, 1.0F}};
-inline constexpr Vertex vertex3 {.position = {-0.5F, 0.5F, 0.0F}, .color = {0.0F, 0.0F, 1.0F, 1.0F}};
-inline constexpr std::array vertices = {vertex1, vertex2, vertex3};
+int main() try {
+  using namespace rf3d;
 
-int main() {
+  rhi::VertexBuffer vertex_buffer {test::triangle::vertices};
+  rhi::IndexBuffer index_buffer {test::triangle::indices};
+  rhi::Surface surface {rf3d::WindowBuilder().default_callbacks().build()};
+  auto pso = test::create_basic_pso();
 
-  Mesh mesh {
-    .vertices = std::ranges::to<std::vector>(vertices),
-    .indices  = std::vector<Index> {0, 1, 2, 2, 3, 0},
-  };
+  std::stop_token const token = mono::ex::setup_signals();
+  while (not token.stop_requested()) {
+    input::poll_events();
 
-  test::renderer<rf3d::impl::vk>(1, mono::as_span(mesh));
+    auto& frame_ctx   = rhi::gpu::new_frame();
+    auto* back_buffer = surface.next_image();
+
+    if (back_buffer == nullptr) {
+      continue;
+    }
+
+    rhi::DrawStreamBuilder draw_stream {};
+    draw_stream.draw({
+      .pso           = pso,
+      .vertex_buffer = vertex_buffer,
+      .index_buffer  = index_buffer,
+      .draw_params   = {
+          .index_count = static_cast<std::uint32_t>(index_buffer.size()),
+      },
+    });
+
+    frame_ctx.command_list.render_pass(
+        RenderPass {
+          .debug_name = "Test Render Pass",
+          .render_targets =
+              RenderTargets {
+                ColorTarget {.texture = *back_buffer, .final_state = ResourceState::present},
+              },
+          .draw_area = DrawArea {
+            .viewport   = surface.viewport(),
+            .scissor    = surface.viewport().rect,
+            .draw_calls = draw_stream.get_stream(),
+          },
+        }
+    );
+
+    frame_ctx.command_list.end();
+    rhi::gpu::submit_work(rhi::default_submit_info(frame_ctx, surface));
+    surface.present();
+  }
+  rhi::gpu::wait_idle();
+}
+catch (std::exception const& e) {
+  LOG_ERROR("Program execution terminated with an unhandled exception: {}", e.what());
+  return EXIT_FAILURE;
+}
+catch (...) {
+  LOG_ERROR("Program execution terminated with an unknown error");
+  return EXIT_FAILURE;
 }

@@ -1,33 +1,82 @@
+
 #include "common.hpp"
 
-#include "mono/misc/as_span.hpp"
-#include "reflect3d/graphics/rhi.hpp"
-#include "reflect3d/input/input.hpp"
+#include <reflect3d/graphics/core/renderpass_descriptor.hpp>
+#include <reflect3d/graphics/core/resource_state.hpp>
+#include <reflect3d/graphics/core/shader/compiler.hpp>
+#include <reflect3d/graphics/core/shader/targets.hpp>
+#include <reflect3d/graphics/rhi.hpp>
+#include <reflect3d/graphics/vk/gpu.hpp>
+#include <reflect3d/graphics/vk/pso.hpp>
+#include <reflect3d/input/input.hpp>
+#include <reflect3d/window/window.hpp>
+#include <reflect3d/window/window_builder.hpp>
 
-#include <mono/error/expected.hpp>
+#include <assets_path.hpp>
 #include <mono/execution/signals.hpp>
 #include <mono/execution/stop_token.hpp>
 #include <mono/logging/logger.hpp>
 
-#include <iostream>
 
-using namespace rf3d;
-using namespace rf3d::gfx;
-using namespace rf3d::gfx::vk;
+template<rf3d::RenderHardwareInterface Impl>
+void test_square() {
+  rf3d::rhi::vertex_buffer_t<Impl> vertex_buffer {test::square::vertices};
+  rf3d::rhi::index_buffer_t<Impl> index_buffer {test::square::indices};
 
-std::array constexpr vertices = {
-  Vertex {.position = {-0.5F, -0.5F, 0.F}, .color {1.0F, 0.0F, 0.0F, 0.0F}},
-  Vertex {.position = {0.5F, -0.5F, 0.F}, .color = {0.0F, 1.0F, 0.0F, 0.F}},
-  Vertex {.position = {0.5F, 0.5F, 0.F}, .color = {0.0F, 0.0F, 1.0F, 0.F}},
-  Vertex {.position = {-0.5F, 0.5F, 0.F}, .color = {1.0F, 1.0F, 1.0F, 0.F}}
-};
+  auto pso = test::create_basic_pso<Impl>();
 
-int main() {
+  rf3d::rhi::surface_t<Impl> surface {rf3d::WindowBuilder().default_callbacks().build()};
+  std::stop_token const token = mono::ex::setup_signals();
 
-  Mesh mesh {
-    .vertices = std::ranges::to<std::vector>(vertices),
-    .indices  = std::vector<Index> {0, 1, 2, 2, 3, 0},
-  };
+  while (not token.stop_requested()) {
+    rf3d::input::poll_events();
 
-  test::renderer<rf3d::impl::vk>(1, mono::as_span(mesh));
+    auto& frame_ctx = rf3d::rhi::gpu_t<Impl>::new_frame();
+    auto* image     = surface.next_image();
+
+    if (image == nullptr) {
+      continue;
+    }
+
+    rf3d::rhi::draw_stream_builder_t<Impl> draw_stream {};
+    draw_stream.draw({
+      .pso           = pso,
+      .vertex_buffer = vertex_buffer,
+      .index_buffer  = index_buffer,
+      .draw_params   = {
+          .index_count = static_cast<std::uint32_t>(index_buffer.size()),
+      },
+    });
+
+    frame_ctx.command_list.render_pass(
+        rf3d::RenderPass {
+          .debug_name = "Test Render Pass",
+          .render_targets =
+              rf3d::RenderTargets {
+                rf3d::ColorTarget {.texture = *image, .final_state = rf3d::ResourceState::present},
+              },
+          .draw_area = rf3d::DrawArea {
+            .viewport   = surface.viewport(),
+            .scissor    = surface.viewport().rect,
+            .draw_calls = draw_stream.get_stream(),
+          },
+        }
+    );
+
+    frame_ctx.command_list.end();
+    rf3d::rhi::gpu_t<Impl>::submit_work(rf3d::rhi::default_submit_info(frame_ctx, surface));
+    surface.present();
+  }
+}
+
+int main() try { //
+  test_square<rf3d::impl::vk>();
+}
+catch (std::exception const& e) {
+  LOG_ERROR("Program execution terminated with an unhandled exception: {}", e.what());
+  return EXIT_FAILURE;
+}
+catch (...) {
+  LOG_ERROR("Program execution terminated with an unknown error");
+  return EXIT_FAILURE;
 }

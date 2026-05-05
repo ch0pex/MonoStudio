@@ -1,10 +1,11 @@
 #pragma once
 
+#include "mono/containers/span.hpp"
+
 #include <cstdint>
-#include <mono/containers/span.hpp>
 #include <string>
 
-namespace rf3d::gfx::shader {
+namespace rf3d::shader {
 
 using Bytecode = mono::span<char const>;
 
@@ -36,4 +37,4 @@ inline std::string entry_point_name(Stage const stage) {
   }
 }
 
-} // namespace rf3d::gfx::shader
+} // namespace rf3d::shader
