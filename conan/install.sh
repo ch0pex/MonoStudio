@@ -31,40 +31,40 @@ install_preset() {
 
     case "$PRESET" in
     "Debug-gcc")
-        PROFILE="gcc-15"
+        PROFILE="gcc-16"
         BUILD_TYPE="Debug"
         ;;
     "Release-gcc")
-        PROFILE="gcc-15"
+        PROFILE="gcc-16"
         BUILD_TYPE="Release"
         ;;
     "RelWithDebInfo-gcc")
-        PROFILE="gcc-15"
+        PROFILE="gcc-16"
         BUILD_TYPE="RelWithDebInfo"
         ;;
     "Sanitize-gcc")
-        PROFILE="gcc-15"
+        PROFILE="gcc-16"
         BUILD_TYPE="Debug"
         ;;
     "Coverage-gcc")
-        PROFILE="gcc-15"
+        PROFILE="gcc-16"
         BUILD_TYPE="Debug"
         ;;
 
     "Debug-clang")
-        PROFILE="clang-21"
+        PROFILE="clang-22"
         BUILD_TYPE="Debug"
         ;;
     "Release-clang")
-        PROFILE="clang-21"
+        PROFILE="clang-22"
         BUILD_TYPE="Release"
         ;;
     "RelWithDebInfo-clang")
-        PROFILE="clang-21"
+        PROFILE="clang-22"
         BUILD_TYPE="RelWithDebInfo"
         ;;
     "Sanitize-clang")
-        PROFILE="clang-21-sanitizer"
+        PROFILE="clang-22-sanitizer"
         BUILD_TYPE="Debug"
         ;;
 

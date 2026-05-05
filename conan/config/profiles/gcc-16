@@ -2,7 +2,7 @@
 arch=x86_64
 os=Linux
 compiler=gcc
-compiler.version=16
+compiler.version=16.1
 compiler.cppstd=26
 compiler.cstd=gnu11
 compiler.libcxx=libstdc++11

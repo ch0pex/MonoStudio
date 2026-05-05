@@ -21,19 +21,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' # O la versión que necesites
+
       - name: Setup Conan and Jinja2
         run: |
-          PYTHON_BIN="C:/hostedtoolcache/windows/Python/3.14.3/x64"
-
-          "$PYTHON_BIN/python3.exe" -m pip install --upgrade pip
-          "$PYTHON_BIN/python3.exe" -m pip install conan jinja2
-
-          echo "$PYTHON_BIN" >> $GITHUB_PATH
-          echo "$PYTHON_BIN/Scripts" >> $GITHUB_PATH
-
-          "$PYTHON_BIN/Scripts/conan.exe" config install conan/config
-          "$PYTHON_BIN/Scripts/conan.exe" remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
-          "$PYTHON_BIN/Scripts/conan.exe" remote enable conancenter
+          python -m pip install --upgrade pip
+          python -m pip install conan jinja2
+          
+          # Los scripts como conan.exe ya estarán en el PATH automáticamente
+          conan config install conan/config
+          conan remote login -p "${{ secrets.CONAN_TOKEN }}" monostudio-conan-local runner
+          conan remote enable conancenter
 
       - name: Build and Upload
         run: |
