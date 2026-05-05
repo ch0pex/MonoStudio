@@ -26,6 +26,7 @@ target_sources(
         reflect3d/graphics/api/texture.hpp
 
         reflect3d/graphics/core/buffer_info.hpp
+        reflect3d/graphics/core/frame_index.hpp
         reflect3d/graphics/core/command_list_type.hpp
         reflect3d/graphics/core/defaults.hpp
         reflect3d/graphics/core/enum_flags.hpp

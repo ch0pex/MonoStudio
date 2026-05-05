@@ -1,11 +1,14 @@
 
 #include "reflect3d/graphics/vk/gpu.hpp"
+#include <tuple>
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_to_native.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 #include "reflect3d/graphics/vk/surface.hpp"
+
+#include "reflect3d/graphics/core/frame_index.hpp"
 
 namespace rf3d::vk {
 
@@ -14,28 +17,18 @@ namespace {
 class FrameContextManager {
 public:
   using context_type = FrameContext;
-  using index_type   = FrameIndex;
 
-  FrameContextManager() {
-    for (auto [index, ctx]: std::views::enumerate(frames_context)) {
-      ctx.index = static_cast<std::uint32_t>(index);
-    }
-  }
+  FrameContextManager() { ++detail::frame_index(); }
 
   FrameContext& next_frame() { //
-    return frames_context.at(++frame_index % defaults::max_frames_in_flight);
+    return frames_context.at((++detail::frame_index()).value());
   }
 
   [[nodiscard]] FrameContext& current_frame() { //
-    return frames_context.at(frame_index);
-  }
-
-  [[nodiscard]] index_type current_frame_index() const noexcept { //
-    return frame_index;
+    return frames_context.at(detail::frame_index());
   }
 
 private:
-  index_type frame_index {};
   std::array<context_type, defaults::max_frames_in_flight> frames_context {};
 };
 
@@ -63,8 +56,8 @@ void Gpu::wait_idle() { //
   detail::wait_idle();
 }
 
-FrameIndex Gpu::current_frame_index() { //
-  return frame_manager().current_frame_index();
+FrameIndex::counter_type Gpu::current_frame_index() { //
+  return detail::frame_index().value();
 }
 
 Gpu::frame_context_type& Gpu::new_frame() {
@@ -74,56 +67,22 @@ Gpu::frame_context_type& Gpu::new_frame() {
 
   // TODO: collect garbage resources from previous frame and free them here
 
-  ctx.fence.reset();
   ctx.command_list.reset();
   ctx.command_list.begin();
   return ctx;
 }
 
-// TODO: optimize this function
-void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces [[maybe_unused]]) {
-
-  auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
-  auto to_render_semaphore = [&](surface_type const* surface) {
-    return *surface->render_semaphore(frame_ctx.index).handle();
-  };
-  auto to_present_semaphore = [&](surface_type const* surface) {
-    return *surface->present_semaphore(frame_ctx.index).handle();
-  };
-
-  auto wait_semaphores = surfaces //
-                         | std::views::transform(to_present_semaphore) //
-                         | std::ranges::to<std::vector>();
-
-  auto signal_semaphores = surfaces //
-                           | std::views::transform(to_render_semaphore) //
-                           | std::ranges::to<std::vector>();
-
-  auto masks = std::views::iota(0U, static_cast<std::uint32_t>(surfaces.size())) //
-               | std::views::transform(to_stage_flag) //
-               | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
-
-  frame_ctx.command_list.end();
-  detail::submit_work(
-      {
-        .wait_semaphores     = wait_semaphores,
-        .wait_dst_stage_mask = masks,
-        .command_buffers     = {frame_ctx.command_list.handle()},
-        .signal_semaphores   = signal_semaphores,
-      },
-      *frame_ctx.fence.handle()
-  );
-}
 
 void Gpu::submit_frame(frame_context_type& frame_ctx, surface_type& surface) {
   detail::core::PipelineStageFlags mask = detail::core::PipelineStageFlagBits::eColorAttachmentOutput;
   frame_ctx.command_list.end();
+  frame_ctx.fence.reset();
   detail::submit_work(
       {
-        .wait_semaphores     = {*surface.present_semaphore(frame_ctx.index).handle()},
+        .wait_semaphores     = {*surface.present_semaphore().handle()},
         .wait_dst_stage_mask = {mask},
         .command_buffers     = {frame_ctx.command_list.handle()},
-        .signal_semaphores   = {*surface.render_semaphore(frame_ctx.index).handle()},
+        .signal_semaphores   = {*surface.render_semaphore().handle()},
       },
       *frame_ctx.fence.handle()
   );
@@ -146,6 +105,7 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
                      | std::views::transform(detail::to_native_stage) //
                      | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
 
+  submit_info.signal_fence->get().reset();
   detail::submit_work(
       detail::SubmitInfo {
         .wait_semaphores     = wait_semaphores,
@@ -157,6 +117,85 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
   );
 }
 
-void Gpu::present(mono::span<surface_type* const>) { }
+void Gpu::submit_frame(Gpu::frame_context_type& frame_ctx, mono::span<surface_type* const> surfaces) {
+  if (surfaces.empty()) {
+    LOG_WARNING("No surfaces to submit for frame {}, skipping submission", detail::frame_index().value());
+    frame_ctx.command_list.end();
+    frame_ctx.fence.reset();
+    return;
+  }
+
+  auto to_stage_flag       = [&](std::uint32_t) { return detail::core::PipelineStageFlagBits::eColorAttachmentOutput; };
+  auto to_render_semaphore = [&](surface_type const* surface) { return *surface->render_semaphore().handle(); };
+  auto to_present_semaphore = [&](surface_type const* surface) { return *surface->present_semaphore().handle(); };
+
+  auto wait_semaphores = surfaces //
+                         | std::views::transform(to_present_semaphore) //
+                         | std::ranges::to<std::vector>();
+
+  auto signal_semaphores = surfaces //
+                           | std::views::transform(to_render_semaphore) //
+                           | std::ranges::to<std::vector>();
+
+  auto masks = std::views::iota(0U, static_cast<std::uint32_t>(surfaces.size())) //
+               | std::views::transform(to_stage_flag) //
+               | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
+
+  auto image_indices = surfaces //
+                       | std::views::transform([](auto* surface) { return surface->image_index(); }) //
+                       | std::ranges::to<std::vector>();
+
+  frame_ctx.command_list.end();
+  frame_ctx.fence.reset();
+  detail::submit_work(
+      {
+        .wait_semaphores     = wait_semaphores,
+        .wait_dst_stage_mask = masks,
+        .command_buffers     = {frame_ctx.command_list.handle()},
+        .signal_semaphores   = signal_semaphores,
+      },
+      *frame_ctx.fence.handle()
+  );
+}
+
+void Gpu::present(mono::span<surface_type* const> const surfaces) {
+  if (surfaces.empty()) {
+    return;
+  }
+
+  auto wait_semaphores = surfaces //
+                         | std::views::transform([](auto* surface) { return *surface->render_semaphore().handle(); }) //
+                         | std::ranges::to<std::vector>();
+
+  auto swapchains = surfaces //
+                    | std::views::transform([](auto* surface) { return *surface->swapchain().handle(); }) //
+                    | std::ranges::to<std::vector>();
+
+  auto image_indices = surfaces //
+                       | std::views::transform([](auto* surface) { return surface->image_index(); }) //
+                       | std::ranges::to<std::vector>();
+
+  std::vector<detail::core::Result> results(surfaces.size());
+
+  std::ignore = detail::present(
+      detail::core::PresentInfoKHR {
+        .waitSemaphoreCount = static_cast<std::uint32_t>(surfaces.size()),
+        .pWaitSemaphores    = wait_semaphores.data(),
+        .swapchainCount     = static_cast<std::uint32_t>(surfaces.size()),
+        .pSwapchains        = swapchains.data(),
+        .pImageIndices      = image_indices.data(),
+        .pResults           = results.data(),
+      }
+  );
+
+  for (auto [surf, res]: std::views::zip(surfaces, results)) {
+    if (res == detail::core::Result::eSuboptimalKHR or res == detail::core::Result::eErrorOutOfDateKHR) {
+      surf->recreate_swapchain();
+    }
+    else if (res != detail::core::Result::eSuccess) {
+      throw std::runtime_error {"Failed to present surface"};
+    }
+  }
+}
 
 } // namespace rf3d::vk
