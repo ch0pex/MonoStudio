@@ -24,11 +24,11 @@
 namespace rf3d::rhi {
 
 template<RenderHardwareInterface Rhi = impl::DefaultBackend>
-submit_info_t<Rhi> default_submit_info(frame_context_t<Rhi> const& ctx, surface_t<Rhi> const& surface) {
+submit_info_t<Rhi> default_submit_info(frame_context_t<Rhi>& ctx, surface_t<Rhi> const& surface) {
   return {
     .command_buffers   = {ctx.command_list},
-    .wait_semaphores   = {surface.present_semaphore(ctx.index)},
-    .signal_semaphores = {surface.render_semaphore(ctx.index)},
+    .wait_semaphores   = {surface.present_semaphore()},
+    .signal_semaphores = {surface.render_semaphore()},
     .wait_stages       = {PsoStage::color_attachment_output},
     .signal_fence      = ctx.fence,
   };

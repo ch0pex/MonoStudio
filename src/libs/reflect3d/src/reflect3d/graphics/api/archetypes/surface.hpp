@@ -15,13 +15,13 @@ namespace rf3d::archetypes {
 struct Surface {
   struct Image { };
 
-  using resolution_type = rf3d::Resolution;
+  using resolution_type = Resolution;
   using image_type      = Image;
   using window_type     = Window;
 
   Surface() = default;
 
-  Surface(window_type&& window);
+  explicit Surface(window_type&& window);
 
   Surface(Surface const&) = delete;
 
@@ -33,7 +33,7 @@ struct Surface {
 
   ~Surface() = default;
 
-  [[nodiscard]] image_type next_image(FrameIndex frame_index);
+  [[nodiscard]] image_type next_image();
 
   void present();
 

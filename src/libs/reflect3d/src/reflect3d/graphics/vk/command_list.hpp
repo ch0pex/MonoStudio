@@ -34,7 +34,7 @@ public:
   // --- Constructors ---
 
   explicit CommandList() : cmd_buffer(std::move(detail::allocate_command_buffer(list_type::value, 1).front())) {
-    LOG_INFO("Allocated command buffer for list type {}", static_cast<std::uint32_t>(list_type::value));
+    // LOG_INFO("Allocated command buffer for list type {}", static_cast<std::uint32_t>(list_type::value));
   }
 
   // --- Common commands ---

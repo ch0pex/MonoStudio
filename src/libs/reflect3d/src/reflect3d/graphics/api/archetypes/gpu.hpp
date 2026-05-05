@@ -11,7 +11,12 @@ namespace rf3d::archetypes {
  * can be used by concepts to trick this language limitation.
  */
 struct Gpu {
-  struct FrameContext { };
+  struct FrameContext {
+    using command_list_type = CommandList;
+    using fence_type        = Fence;
+    command_list_type command_list;
+    fence_type fence;
+  };
 
   using frame_context_type = FrameContext;
   using surface_type       = Surface;

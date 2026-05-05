@@ -37,6 +37,8 @@ public:
 
   [[nodiscard]] count_type counter() const { return semaphore.getCounterValue(); }
 
+  [[nodiscard]] bool is_signaled() const { return counter() > 0; }
+
   [[nodiscard]] handle_type const& handle() const { return semaphore; }
 
 private:

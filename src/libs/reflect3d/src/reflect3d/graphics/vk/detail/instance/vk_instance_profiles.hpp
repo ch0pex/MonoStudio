@@ -6,6 +6,7 @@
 #include "reflect3d/window/utils/context.hpp"
 
 #include <mono/logging/logger.hpp>
+#include <vulkan/vulkan_enums.hpp>
 
 namespace rf3d::vk::detail {
 
@@ -28,7 +29,21 @@ raii::Instance create_instance(raii::Context const& context) {
 
   static auto extensions = get_extensions(context).value();
 
+  std::array const validation_features = {
+    core::ValidationFeatureEnableEXT::eBestPractices,
+    core::ValidationFeatureEnableEXT::eSynchronizationValidation,
+    core::ValidationFeatureEnableEXT::eGpuAssisted,
+    core::ValidationFeatureEnableEXT::eGpuAssistedReserveBindingSlot,
+  };
+
+  core::ValidationFeaturesEXT validation_features_info {
+    .enabledValidationFeatureCount = static_cast<std::uint32_t>(validation_features.size()),
+    .pEnabledValidationFeatures    = validation_features.data(),
+  };
+
   core::InstanceCreateInfo create_info {
+    .sType                   = core::StructureType::eInstanceCreateInfo,
+    .pNext                   = &validation_features_info,
     .pApplicationInfo        = &app_info,
     .enabledExtensionCount   = static_cast<std::uint32_t>(extensions.size()),
     .ppEnabledExtensionNames = extensions.data(),

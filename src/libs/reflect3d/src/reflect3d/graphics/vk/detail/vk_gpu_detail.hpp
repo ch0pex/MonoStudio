@@ -11,6 +11,8 @@
 //
 #include <chrono>
 
+#include "reflect3d/graphics/core/frame_index.hpp"
+
 
 namespace rf3d::vk::detail {
 
@@ -18,9 +20,14 @@ namespace rf3d::vk::detail {
 // --- Gpu frame commands and synchronization ---
 // ----------------------------------------------
 
+inline FrameIndex& frame_index() {
+  static FrameIndex index {};
+  return index;
+}
+
 void wait_idle();
 
-void wait_fence(core::Fence fences, std::chrono::nanoseconds timeout);
+void wait_fence(core::Fence fence, std::chrono::nanoseconds timeout);
 
 void wait_fences(mono::span<core::Fence> fences, bool wait_all, std::chrono::nanoseconds timeout);
 

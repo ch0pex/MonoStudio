@@ -9,10 +9,10 @@ namespace rf3d::vk::detail {
 struct SubmitInfo {
   using native_type = core::SubmitInfo;
 
-  mono::span<core::Semaphore const> wait_semaphores {}; // NOLINT(false redundant warning)
-  mono::span<core::PipelineStageFlags const> wait_dst_stage_mask {}; // NOLINT(false redundant warning)
-  mono::span<core::CommandBuffer const> command_buffers {}; // NOLINT(false redundant warning)
-  mono::span<core::Semaphore const> signal_semaphores {}; // NOLINT(false redundant warning)
+  mono::span<core::Semaphore const> wait_semaphores {};
+  mono::span<core::PipelineStageFlags const> wait_dst_stage_mask {};
+  mono::span<core::CommandBuffer const> command_buffers {};
+  mono::span<core::Semaphore const> signal_semaphores {};
 };
 
 

@@ -9,6 +9,7 @@
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 
+#include <chrono>
 #include <mono/containers/static_vector.hpp>
 
 #include <array>
@@ -21,10 +22,7 @@ struct Image {
   BackBufferTexture back_buffer;
 };
 
-struct FrameSync {
-  Semaphore render_semaphore {};
-  Semaphore present_semaphore {};
-};
+struct FrameSync { };
 
 inline uint32_t choose_swap_min_image_count(core::SurfaceCapabilitiesKHR const& surfaceCapabilities) {
   auto minImageCount = std::max(3U, surfaceCapabilities.minImageCount);
@@ -47,10 +45,14 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
     return presentMode == core::PresentModeKHR::eFifo;
   }));
 
+  // return core::PresentModeKHR::eFifo; // FIFO is guaranteed to be available, so we can return it immediately if
+  // mailbox
+  //                                     // is not supported
   bool const support_mailbox = std::ranges::any_of(availablePresentModes, [](core::PresentModeKHR const value) {
     return core::PresentModeKHR::eMailbox == value;
   });
 
+  LOG_INFO("Present mode: {}", support_mailbox ? "mailbox" : "fifo");
   return support_mailbox ? core::PresentModeKHR::eMailbox : core::PresentModeKHR::eFifo;
 }
 
@@ -136,8 +138,9 @@ public:
   using extent_type = core::Extent2D;
 
   explicit Swapchain(config_type const& config) :
-    handle(make_swapchain(config)), //
-    images(get_images(handle, config)), //
+    swapchain_handle(make_swapchain(config)), //
+    images(get_images(swapchain_handle, config)), //
+    render_semaphores(images.size()), //
     extent(config.imageExtent) //
   { }
 
@@ -146,42 +149,44 @@ public:
   Swapchain& operator=(Swapchain const&) = delete;
 
   Swapchain(Swapchain&& other) noexcept :
-    handle((wait_idle(), std::move(other.handle))), //
+    swapchain_handle((wait_idle(), std::move(other.swapchain_handle))), //
     images(std::move(other.images)), //
-    frame_sync(std::move(other.frame_sync)), //
+    present_semaphores(std::move(other.present_semaphores)), //
+    render_semaphores(std::move(other.render_semaphores)), //
     current_image_index(other.current_image_index), //
-    current_frame_index(other.current_frame_index), //
     extent(other.extent) //
   { }
 
   Swapchain& operator=(Swapchain&& other) noexcept {
-    if (other.handle != nullptr) {
-      handle = std::move(other.handle);
-      extent = other.extent;
-      images = std::move(other.images);
+    if (other.swapchain_handle != nullptr) {
+      swapchain_handle = std::move(other.swapchain_handle);
+      extent           = other.extent;
+      images           = std::move(other.images);
       wait_idle();
-      frame_sync          = std::move(other.frame_sync);
+      present_semaphores  = std::move(other.present_semaphores);
+      render_semaphores   = std::move(other.render_semaphores);
       current_image_index = other.current_image_index;
-      current_frame_index = other.current_frame_index;
     }
     return *this;
   }
 
   ~Swapchain() { //
-    if (handle != nullptr) {
+    if (swapchain_handle != nullptr) {
       wait_idle();
     }
   }
 
   // TODO: Not use exception for flow control
-  [[nodiscard]] image_type next_image(FrameIndex const frame_index) try {
-    auto [result, index] = handle.acquireNextImage( //
+  [[nodiscard]] image_type next_image() try {
+    auto& semaphore = present_semaphores.at(frame_index().value());
+
+    assert(not semaphore.is_signaled());
+    auto [result, index] = swapchain_handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
-      *frame_sync.at(frame_index).present_semaphore.handle(),  //
+      *semaphore.handle(),  //
       nullptr //
     );
     current_image_index = index;
-    current_frame_index = frame_index;
     return std::addressof(images.at(index));
   }
   catch (std::exception const& e) {
@@ -189,12 +194,12 @@ public:
     return nullptr;
   }
 
-  [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const noexcept {
-    return frame_sync.at(frame_index).present_semaphore;
+  [[nodiscard]] Semaphore const& present_semaphore() const noexcept {
+    return present_semaphores.at(frame_index().value());
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const noexcept {
-    return frame_sync.at(frame_index).render_semaphore;
+  [[nodiscard]] Semaphore const& render_semaphore() const noexcept { //
+    return render_semaphores.at(current_image_index);
   }
 
   [[nodiscard]] Resolution resolution() const noexcept {
@@ -205,30 +210,35 @@ public:
   }
 
   void recreate(config_type config) {
-    config.oldSwapchain    = *handle;
+    config.oldSwapchain    = *swapchain_handle;
     handle_type new_handle = make_swapchain(config);
-    handle                 = std::move(new_handle);
+    swapchain_handle       = std::move(new_handle);
     extent                 = config.imageExtent;
-    images                 = get_images(handle, config);
+    images                 = get_images(swapchain_handle, config);
     current_image_index    = 0;
+    render_semaphores      = std::vector<Semaphore>(images.size());
   }
 
   [[nodiscard]] core::PresentInfoKHR present_info() const {
     return core::PresentInfoKHR {
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores    = std::addressof(*render_semaphore(current_frame_index).handle()),
+      .pWaitSemaphores    = std::addressof(*render_semaphores.at(current_image_index).handle()),
       .swapchainCount     = 1,
-      .pSwapchains        = std::addressof(*handle),
+      .pSwapchains        = std::addressof(*swapchain_handle),
       .pImageIndices      = std::addressof(current_image_index),
     };
   }
 
+  [[nodiscard]] ImageIndex image_index() const noexcept { return current_image_index; }
+
+  [[nodiscard]] handle_type const& handle() const noexcept { return swapchain_handle; }
+
 private:
-  handle_type handle;
+  handle_type swapchain_handle;
   std::vector<Image> images;
-  std::array<FrameSync, rf3d::defaults::max_frames_in_flight> frame_sync {};
+  std::array<Semaphore, rf3d::defaults::max_frames_in_flight> present_semaphores {};
+  std::vector<Semaphore> render_semaphores {};
   ImageIndex current_image_index {};
-  FrameIndex current_frame_index {};
   extent_type extent;
 };
 
@@ -257,26 +267,12 @@ public:
   explicit Surface(window_type&& window_surface) : //
     window(std::move(window_surface)), //
     surface_handle(detail::create_surface(window.handle())), //
-    swapchain(
-        detail::create_swapchain_config(
-            surface_handle, //
-            detail::get_surface_info(surface_handle), //
-            window.resolution() //
-        )
-    ) //
-  {
-    // glfwSetWindowUserPointer(window.handle(), this);
-    // window.set_callback<callbacks::WindowEvent::size>( //
-    //     [](Window::handle_type handle [[maybe_unused]], int width,
-    //        int height) { //
-    //       auto* self = static_cast<Surface*>(glfwGetWindowUserPointer(handle));
-    //       self->resize({
-    //         .width  = static_cast<uint16_t>(width),
-    //         .height = static_cast<uint16_t>(height),
-    //       });
-    //     }
-    // );
-  }
+    sc(detail::create_swapchain_config(
+        surface_handle, //
+        detail::get_surface_info(surface_handle), //
+        window.resolution() //
+    )) //
+  { }
 
   Surface(Surface const&) = delete;
 
@@ -295,13 +291,19 @@ public:
 
   // --- Member functions ---
 
-  [[nodiscard]] image_type next_image(FrameIndex const frame_index) {
-    assert(frame_index < defaults::max_frames_in_flight);
-    if (auto* image = swapchain.next_image(frame_index)) {
-      return std::addressof(image->back_buffer);
+  [[nodiscard]] image_type next_image() {
+    if (window_size() == null_resolution) {
+      return nullptr;
     }
-    recreate_swapchain();
-    return nullptr;
+
+    auto* image = sc.next_image();
+
+    if (image == nullptr) {
+      recreate_swapchain();
+      return nullptr;
+    }
+
+    return std::addressof(image->back_buffer);
   }
 
   void resize(resolution_type const& new_resolution) {
@@ -316,7 +318,7 @@ public:
   }
 
   [[nodiscard]] Resolution resolution() const { //
-    return swapchain.resolution();
+    return sc.resolution();
   }
 
   [[nodiscard]] Viewport viewport() const { //
@@ -326,30 +328,32 @@ public:
     };
   }
 
-  [[nodiscard]] Semaphore const& render_semaphore(FrameIndex const frame_index) const { //
-    return swapchain.render_semaphore(frame_index);
+  [[nodiscard]] Semaphore const& render_semaphore() const { //
+    return sc.render_semaphore();
   }
 
-  [[nodiscard]] Semaphore const& present_semaphore(FrameIndex const frame_index) const {
-    return swapchain.present_semaphore(frame_index);
+  [[nodiscard]] Semaphore const& present_semaphore() const { return sc.present_semaphore(); }
+
+  [[nodiscard]] ImageIndex image_index() const { //
+    return sc.image_index();
   }
 
   void present() { //
-    std::ignore = detail::present(swapchain.present_info()).or_else([&](auto const& /*error*/) -> mono::expected<void> {
+    std::ignore = detail::present(sc.present_info()).or_else([&](auto const& /*error*/) -> mono::expected<void> {
       recreate_swapchain();
       return {};
     });
   }
 
-private:
+  [[nodiscard]] swapchain_type const& swapchain() const noexcept { return sc; }
+
   void recreate_swapchain() {
-    // TODO: Refactor busy waiting
-    while (window_size() == null_resolution) {
-      glfwWaitEvents();
+    if (window_size() == null_resolution) {
+      return;
     }
     detail::wait_idle();
     LOG_INFO("Recreating swapchain");
-    swapchain.recreate(
+    sc.recreate(
         detail::create_swapchain_config(
             surface_handle, //
             detail::get_surface_info(surface_handle), //
@@ -358,9 +362,10 @@ private:
     );
   }
 
+private:
   window_type window;
   handle_type surface_handle;
-  swapchain_type swapchain;
+  swapchain_type sc;
 };
 
 } // namespace rf3d::vk

@@ -20,7 +20,7 @@ struct WarningGrabber { };
 
 inline void operator>>(Error const& grabber, [[maybe_unused]] ErrorGrabber const checker) {
   if (grabber.result != core::Result::eSuccess and grabber.result != core::Result::eSuboptimalKHR) {
-    std::string const error = std::format(
+    std::string const error[[]] = std::format(
         "{}:{}:{}: VkResult failed with error code {} ({})", grabber.location.file_name(), grabber.location.line(),
         grabber.location.column(), to_string(grabber.result), error_message(grabber.result)
     );

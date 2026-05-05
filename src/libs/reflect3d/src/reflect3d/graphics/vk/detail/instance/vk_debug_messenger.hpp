@@ -7,6 +7,7 @@ namespace rf3d::vk::detail {
 
 core::DebugUtilsMessageSeverityFlagsEXT constexpr severity_flags(
     core::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose //
+    | core::DebugUtilsMessageSeverityFlagBitsEXT::eInfo //
     | core::DebugUtilsMessageSeverityFlagBitsEXT::eWarning //
     | core::DebugUtilsMessageSeverityFlagBitsEXT::eError //
 );

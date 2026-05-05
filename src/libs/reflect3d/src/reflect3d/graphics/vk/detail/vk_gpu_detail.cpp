@@ -54,14 +54,14 @@ void wait_fences(mono::span<core::Fence> fences, bool const wait_all, std::chron
   get_gpu().logical.wait_for_fences(fences, wait_all, timeout);
 }
 
-void reset_fences(mono::span<core::Fence const> fences) { //
+void reset_fences(mono::span<core::Fence const> const fences) { //
   get_gpu().logical.reset_fences(fences);
 }
 
 void wait_semaphores(
-    mono::span<core::Semaphore const> semaphore, //
-    mono::span<std::uint64_t const> wait_values, //
-    std::chrono::milliseconds timeout //
+    mono::span<core::Semaphore const> const semaphore, //
+    mono::span<std::uint64_t const> const wait_values, //
+    std::chrono::milliseconds const timeout //
 ) {
   get_gpu().logical.wait_semaphores(semaphore, wait_values, timeout);
 }
@@ -83,7 +83,7 @@ void submit_work(SubmitInfo const& submit_info) { //
 }
 
 mono::expected<void> present(core::PresentInfoKHR const& present_info) try {
-  auto const result = get_gpu().queues.present().presentKHR(present_info);
+  auto const result = get_gpu().queues.graphics().presentKHR(present_info);
   if (result == core::Result::eSuboptimalKHR or result == core::Result::eErrorOutOfDateKHR) {
     return mono::unexpected("Swapchain is out of date or suboptimal");
   }

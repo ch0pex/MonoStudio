@@ -12,6 +12,7 @@ TEST_SUITE_BEGIN("Vulkan");
 TEST_CASE("Verify validation layer support") {
   using namespace std::string_literals;
 
+
   // Mock supported validation layers
   std::vector<rf3d::vk::detail::core::LayerProperties> const supported_layers = {
     {
