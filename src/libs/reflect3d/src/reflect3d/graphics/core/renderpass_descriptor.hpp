@@ -53,7 +53,7 @@ struct DrawArea {
   using call_type     = CallType;
 
   viewport_type viewport {};
-  scissor_type scissor {};
+  scissor_type scissor {viewport.rect};
   mono::span<call_type> draw_calls;
 };
 

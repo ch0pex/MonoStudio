@@ -1,6 +1,7 @@
 
 #include "reflect3d/graphics/vk/gpu.hpp"
 #include <tuple>
+#include <vulkan/vulkan_handles.hpp>
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_submit_info.hpp"
@@ -105,7 +106,11 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
                      | std::views::transform(detail::to_native_stage) //
                      | std::ranges::to<std::vector<detail::core::PipelineStageFlags>>();
 
-  submit_info.signal_fence->get().reset();
+  detail::core::Fence fence_handle = nullptr;
+  if (submit_info.signal_fence.has_value()) {
+    submit_info.signal_fence->get().reset();
+    fence_handle = *submit_info.signal_fence->get().handle();
+  }
   detail::submit_work(
       detail::SubmitInfo {
         .wait_semaphores     = wait_semaphores,
@@ -113,7 +118,7 @@ void Gpu::submit_work(SubmitInfo const& submit_info) {
         .command_buffers     = command_buffers,
         .signal_semaphores   = signal_semaphores,
       },
-      *submit_info.signal_fence->get().handle()
+      fence_handle
   );
 }
 

@@ -20,8 +20,9 @@
 
 template<rf3d::RenderHardwareInterface Impl>
 void test_square() {
-  rf3d::rhi::vertex_buffer_t<Impl> vertex_buffer {test::square::vertices};
-  rf3d::rhi::index_buffer_t<Impl> index_buffer {test::square::indices};
+  using namespace rf3d;
+  auto vertex_buffer = rhi::make_buffer<rhi::VertexBuffer, Impl>(test::square::vertices);
+  auto index_buffer  = rhi::make_buffer<rhi::IndexBuffer, Impl>(test::square::indices);
 
   auto pso = test::create_basic_pso<Impl>();
 
@@ -44,7 +45,7 @@ void test_square() {
       .vertex_buffer = vertex_buffer,
       .index_buffer  = index_buffer,
       .draw_params   = {
-          .index_count = static_cast<std::uint32_t>(index_buffer.size()),
+          .index_count = static_cast<std::uint32_t>(test::square::indices.size()),
       },
     });
 
@@ -57,7 +58,6 @@ void test_square() {
               },
           .draw_area = rf3d::DrawArea {
             .viewport   = surface.viewport(),
-            .scissor    = surface.viewport().rect,
             .draw_calls = draw_stream.get_stream(),
           },
         }

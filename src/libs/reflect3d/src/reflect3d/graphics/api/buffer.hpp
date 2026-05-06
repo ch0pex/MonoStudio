@@ -5,7 +5,6 @@
 #include "reflect3d/graphics/core/resource_state.hpp"
 
 #include <concepts>
-#include <span>
 
 namespace rf3d {
 

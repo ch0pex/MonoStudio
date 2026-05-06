@@ -5,7 +5,6 @@
 #include "reflect3d/graphics/vk/detail/vk_instance.hpp"
 #include "reflect3d/graphics/vk/semaphore.hpp"
 #include "reflect3d/graphics/vk/texture.hpp"
-#include "reflect3d/window/utils/callbacks.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 #include "reflect3d/window/window.hpp"
 

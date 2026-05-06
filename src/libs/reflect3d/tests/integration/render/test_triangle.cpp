@@ -17,8 +17,8 @@
 int main() try {
   using namespace rf3d;
 
-  rhi::VertexBuffer vertex_buffer {test::triangle::vertices};
-  rhi::IndexBuffer index_buffer {test::triangle::indices};
+  auto index_buffer  = rhi::make_buffer<rhi::IndexBuffer>(test::triangle::indices);
+  auto vertex_buffer = rhi::make_buffer<rhi::VertexBuffer>(test::triangle::vertices);
   rhi::Surface surface {rf3d::WindowBuilder().default_callbacks().build()};
   auto pso = test::create_basic_pso();
 
@@ -39,7 +39,7 @@ int main() try {
       .vertex_buffer = vertex_buffer,
       .index_buffer  = index_buffer,
       .draw_params   = {
-          .index_count = static_cast<std::uint32_t>(index_buffer.size()),
+          .index_count = static_cast<std::uint32_t>(test::triangle::indices.size()),
       },
     });
 
@@ -52,7 +52,6 @@ int main() try {
               },
           .draw_area = DrawArea {
             .viewport   = surface.viewport(),
-            .scissor    = surface.viewport().rect,
             .draw_calls = draw_stream.get_stream(),
           },
         }

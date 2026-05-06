@@ -15,6 +15,7 @@
 #include <mono/misc/start_lifetime_as.hpp>
 
 #include <cstddef>
+#include <ranges>
 #include <type_traits>
 
 namespace rf3d::vk {
@@ -41,26 +42,24 @@ public:
 
   // --- Constructors ---
 
-  template<mono::meta::trivially_copyable_value T>
-  explicit Buffer(BufferInfo<T> const& config) :
+  // @note: size specified is the garanteed minimum size of the buffer,
+  // but the actual allocated size might be greater due to alignment requirements and padding added by the allocator.
+  explicit Buffer(size_type const size) :
     buffer_allocation(
         detail::allocate_buffer(
             {
-              .size  = std::max(config.capacity, config.data.size_bytes()),
+              .size  = size,
               .usage = detail::to_native<usage::value>(),
             },
             Mem == MemoryProperty::mapped //
                 ? detail::mapped_allocation_create_info
                 : detail::device_local_allocation_create_info
         )
-    ), //
-    element_count(std::max(config.capacity, config.data.size_bytes() / sizeof(T))) //,
+    ) //
   // name(std::format("Buffer<{}>-{}", to_string(usage::value)))  //
   { }
 
-  Buffer(Buffer&& other) noexcept :
-    buffer_allocation(std::exchange(other.buffer_allocation, {})),
-    element_count(std::exchange(other.element_count, 0)) { }
+  Buffer(Buffer&& other) noexcept : buffer_allocation(std::exchange(other.buffer_allocation, {})) { }
 
   Buffer& operator=(Buffer&& other) noexcept {
     if (this != &other) {
@@ -70,7 +69,6 @@ public:
       }
 
       buffer_allocation = std::exchange(other.buffer_allocation, {});
-      element_count     = std::exchange(other.element_count, 0);
     }
     return *this;
   }
@@ -87,7 +85,9 @@ public:
 
   // --- Member functions ---
 
-  [[nodiscard]] std::size_t size() const { return element_count; }
+  // This size might not be the same as the size specified during buffer creation, because of alignment requirements and
+  // padding added by the allocator. However, it will always be greater than or equal to the requested size.
+  [[nodiscard]] std::size_t size() const { return buffer_allocation.allocation_info.size; }
 
   [[nodiscard]] std::size_t size_bytes() const { return buffer_allocation.allocation_info.size; }
 
@@ -98,7 +98,6 @@ protected:
 
 private:
   detail::BufferAllocation buffer_allocation;
-  size_type element_count;
   // std::string name {}; TODO: add debug names to buffers
 };
 
@@ -123,13 +122,9 @@ public:
 
   // --- Constructors ---
 
-  template<mono::meta::trivially_copyable_value T>
-  explicit MappedBuffer(BufferInfo<T> const& config) : Buffer<Usage, MemoryProperty::mapped>(config) {
-    assert(this->allocation().allocation_info.size > 0 && "Mapped memory size must be greater than zero");
-    assert(this->allocation().allocation_info.pMappedData != nullptr && "Mapped memory pointer must not be null");
-
-    auto mapped_data = this->template mapped_data<T>();
-    std::ranges::copy(config.data, std::ranges::begin(mapped_data));
+  explicit MappedBuffer(size_type const size) : Buffer<Usage, MemoryProperty::mapped>(size) {
+    assert(this->allocation().allocation_info.size > 0 and "Mapped memory size must be greater than zero");
+    assert(this->allocation().allocation_info.pMappedData != nullptr and "Mapped memory pointer must not be null");
   }
 
   // --- Member functions ---
@@ -160,29 +155,9 @@ public:
   using host_visible = Buffer<Usage>::host_visible;
 
   // --- Constructors ---
-  template<mono::meta::trivially_copyable_value T>
-  explicit DedicatedBuffer(BufferInfo<T> const& config) : Buffer<Usage, MemoryProperty::dedicated>(config) {
-    // TODO: this is a patch for now, I should implement a proper asynchronous upload mechanism
-    if (config.data.empty()) {
-      return;
-    }
-    BufferCopyRegion const copy_region {.size = config.data.size_bytes()};
-    MappedBuffer<BufferUsage::source> staging_buffer {BufferInfo<T> {.data = config.data}};
-
-    CopyCommandList command_list {};
-    command_list.begin().copy_buffer(staging_buffer, *this, copy_region).end();
-
-    detail::submit_work({.command_buffers = {*command_list.handle()}});
-
-    detail::wait_idle();
-  }
-
-  template<std::ranges::contiguous_range Range>
-    requires mono::meta::trivially_copyable_value<std::ranges::range_value_t<Range>>
-  explicit DedicatedBuffer(Range&& data) :
-    DedicatedBuffer<Usage>(BufferInfo<std::ranges::range_value_t<Range>> {
-      .data = std::forward<Range>(data), .capacity = std::ranges::size(data)
-    }) { }
+  // @note: size specified is the garanteed minimum size of the buffer,
+  // but the actual allocated size might be greater due to alignment requirements and padding added by the allocator.
+  explicit DedicatedBuffer(size_type const size) : Buffer<Usage, MemoryProperty::dedicated>(size) { }
 
   // --- Member functions ---
   [[nodiscard]] state_type current_state() const { return state; }
