@@ -179,8 +179,6 @@ public:
   // TODO: Not use exception for flow control
   [[nodiscard]] image_type next_image() try {
     auto& semaphore = present_semaphores.at(frame_index().value());
-
-    assert(not semaphore.is_signaled());
     auto [result, index] = swapchain_handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
       *semaphore.handle(),  //
