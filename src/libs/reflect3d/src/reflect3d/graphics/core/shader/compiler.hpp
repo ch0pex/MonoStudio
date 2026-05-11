@@ -184,7 +184,9 @@ mono::expected<std::vector<Program>> compile(std::filesystem::path const& shader
   auto entry_points = detail::find_entry_points(module.get());
 
   if (entry_points.empty()) {
-    return mono::unexpected("Couldn't find any entry point in the specified module shader module {}", shader_path);
+    return mono::unexpected(
+        "Couldn't find any entry point in the specified module shader module {}", shader_path.string()
+    );
   }
 
   std::vector<Program> programs;

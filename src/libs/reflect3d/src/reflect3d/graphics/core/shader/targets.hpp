@@ -61,17 +61,68 @@ struct SpirV : ShaderTargetTag {
   };
 };
 
-struct HLSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
+struct HLSL : ShaderTargetTag {
+  static constexpr bool multi_entry_point = false;
 
-struct DXIL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
+  inline static slang::TargetDesc const description = {
+    .format  = SLANG_HLSL,
+    .profile = GlobalSession::instance()->findProfile("sm_6_0"),
+  };
 
-struct GLSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
 
-struct Metal : ShaderTargetTag { static constexpr bool multi_entry_point = true; };
+struct DXIL : ShaderTargetTag {
+  static constexpr bool multi_entry_point = false;
 
-struct WGSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
+  inline static slang::TargetDesc const description = {
+    .format  = SLANG_DXIL,
+    .profile = GlobalSession::instance()->findProfile("sm_6_0"),
+  };
 
-struct CUDA : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
+
+struct GLSL : ShaderTargetTag {
+  static constexpr bool multi_entry_point = false;
+
+  inline static slang::TargetDesc const description = {
+    .format  = SLANG_GLSL,
+    .profile = GlobalSession::instance()->findProfile("glsl_460"),
+  };
+
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
+
+struct Metal : ShaderTargetTag {
+  static constexpr bool multi_entry_point = true;
+
+  inline static slang::TargetDesc const description = {
+    .format = SLANG_METAL,
+  };
+
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
+
+struct WGSL : ShaderTargetTag {
+  static constexpr bool multi_entry_point = false;
+
+  inline static slang::TargetDesc const description = {
+    .format = SLANG_WGSL,
+  };
+
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
+
+struct CUDA : ShaderTargetTag {
+  static constexpr bool multi_entry_point = false;
+
+  inline static slang::TargetDesc const description = {
+    .format = SLANG_CUDA_SOURCE,
+  };
+
+  static constexpr std::array<slang::CompilerOptionEntry, 0> options = {};
+};
 
 
 } // namespace rf3d::shader
