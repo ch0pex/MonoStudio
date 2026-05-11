@@ -17,12 +17,21 @@ template<typename T>
 concept ShaderTarget = std::is_base_of_v<ShaderTargetTag, T> and requires {
   { T::description } -> std::same_as<slang::TargetDesc const&>;
   { T::options } -> std::ranges::range;
+  { T::multi_entry_point } -> std::same_as<bool const&>;
 };
 
+template<typename T>
+concept MultiEntryPointTarget = ShaderTarget<T> and T::multi_entry_point;
+
+template<typename T>
+concept SingleEntryPointTarget = ShaderTarget<T> and not T::multi_entry_point;
+
 struct SpirV : ShaderTargetTag {
+  static constexpr bool multi_entry_point = true;
+
   inline static slang::TargetDesc const description = {
     .format  = SLANG_SPIRV,
-    .profile = GlobalSession::instance()->findProfile("spirv-1_5"),
+    .profile = GlobalSession::instance()->findProfile("spirv_1_5"),
   };
 
   static constexpr std::array options = {
@@ -52,17 +61,17 @@ struct SpirV : ShaderTargetTag {
   };
 };
 
-struct HLSL : ShaderTargetTag { };
+struct HLSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
 
-struct DXIL : ShaderTargetTag { };
+struct DXIL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
 
-struct GLSL : ShaderTargetTag { };
+struct GLSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
 
-struct Metal : ShaderTargetTag { };
+struct Metal : ShaderTargetTag { static constexpr bool multi_entry_point = true; };
 
-struct WGSL : ShaderTargetTag { };
+struct WGSL : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
 
-struct CUDA : ShaderTargetTag { };
+struct CUDA : ShaderTargetTag { static constexpr bool multi_entry_point = false; };
 
 
 } // namespace rf3d::shader

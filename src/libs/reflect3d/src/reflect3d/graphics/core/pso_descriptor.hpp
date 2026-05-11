@@ -15,6 +15,7 @@
 // --- Includes ---
 #include "reflect3d/graphics/core/format.hpp"
 #include "reflect3d/graphics/core/pso_states.hpp"
+#include "reflect3d/graphics/core/shader/program.hpp"
 
 // --- Dependencies ---
 #include <mono/containers/span.hpp>
@@ -30,11 +31,6 @@ namespace rf3d {
 
 using ShaderBytecode = mono::span<char const>;
 
-struct Shader {
-  std::string entry_point {"main"};
-  ShaderBytecode bytecode {};
-};
-
 struct BindingAttribute {
   std::uint32_t offset {};
   Format format {};
@@ -47,8 +43,7 @@ struct VertexBufferBinding {
 
 struct PipelineCreateInfo {
   std::string debug_name {};
-  Shader vertex_shader {};
-  Shader fragment_shader {};
+  shader::Program shader;
   RasterizerState rasterizer_state {};
   mono::span<VertexBufferBinding const> vertex_buffer_bindings {};
 };

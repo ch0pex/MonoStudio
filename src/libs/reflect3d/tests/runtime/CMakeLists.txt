@@ -5,6 +5,7 @@ create_test(input test_input.cpp)
 # --- Graphics ---
 create_test(frame_index graphics/test_frame_index.cpp)
 create_test(shader_compiler graphics/shaders/test_shader_compiler.cpp)
+create_test(shader_reflection graphics/shaders/test_reflection.cpp)
 target_copy_slang_binaries(test_reflect3d_shader_compiler)
 
 create_test(vk_extensions graphics/vk/test_vk_extensions.cpp LABELS "graphics")

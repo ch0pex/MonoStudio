@@ -2,12 +2,15 @@
 
 #include "mono/containers/span.hpp"
 
+#include <slang.h>
+
 #include <cstdint>
 #include <string>
 
 namespace rf3d::shader {
 
 using Bytecode = mono::span<char const>;
+using Layout   = slang::ProgramLayout;
 
 enum class Stage : std::uint8_t {
   vertex = 0,

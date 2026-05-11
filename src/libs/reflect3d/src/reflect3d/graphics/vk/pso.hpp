@@ -14,24 +14,12 @@ namespace rf3d::vk {
 
 namespace detail {
 
-inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
-  // --- Shader stages ---
-  Shader vertex_shader {create_info.vertex_shader.bytecode};
-  Shader fragment_shader {create_info.fragment_shader.bytecode};
-
-  std::array shader_stages = {
-    vertex_shader.stage(core::ShaderStageFlagBits::eVertex, create_info.vertex_shader.entry_point),
-    fragment_shader.stage(core::ShaderStageFlagBits::eFragment, create_info.fragment_shader.entry_point),
-  };
-
-  // --- Vertex input ---
+inline auto create_vertex_input_state(mono::span<VertexBufferBinding const> const vertex_bindings) {
   std::vector<core::VertexInputBindingDescription> binding_descriptions;
   std::vector<core::VertexInputAttributeDescription> attribute_descriptions;
 
   std::uint32_t location = 0;
-  for (std::uint32_t binding = 0; binding < create_info.vertex_buffer_bindings.size(); ++binding) {
-    auto const& vb = create_info.vertex_buffer_bindings[binding];
-
+  for (std::uint32_t binding = 0; auto const& vb: vertex_bindings) {
     binding_descriptions.push_back({
       .binding   = binding,
       .stride    = vb.byte_stride,
@@ -48,12 +36,24 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
     }
   }
 
-  core::PipelineVertexInputStateCreateInfo vertex_input_info {
+  return core::PipelineVertexInputStateCreateInfo {
     .vertexBindingDescriptionCount   = static_cast<std::uint32_t>(binding_descriptions.size()),
     .pVertexBindingDescriptions      = binding_descriptions.data(),
     .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(attribute_descriptions.size()),
     .pVertexAttributeDescriptions    = attribute_descriptions.data(),
   };
+}
+
+
+inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
+  Shader const shader {create_info.shader.bytecode()};
+
+  std::array const shader_stages = {
+    shader.stage(core::ShaderStageFlagBits::eVertex, "main"),
+    shader.stage(core::ShaderStageFlagBits::eFragment, "main"),
+  };
+
+  auto const vertex_input_info = create_vertex_input_state(create_info.vertex_buffer_bindings);
 
   // --- Fixed-function state from RasterizerState ---
   auto const input_assembly = to_native_input_assembly(create_info.rasterizer_state);
@@ -113,10 +113,6 @@ public:
   using handle_type = detail::raii::Pipeline;
 
   explicit PipelineState(config_type const& config) : pso_handle(detail::create_pipeline(config)) { }
-
-  PipelineState(PipelineState const& other) = delete;
-
-  PipelineState& operator=(PipelineState const& other) = delete;
 
   [[nodiscard]] PsoType type() const { // NOLINT
     return PsoType::graphics; // TODO: support compute pipelines

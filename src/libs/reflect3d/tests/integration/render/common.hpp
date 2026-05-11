@@ -41,15 +41,15 @@ inline constexpr std::array<std::uint16_t, 6> indices = {0, 1, 2, 2, 3, 0};
 
 } // namespace square
 
-inline auto const shader_path     = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
-inline auto const shader_bytecode = rf3d::shader::compile_module<rf3d::shader::SpirV>(shader_path);
+inline auto const shader_path = std::filesystem::path {mono::assets_path} / "shaders" / "basic_shader.slang";
+inline auto const shader      = rf3d::shader::compile<rf3d::shader::SpirV>(shader_path).value();
+
 template<rf3d::RenderHardwareInterface Rhi = rf3d::impl::DefaultBackend>
 rf3d::rhi::pipeline_state_t<Rhi> create_basic_pso() {
   return rf3d::rhi::pipeline_state_t<Rhi> {
     rf3d::PipelineCreateInfo {
       .debug_name             = "Triangle PSO",
-      .vertex_shader          = {.bytecode = shader_bytecode},
-      .fragment_shader        = {.bytecode = shader_bytecode},
+      .shader                 = shader,
       .rasterizer_state       = {.cull_mode = rf3d::CullMode::none},
       .vertex_buffer_bindings = {
         {

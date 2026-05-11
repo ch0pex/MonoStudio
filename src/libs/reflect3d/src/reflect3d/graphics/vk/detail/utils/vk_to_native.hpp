@@ -282,6 +282,8 @@ constexpr core::PipelineStageFlags to_native_stage(PsoStage const stage) noexcep
       return core::PipelineStageFlagBits::eComputeShader;
     case PsoStage::color_attachment_output:
       return core::PipelineStageFlagBits::eColorAttachmentOutput;
+    case PsoStage::count:
+      break;
   }
   return core::PipelineStageFlagBits::eAllCommands;
 }

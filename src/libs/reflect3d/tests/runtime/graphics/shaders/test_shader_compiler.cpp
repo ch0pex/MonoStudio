@@ -9,13 +9,14 @@ TEST_SUITE_BEGIN("Shaders");
 TEST_CASE("Compile entire module") {
   using namespace rf3d::shader;
 
-  auto const bytecode =
-      compile_module<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/hardcoded_triangle.slang");
+  auto const shader  = compile<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/hardcoded_triangle.slang");
+  auto const shader2 = compile<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang");
 
-  auto const bytecode2 =
-      compile_module<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang");
-  CHECK_FALSE(bytecode.empty());
-  CHECK_FALSE(bytecode2.empty());
+
+  CHECK(shader.has_value());
+  CHECK(shader2.has_value());
+  CHECK_FALSE(shader->bytecode().empty());
+  CHECK_FALSE(shader2->bytecode().empty());
 }
 
 TEST_SUITE_END();

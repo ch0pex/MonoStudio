@@ -50,13 +50,13 @@ private:
 };
 
 inline Shader::byte_code_type load_shader_bytecode(std::filesystem::path const& file_path) {
-  auto const bytecode = shader::compile_module<shader::SpirV>(file_path);
+  auto const program = shader::compile<shader::SpirV>(file_path);
 
-  if (bytecode.empty()) {
-    throw std::runtime_error("Failed to open shader file: " + file_path.string());
+  if (not program) {
+    throw std::runtime_error(std::string("Failed to load shader bytecode: ") + program.error().what());
   }
 
-  return bytecode;
+  return program->bytecode();
 }
 
 

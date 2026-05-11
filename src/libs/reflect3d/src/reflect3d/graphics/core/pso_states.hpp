@@ -22,6 +22,8 @@ enum class PsoStage : std::uint8_t {
   pixel_shader,
   compute_shader,
   color_attachment_output,
+
+  count,
 };
 
 enum class ComparisonFunction : std::uint8_t {
