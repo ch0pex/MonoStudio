@@ -17,8 +17,8 @@ namespace rf3d::vk {
 namespace detail {
 
 inline constexpr std::array dynamic_states_list = {
-  core::DynamicState::eViewport,
-  core::DynamicState::eScissor,
+  core::DynamicState::eViewportWithCount,
+  core::DynamicState::eScissorWithCount,
   core::DynamicState::ePrimitiveTopology,
 };
 
@@ -112,7 +112,6 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
       .pStages             = shader_stages.data(),
       .pVertexInputState   = std::addressof(vertex_input_info),
       .pInputAssemblyState = std::addressof(input_assembly),
-      .pViewportState      = std::addressof(viewport_state),
       .pRasterizationState = std::addressof(rasterizer),
       .pMultisampleState   = std::addressof(defaults::multisampling),
       .pDepthStencilState  = has_depth ? std::addressof(depth_stencil) : nullptr,

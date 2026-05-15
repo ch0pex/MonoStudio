@@ -242,14 +242,14 @@ public:
   CommandList& set_viewport(Viewport const& viewport)
     requires(list_type::value == graphics)
   {
-    cmd_buffer.setViewport(0, detail::to_native(viewport));
+    cmd_buffer.setViewportWithCount(detail::to_native(viewport));
     return *this;
   }
 
   CommandList& set_scissor(Rect2D const& scissor)
     requires(list_type::value == graphics)
   {
-    cmd_buffer.setScissor(0, detail::to_native(scissor));
+    cmd_buffer.setScissorWithCount(detail::to_native(scissor));
     return *this;
   }
 

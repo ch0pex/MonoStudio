@@ -60,9 +60,10 @@ inline std::vector<std::string_view> get_required_extensions() {
                     | std::views::transform([](auto const* ext) { return std::string_view {ext}; }) //
                     | std::ranges::to<std::vector>();
 
+  // extensions.emplace_back(core::EXTExtendedDynamicState2ExtensionName);
 
   for (auto const& ext: extensions) {
-    LOG_INFO("GLFW required Vulkan extension: {}", ext);
+    LOG_INFO("Required Vulkan extension: {}", ext);
   }
 
   if constexpr (enable_validation_layers) {

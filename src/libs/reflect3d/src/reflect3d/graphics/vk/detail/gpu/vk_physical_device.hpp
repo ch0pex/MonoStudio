@@ -16,6 +16,7 @@ inline std::vector<char const*> physical_device_extensions() {
     core::KHRSpirv14ExtensionName,
     core::KHRSynchronization2ExtensionName,
     core::KHRCreateRenderpass2ExtensionName,
+    core::EXTExtendedDynamicState3ExtensionName,
   };
 }
 
