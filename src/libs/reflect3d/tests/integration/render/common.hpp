@@ -45,21 +45,12 @@ inline auto const shader_path = std::filesystem::path {mono::assets_path} / "sha
 inline auto const shader      = rf3d::shader::compile<rf3d::shader::SpirV>(shader_path).value();
 
 template<rf3d::RenderHardwareInterface Rhi = rf3d::impl::DefaultBackend>
-rf3d::rhi::pipeline_state_t<Rhi> create_basic_pso() {
+auto create_basic_pso() {
   return rf3d::rhi::pipeline_state_t<Rhi> {
     rf3d::PipelineCreateInfo {
-      .debug_name             = "Triangle PSO",
-      .shader                 = shader,
-      .rasterizer_state       = {.cull_mode = rf3d::CullMode::none},
-      .vertex_buffer_bindings = {
-        {
-          .byte_stride = sizeof(Vertex),
-          .attributes  = {
-            {.offset = offsetof(Vertex, position), .format = rf3d::Format::rgb32_sfloat},
-            {.offset = offsetof(Vertex, color), .format = rf3d::Format::rgba32_sfloat},
-          },
-        },
-      },
+      .debug_name       = "Triangle PSO",
+      .shader           = shader,
+      .rasterizer_state = {.cull_mode = rf3d::CullMode::none},
     },
   };
 }

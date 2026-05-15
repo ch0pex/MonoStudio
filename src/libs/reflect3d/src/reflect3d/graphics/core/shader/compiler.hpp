@@ -124,13 +124,15 @@ mono::expected<Program> compile(std::filesystem::path const& shader_path) {
   Slang::ComPtr<IModule> const module = detail::load_module<Target>(shader_path.string());
 
   if (not module) {
-    return mono::unexpected("Failed to load module.");
+    return mono::unexpected("Failed to load module {}.", shader_path.string());
   }
 
-  auto entry_points = detail::find_entry_points(module.get());
+  auto const entry_points = detail::find_entry_points(module.get());
 
   if (entry_points.empty()) {
-    return mono::unexpected("Couldn't find any entry point in the specified module shader module {}", shader_path);
+    return mono::unexpected(
+        "Couldn't find any entry point in the specified module shader module {}", shader_path.string()
+    );
   }
 
   std::vector<IComponentType*> components = {module.get()};
@@ -152,7 +154,7 @@ mono::expected<Program> compile(std::filesystem::path const& shader_path) {
   }
 
   if (not code) {
-    return mono::unexpected("Failed to generate shader code.");
+    return mono::unexpected("Failed to generate shader code, for {}.", shader_path.string());
   }
 
   return Program {
@@ -178,10 +180,10 @@ mono::expected<std::vector<Program>> compile(std::filesystem::path const& shader
   Slang::ComPtr<IModule> const module = detail::load_module<Target>(shader_path.string());
 
   if (not module) {
-    return mono::unexpected("Failed to load module.");
+    return mono::unexpected("Failed to load module: {}", shader_path.string());
   }
 
-  auto entry_points = detail::find_entry_points(module.get());
+  auto const entry_points = detail::find_entry_points(module.get());
 
   if (entry_points.empty()) {
     return mono::unexpected(
@@ -211,7 +213,7 @@ mono::expected<std::vector<Program>> compile(std::filesystem::path const& shader
     linked->getTargetCode(0, code.writeRef(), diagnosticBlob.writeRef());
 
     if (not code) {
-      return mono::unexpected("Failed to generate shader code for entry point.");
+      return mono::unexpected("Failed to generate shader code {}", shader_path.string());
     }
 
     programs.emplace_back(

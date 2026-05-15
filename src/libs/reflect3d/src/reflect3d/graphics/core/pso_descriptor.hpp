@@ -23,7 +23,9 @@
 // --- External dependencies ---
 
 // --- STD ---
+#include <algorithm>
 #include <string>
+#include <vector>
 
 // --- System ---
 
@@ -34,18 +36,34 @@ using ShaderBytecode = mono::span<char const>;
 struct BindingAttribute {
   std::uint32_t offset {};
   Format format {};
+
+  friend bool operator==(BindingAttribute const& lhs, BindingAttribute const& rhs) {
+    return lhs.offset == rhs.offset and lhs.format == rhs.format;
+  }
 };
 
 struct VertexBufferBinding {
   std::uint32_t byte_stride {};
-  mono::span<BindingAttribute const> attributes {};
+  std::vector<BindingAttribute> attributes {};
+
+  friend bool operator==(VertexBufferBinding const& lhs, VertexBufferBinding const& rhs) {
+    return lhs.byte_stride == rhs.byte_stride and std::ranges::equal(lhs.attributes, rhs.attributes);
+  }
 };
 
+/**
+ * @brief Pipeline creation descriptor that contains all the necessary information to create a graphics pipeline state
+ * object.
+ *
+ * This descriptor is designed to be backend-agnostic, containing only the information that is relevant for pipeline.
+ * Bindings can be either be left empty for automatic extraction from shader reflection, or explicitly provided to
+ * override the reflection results.
+ */
 struct PipelineCreateInfo {
   std::string debug_name {};
   shader::Program shader;
   RasterizerState rasterizer_state {};
-  mono::span<VertexBufferBinding const> vertex_buffer_bindings {};
+  std::vector<VertexBufferBinding> vertex_buffer_bindings {};
 };
 
 } // namespace rf3d

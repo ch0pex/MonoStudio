@@ -24,7 +24,6 @@
 // --- STD ---
 #include <ranges>
 #include <stdexcept>
-#include <vector>
 
 // --- System ---
 
@@ -34,7 +33,6 @@ namespace rf3d::shader {
 struct ProgramException : public std::runtime_error {
   using std::runtime_error::runtime_error;
 };
-
 
 class Program {
 public:

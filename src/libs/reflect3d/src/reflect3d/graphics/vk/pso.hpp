@@ -10,41 +10,73 @@
 
 #include <vector>
 
+#include "reflect3d/graphics/core/shader/reflection.hpp"
+
 namespace rf3d::vk {
 
 namespace detail {
 
-inline auto create_vertex_input_state(mono::span<VertexBufferBinding const> const vertex_bindings) {
+inline constexpr std::array dynamic_states_list = {
+  core::DynamicState::eViewport,
+  core::DynamicState::eScissor,
+  core::DynamicState::ePrimitiveTopology,
+};
+
+inline constexpr core::PipelineDynamicStateCreateInfo dynamic_state_info {
+  .dynamicStateCount = static_cast<std::uint32_t>(dynamic_states_list.size()),
+  .pDynamicStates    = dynamic_states_list.data(),
+};
+
+
+/**
+ * @brief Translates API agnostic vertex bindings to vulkan native bindings
+ *
+ * @param vertex_bindings API agnostic vertex binding descriptors
+ * @return Vulkan Vertex Binding and Attributes
+ */
+inline auto translate_vertex_bindings(mono::span<VertexBufferBinding const> const vertex_bindings) {
   std::vector<core::VertexInputBindingDescription> binding_descriptions;
   std::vector<core::VertexInputAttributeDescription> attribute_descriptions;
 
   std::uint32_t location = 0;
-  for (std::uint32_t binding = 0; auto const& vb: vertex_bindings) {
+  for (auto [binding, vb]: vertex_bindings | std::views::enumerate) {
     binding_descriptions.push_back({
-      .binding   = binding,
+      .binding   = static_cast<std::uint32_t>(binding),
       .stride    = vb.byte_stride,
       .inputRate = core::VertexInputRate::eVertex,
     });
 
-    for (auto const& attr: vb.attributes) {
+    for (auto const& [offset, format]: vb.attributes) {
       attribute_descriptions.push_back({
         .location = location++,
-        .binding  = binding,
-        .format   = to_native(attr.format),
-        .offset   = attr.offset,
+        .binding  = static_cast<std::uint32_t>(binding),
+        .format   = to_native(format),
+        .offset   = offset,
       });
     }
   }
 
-  return core::PipelineVertexInputStateCreateInfo {
-    .vertexBindingDescriptionCount   = static_cast<std::uint32_t>(binding_descriptions.size()),
-    .pVertexBindingDescriptions      = binding_descriptions.data(),
-    .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(attribute_descriptions.size()),
-    .pVertexAttributeDescriptions    = attribute_descriptions.data(),
+  return std::make_tuple(std::move(binding_descriptions), std::move(attribute_descriptions));
+}
+
+inline core::PipelineVertexInputStateCreateInfo create_vertex_input_state(
+    mono::span<core::VertexInputBindingDescription const> const vertex_bindings,
+    mono::span<core::VertexInputAttributeDescription const> const attributes
+) {
+  return {
+    .vertexBindingDescriptionCount   = static_cast<std::uint32_t>(vertex_bindings.size()),
+    .pVertexBindingDescriptions      = vertex_bindings.data(),
+    .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(attributes.size()),
+    .pVertexAttributeDescriptions    = attributes.data(),
   };
 }
 
-
+/**
+ * @brief Creates a Vulkan graphics pipeline state object from an API agnostic pipeline creation descriptor.
+ *
+ * @param create_info /PSO description
+ * @return Vulkan PSO
+ */
 inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
   Shader const shader {create_info.shader.bytecode()};
 
@@ -53,7 +85,12 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
     shader.stage(core::ShaderStageFlagBits::eFragment, "main"),
   };
 
-  auto const vertex_input_info = create_vertex_input_state(create_info.vertex_buffer_bindings);
+  auto const vertex_bindings_info = create_info.vertex_buffer_bindings.empty()
+                                        ? shader::find_vertex_bindings(create_info.shader)
+                                        : create_info.vertex_buffer_bindings;
+
+  auto const [bindings, attributes] = translate_vertex_bindings(vertex_bindings_info);
+  auto const vertex_input_info      = create_vertex_input_state(bindings, attributes);
 
   // --- Fixed-function state from RasterizerState ---
   auto const input_assembly = to_native_input_assembly(create_info.rasterizer_state);
@@ -62,25 +99,12 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
 
   bool const has_depth = create_info.rasterizer_state.depth_mode != DepthMode::none;
 
-  // --- Dynamic state ---
-  std::array dynamic_states_list = {
-    core::DynamicState::eViewport,
-    core::DynamicState::eScissor,
-    core::DynamicState::ePrimitiveTopology,
-  };
-
-  core::PipelineDynamicStateCreateInfo dynamic_state_info {
-    .dynamicStateCount = static_cast<std::uint32_t>(dynamic_states_list.size()),
-    .pDynamicStates    = dynamic_states_list.data(),
-  };
-
   // --- Pipeline layout ---
   raii::PipelineLayout pipeline_layout = make_pipeline_layout(defaults::pipeline_layout_info);
 
   // --- Assemble pipeline ---
   core::PipelineViewportStateCreateInfo viewport_state {.viewportCount = 1, .scissorCount = 1};
-
-  core::Format color_format = core::Format::eB8G8R8A8Srgb;
+  auto color_format = core::Format::eB8G8R8A8Srgb;
 
   core::StructureChain<core::GraphicsPipelineCreateInfo, core::PipelineRenderingCreateInfo> pipeline_info_chain {
     {

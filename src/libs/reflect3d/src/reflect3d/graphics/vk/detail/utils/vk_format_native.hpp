@@ -54,6 +54,16 @@ constexpr core::Format to_native(Format const format) noexcept {
     case Format::rgb32_sfloat:      return core::Format::eR32G32B32Sfloat;
     case Format::rgba32_sfloat:     return core::Format::eR32G32B32A32Sfloat;
 
+    // --- 32-bit Integer ---
+    case Format::r32_uint:          return core::Format::eR32Uint;
+    case Format::rg32_uint:         return core::Format::eR32G32Uint;
+    case Format::rgb32_uint:        return core::Format::eR32G32B32Uint;
+    case Format::rgba32_uint:       return core::Format::eR32G32B32A32Uint;
+    case Format::r32_sint:          return core::Format::eR32Sint;
+    case Format::rg32_sint:         return core::Format::eR32G32Sint;
+    case Format::rgb32_sint:        return core::Format::eR32G32B32Sint;
+    case Format::rgba32_sint:       return core::Format::eR32G32B32A32Sint;
+
     // --- Packed ---
     case Format::rgb10a2_unorm:     return core::Format::eA2B10G10R10UnormPack32;
     case Format::r11f_g11f_b10f:    return core::Format::eB10G11R11UfloatPack32;

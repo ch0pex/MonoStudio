@@ -1,6 +1,8 @@
 struct VSInput {
-    float3 inPosition;
-    float4 inColor;
+    float2 inPosition;
+    float3 inColor;
+    float2 inTexCoord;
+    uint inInstanceID;
 };
 
 struct VSOutput
@@ -12,8 +14,8 @@ struct VSOutput
 [shader("vertex")]
 VSOutput vertMain(VSInput input) {
     VSOutput output;
-    output.pos = float4(input.inPosition, 1.0);
-    output.color = input.inColor.xyz;
+    output.pos = float4(input.inPosition, 0.0, 1.0);
+    output.color = input.inColor;
     return output;
 }
 

@@ -36,11 +36,11 @@ public:
   explicit Shader(byte_code_type const bytecode) :
     code(bytecode), module(make_shader_module(detail::create_shader_module_info(code))) { }
 
-  [[nodiscard]] stage_type stage(core::ShaderStageFlagBits const stage, std::string const& entry_point) const {
+  [[nodiscard]] stage_type stage(core::ShaderStageFlagBits const stage, char const* entry_point) const {
     return stage_type {
       .stage  = stage,
       .module = *module,
-      .pName  = entry_point.c_str(),
+      .pName  = entry_point,
     };
   }
 

@@ -51,6 +51,16 @@ enum class Format : std::uint8_t {
   rgb32_sfloat,
   rgba32_sfloat,
 
+  // --- 32-bit Integer ---
+  r32_uint,
+  rg32_uint,
+  rgb32_uint,
+  rgba32_uint,
+  r32_sint,
+  rg32_sint,
+  rgb32_sint,
+  rgba32_sint,
+
   // --- High Precision / G-Buffer ---
   rgb10a2_unorm, // World Normals
   r11f_g11f_b10f, // Shared exponent HDR
@@ -111,5 +121,70 @@ enum class Format : std::uint8_t {
   d32_float_s8_uint,
   s8_uint
 };
+
+inline std::uint32_t format_byte_size(Format const format) {
+  switch (format) {
+    case Format::r8_unorm:
+    case Format::r8_snorm:
+    case Format::r8_uint:
+    case Format::r8_sint:
+      return 1;
+    case Format::rg8_unorm:
+    case Format::rg8_snorm:
+    case Format::rg8_uint:
+    case Format::rg8_sint:
+      return 2;
+    case Format::rgb8_unorm:
+    case Format::rgb8_srgb:
+      return 3;
+    case Format::rgba8_unorm:
+    case Format::bgr8_unorm:
+    case Format::rgba8_srgb:
+    case Format::bgra8_srgb:
+      return 4;
+    case Format::r16_unorm:
+    case Format::r16_snorm:
+    case Format::r16_uint:
+    case Format::r16_sint:
+    case Format::r16_sfloat:
+      return 2;
+    case Format::rg16_unorm:
+    case Format::rg16_snorm:
+    case Format::rg16_uint:
+    case Format::rg16_sint:
+    case Format::rg16_sfloat:
+      return 4;
+    case Format::rgb16_sfloat:
+      return 6;
+    case Format::rgba16_unorm:
+    case Format::rgba16_snorm:
+    case Format::rgba16_uint:
+    case Format::rgba16_sint:
+    case Format::rgba16_sfloat:
+      return 8;
+    case Format::r32_sfloat:
+      return 4;
+    case Format::rg32_sfloat:
+      return 8;
+    case Format::rgb32_sfloat:
+      return 12;
+    case Format::rgba32_sfloat:
+      return 16;
+    case Format::r32_uint:
+    case Format::r32_sint:
+      return 4;
+    case Format::rg32_uint:
+    case Format::rg32_sint:
+      return 8;
+    case Format::rgb32_uint:
+    case Format::rgb32_sint:
+      return 12;
+    case Format::rgba32_uint:
+    case Format::rgba32_sint:
+      return 16;
+    default:
+      return 0;
+  }
+}
 
 } // namespace rf3d
