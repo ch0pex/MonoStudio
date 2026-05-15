@@ -51,6 +51,14 @@ struct VertexBufferBinding {
   }
 };
 
+struct RenderPassLayout {
+  std::vector<Format> color_attachments {};
+  std::optional<Format> depth_attachment {};
+  std::uint32_t sample_count {};
+  std::uint32_t view_mask {};
+};
+
+
 /**
  * @brief Pipeline creation descriptor that contains all the necessary information to create a graphics pipeline state
  * object.
@@ -63,6 +71,9 @@ struct PipelineCreateInfo {
   std::string debug_name {};
   shader::Program shader;
   RasterizerState rasterizer_state {};
+  RenderPassLayout render_pass_layout {};
+
+  // --- Reflected by default ---
   std::vector<VertexBufferBinding> vertex_buffer_bindings {};
 };
 

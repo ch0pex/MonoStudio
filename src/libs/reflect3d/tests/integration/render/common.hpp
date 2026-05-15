@@ -48,9 +48,12 @@ template<rf3d::RenderHardwareInterface Rhi = rf3d::impl::DefaultBackend>
 auto create_basic_pso() {
   return rf3d::rhi::pipeline_state_t<Rhi> {
     rf3d::PipelineCreateInfo {
-      .debug_name       = "Triangle PSO",
-      .shader           = shader,
-      .rasterizer_state = {.cull_mode = rf3d::CullMode::none},
+      .debug_name         = "Triangle PSO",
+      .shader             = shader,
+      .rasterizer_state   = {.cull_mode = rf3d::CullMode::none},
+      .render_pass_layout = {
+        .color_attachments = {rf3d::Format::bgra8_srgb}, // Hardcoding default surface format
+      },
     },
   };
 }

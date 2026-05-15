@@ -2,6 +2,7 @@
 
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/core/primitive_types.hpp"
+#include "reflect3d/graphics/vk/detail/utils/vk_format_native.hpp"
 #include "reflect3d/graphics/vk/detail/vk_instance.hpp"
 #include "reflect3d/graphics/vk/semaphore.hpp"
 #include "reflect3d/graphics/vk/texture.hpp"
@@ -9,9 +10,9 @@
 #include "reflect3d/window/window.hpp"
 
 #include <chrono>
-#include <mono/containers/static_vector.hpp>
 
 #include <array>
+
 
 namespace rf3d::vk {
 
@@ -32,10 +33,11 @@ inline uint32_t choose_swap_min_image_count(core::SurfaceCapabilitiesKHR const& 
 }
 
 inline core::SurfaceFormatKHR choose_surface_format(std::vector<core::SurfaceFormatKHR> const& availableFormats) {
-  assert(!availableFormats.empty());
+  assert(not availableFormats.empty());
   auto const formatIt = std::ranges::find_if(availableFormats, [](auto const& format) {
-    return format.format == core::Format::eB8G8R8A8Srgb && format.colorSpace == core::ColorSpaceKHR::eSrgbNonlinear;
+    return format.format == core::Format::eB8G8R8A8Srgb and format.colorSpace == core::ColorSpaceKHR::eSrgbNonlinear;
   });
+
   return formatIt != availableFormats.end() ? *formatIt : availableFormats[0];
 }
 
@@ -44,9 +46,6 @@ inline core::PresentModeKHR choose_present_mode(std::vector<core::PresentModeKHR
     return presentMode == core::PresentModeKHR::eFifo;
   }));
 
-  // return core::PresentModeKHR::eFifo; // FIFO is guaranteed to be available, so we can return it immediately if
-  // mailbox
-  //                                     // is not supported
   bool const support_mailbox = std::ranges::any_of(availablePresentModes, [](core::PresentModeKHR const value) {
     return core::PresentModeKHR::eMailbox == value;
   });
@@ -136,11 +135,11 @@ public:
   using config_type = core::SwapchainCreateInfoKHR;
   using extent_type = core::Extent2D;
 
-  explicit Swapchain(config_type const& config) :
-    swapchain_handle(make_swapchain(config)), //
-    images(get_images(swapchain_handle, config)), //
+  explicit Swapchain(config_type const& conf) :
+    swapchain_handle(make_swapchain(conf)), //
+    images(get_images(swapchain_handle, conf)), //
     render_semaphores(images.size()), //
-    extent(config.imageExtent) //
+    config(conf) //
   { }
 
   Swapchain(Swapchain const&) = delete;
@@ -153,13 +152,13 @@ public:
     present_semaphores(std::move(other.present_semaphores)), //
     render_semaphores(std::move(other.render_semaphores)), //
     current_image_index(other.current_image_index), //
-    extent(other.extent) //
+    config(other.config) //
   { }
 
   Swapchain& operator=(Swapchain&& other) noexcept {
     if (other.swapchain_handle != nullptr) {
       swapchain_handle = std::move(other.swapchain_handle);
-      extent           = other.extent;
+      config           = other.config;
       images           = std::move(other.images);
       wait_idle();
       present_semaphores  = std::move(other.present_semaphores);
@@ -177,7 +176,7 @@ public:
 
   // TODO: Not use exception for flow control
   [[nodiscard]] image_type next_image() try {
-    auto& semaphore = present_semaphores.at(frame_index().value());
+    auto const& semaphore = present_semaphores.at(frame_index().value());
     auto [result, index] = swapchain_handle.acquireNextImage( //
       rf3d::defaults::wait_timeout.count(),  //
       *semaphore.handle(),  //
@@ -201,19 +200,19 @@ public:
 
   [[nodiscard]] Resolution resolution() const noexcept {
     return Resolution {
-      .width  = static_cast<std::uint16_t>(extent.width),
-      .height = static_cast<std::uint16_t>(extent.height),
+      .width  = static_cast<std::uint16_t>(config.imageExtent.width),
+      .height = static_cast<std::uint16_t>(config.imageExtent.height),
     };
   }
 
-  void recreate(config_type config) {
-    config.oldSwapchain    = *swapchain_handle;
-    handle_type new_handle = make_swapchain(config);
-    swapchain_handle       = std::move(new_handle);
-    extent                 = config.imageExtent;
-    images                 = get_images(swapchain_handle, config);
-    current_image_index    = 0;
-    render_semaphores      = std::vector<Semaphore>(images.size());
+  void recreate(config_type new_config) {
+    new_config.oldSwapchain = *swapchain_handle;
+    handle_type new_handle  = make_swapchain(config);
+    swapchain_handle        = std::move(new_handle);
+    config                  = new_config;
+    images                  = get_images(swapchain_handle, config);
+    current_image_index     = 0;
+    render_semaphores       = std::vector<Semaphore>(images.size());
   }
 
   [[nodiscard]] core::PresentInfoKHR present_info() const {
@@ -230,13 +229,15 @@ public:
 
   [[nodiscard]] handle_type const& handle() const noexcept { return swapchain_handle; }
 
+  [[nodiscard]] Format format() const noexcept { return from_native_format(config.imageFormat); }
+
 private:
   handle_type swapchain_handle;
   std::vector<Image> images;
   std::array<Semaphore, rf3d::defaults::max_frames_in_flight> present_semaphores {};
   std::vector<Semaphore> render_semaphores {};
   ImageIndex current_image_index {};
-  extent_type extent;
+  config_type config;
 };
 
 } // namespace detail

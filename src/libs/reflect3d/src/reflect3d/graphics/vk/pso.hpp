@@ -72,6 +72,33 @@ inline core::PipelineVertexInputStateCreateInfo create_vertex_input_state(
 }
 
 /**
+ * Translates attachment layouts from Reflect3d types to Vulkan types
+ *
+ * @note This function checks that there is at least one attachment (color or depth). However, it is possible to
+ * create a non-standard pipeline without either of them. For now, we do not support that scenario; if it becomes
+ * common, we will consider supporting it later. This check could potentially be improved by using shader reflection
+ * to verify that the shader does not expect any attachments, but for now, we simply require at least one to be present.
+ *
+ * @param render_pass_layout Render pass layout description
+ * @return Native attachment layouts for vulkan
+ */
+inline auto translate_attachment_layouts(RenderPassLayout const& render_pass_layout) {
+  // Ensure at least one attachment (color or depth) is provided
+  if (render_pass_layout.color_attachments.empty() and not render_pass_layout.depth_attachment.has_value()) {
+    throw std::runtime_error {"At least one color or depth attachment format must be specified"};
+  }
+
+  auto color_attachments = render_pass_layout.color_attachments //
+                           | std::views::transform(to_native_format) //
+                           | std::ranges::to<std::vector>(); //
+  auto depth_attachment = render_pass_layout.depth_attachment.has_value() //
+                              ? to_native_format(render_pass_layout.depth_attachment.value()) //
+                              : core::Format::eUndefined; //
+
+  return std::make_tuple(std::move(color_attachments), std::move(depth_attachment));
+}
+
+/**
  * @brief Creates a Vulkan graphics pipeline state object from an API agnostic pipeline creation descriptor.
  *
  * @param create_info /PSO description
@@ -85,27 +112,23 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
     shader.stage(core::ShaderStageFlagBits::eFragment, "main"),
   };
 
-  auto const vertex_bindings_info = create_info.vertex_buffer_bindings.empty()
-                                        ? shader::find_vertex_bindings(create_info.shader)
-                                        : create_info.vertex_buffer_bindings;
-
-  auto const [bindings, attributes] = translate_vertex_bindings(vertex_bindings_info);
-  auto const vertex_input_info      = create_vertex_input_state(bindings, attributes);
-
   // --- Fixed-function state from RasterizerState ---
   auto const input_assembly = to_native_input_assembly(create_info.rasterizer_state);
   auto const rasterizer     = to_native_rasterizer(create_info.rasterizer_state);
   auto const depth_stencil  = to_native_depth_stencil(create_info.rasterizer_state);
+  bool const has_depth      = create_info.rasterizer_state.depth_mode != DepthMode::none;
 
-  bool const has_depth = create_info.rasterizer_state.depth_mode != DepthMode::none;
-
-  // --- Pipeline layout ---
+  // --- Pipeline bindings ---
+  auto const vertex_bindings_info      = create_info.vertex_buffer_bindings.empty()
+                                             ? shader::find_vertex_bindings(create_info.shader)
+                                             : create_info.vertex_buffer_bindings;
+  auto const [bindings, attributes]    = translate_vertex_bindings(vertex_bindings_info);
+  auto const vertex_input_info         = create_vertex_input_state(bindings, attributes);
   raii::PipelineLayout pipeline_layout = make_pipeline_layout(defaults::pipeline_layout_info);
 
-  // --- Assemble pipeline ---
-  core::PipelineViewportStateCreateInfo viewport_state {.viewportCount = 1, .scissorCount = 1};
-  auto color_format = core::Format::eB8G8R8A8Srgb;
+  auto const [color_attachments, depth_attachment] = translate_attachment_layouts(create_info.render_pass_layout);
 
+  // --- Assemble pipeline ---
   core::StructureChain<core::GraphicsPipelineCreateInfo, core::PipelineRenderingCreateInfo> pipeline_info_chain {
     {
       .stageCount          = static_cast<std::uint32_t>(shader_stages.size()),
@@ -120,8 +143,10 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
       .layout              = *pipeline_layout,
     },
     {
-      .colorAttachmentCount    = 1,
-      .pColorAttachmentFormats = std::addressof(color_format),
+      .colorAttachmentCount    = static_cast<std::uint32_t>(color_attachments.size()),
+      .pColorAttachmentFormats = color_attachments.data(),
+      .depthAttachmentFormat   = depth_attachment,
+      .stencilAttachmentFormat = depth_attachment, // TODO: support separate stencil format
     }
   };
   return make_graphics_pipeline(pipeline_info_chain.get<core::GraphicsPipelineCreateInfo>());
