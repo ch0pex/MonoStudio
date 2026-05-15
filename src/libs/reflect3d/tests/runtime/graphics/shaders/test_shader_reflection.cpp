@@ -38,6 +38,11 @@ struct Vertex {
   rf3d::math::vec3 color {0.4F, 0.4F, 0.4F};
 };
 
+struct Vertex3 {
+  rf3d::math::vec3 position {};
+  rf3d::math::vec4 color {};
+};
+
 TEST_SUITE_BEGIN("Shader");
 
 TEST_CASE("Reflection exposes all global parameters with correct names") {
@@ -80,10 +85,10 @@ TEST_CASE("Reflection correctly reports vertex buffer bindings") {
   auto const program = rf3d::shader::compile<rf3d::shader::SpirV>(shader_file, rf3d::shader::Stage::vertex).value();
 
   rf3d::VertexBufferBinding expected_binding = {
-    .byte_stride = sizeof(Vertex),
+    .byte_stride = sizeof(Vertex3),
     .attributes  = {
-      {.offset = offsetof(Vertex, position), .format = rf3d::Format::rg32_sfloat},
-      {.offset = offsetof(Vertex, color), .format = rf3d::Format::rgb32_sfloat},
+      {.offset = offsetof(Vertex3, position), .format = rf3d::Format::rgb32_sfloat},
+      {.offset = offsetof(Vertex3, color), .format = rf3d::Format::rgba32_sfloat},
     },
   };
 
@@ -103,31 +108,33 @@ TEST_SUITE_BEGIN("VertexBindingReflection");
 TEST_CASE("Float formats: float32 and float16 map to correct rf3d formats") {
   namespace fs = std::filesystem;
   auto const program =
-      rf3d::shader::compile<rf3d::shader::SpirV>(fs::path {mono::assets_path} / "shaders/reflect_float_formats.slang",
-                                                 rf3d::shader::Stage::vertex)
+      rf3d::shader::compile<rf3d::shader::SpirV>(
+          fs::path {mono::assets_path} / "shaders/reflect_float_formats.slang", rf3d::shader::Stage::vertex
+      )
           .value();
 
   auto const bindings = rf3d::shader::find_vertex_bindings(program);
   REQUIRE(bindings.size() == 1);
 
-  auto const& b = bindings[0];
-  CHECK(b.byte_stride == 60);
-  REQUIRE(b.attributes.size() == 8);
-  CHECK(b.attributes[0] == rf3d::BindingAttribute {.offset = 0,  .format = rf3d::Format::r32_sfloat});
-  CHECK(b.attributes[1] == rf3d::BindingAttribute {.offset = 4,  .format = rf3d::Format::rg32_sfloat});
-  CHECK(b.attributes[2] == rf3d::BindingAttribute {.offset = 12, .format = rf3d::Format::rgb32_sfloat});
-  CHECK(b.attributes[3] == rf3d::BindingAttribute {.offset = 24, .format = rf3d::Format::rgba32_sfloat});
-  CHECK(b.attributes[4] == rf3d::BindingAttribute {.offset = 40, .format = rf3d::Format::r16_sfloat});
-  CHECK(b.attributes[5] == rf3d::BindingAttribute {.offset = 42, .format = rf3d::Format::rg16_sfloat});
-  CHECK(b.attributes[6] == rf3d::BindingAttribute {.offset = 46, .format = rf3d::Format::rgb16_sfloat});
-  CHECK(b.attributes[7] == rf3d::BindingAttribute {.offset = 52, .format = rf3d::Format::rgba16_sfloat});
+  auto const& [byte_stride, attributes] = bindings[0];
+  CHECK(byte_stride == 60);
+  REQUIRE(attributes.size() == 8);
+  CHECK(attributes[0] == rf3d::BindingAttribute {.offset = 0, .format = rf3d::Format::r32_sfloat});
+  CHECK(attributes[1] == rf3d::BindingAttribute {.offset = 4, .format = rf3d::Format::rg32_sfloat});
+  CHECK(attributes[2] == rf3d::BindingAttribute {.offset = 12, .format = rf3d::Format::rgb32_sfloat});
+  CHECK(attributes[3] == rf3d::BindingAttribute {.offset = 24, .format = rf3d::Format::rgba32_sfloat});
+  CHECK(attributes[4] == rf3d::BindingAttribute {.offset = 40, .format = rf3d::Format::r16_sfloat});
+  CHECK(attributes[5] == rf3d::BindingAttribute {.offset = 42, .format = rf3d::Format::rg16_sfloat});
+  CHECK(attributes[6] == rf3d::BindingAttribute {.offset = 46, .format = rf3d::Format::rgb16_sfloat});
+  CHECK(attributes[7] == rf3d::BindingAttribute {.offset = 52, .format = rf3d::Format::rgba16_sfloat});
 }
 
 TEST_CASE("Integer formats: uint32 int32 uint16 int16 map to correct rf3d formats") {
   namespace fs = std::filesystem;
   auto const program =
-      rf3d::shader::compile<rf3d::shader::SpirV>(fs::path {mono::assets_path} / "shaders/reflect_int_formats.slang",
-                                                 rf3d::shader::Stage::vertex)
+      rf3d::shader::compile<rf3d::shader::SpirV>(
+          fs::path {mono::assets_path} / "shaders/reflect_int_formats.slang", rf3d::shader::Stage::vertex
+      )
           .value();
 
   auto const bindings = rf3d::shader::find_vertex_bindings(program);
@@ -136,27 +143,28 @@ TEST_CASE("Integer formats: uint32 int32 uint16 int16 map to correct rf3d format
   auto const& b = bindings[0];
   CHECK(b.byte_stride == 108);
   REQUIRE(b.attributes.size() == 14);
-  CHECK(b.attributes[0]  == rf3d::BindingAttribute {.offset = 0,   .format = rf3d::Format::r32_uint});
-  CHECK(b.attributes[1]  == rf3d::BindingAttribute {.offset = 4,   .format = rf3d::Format::rg32_uint});
-  CHECK(b.attributes[2]  == rf3d::BindingAttribute {.offset = 12,  .format = rf3d::Format::rgb32_uint});
-  CHECK(b.attributes[3]  == rf3d::BindingAttribute {.offset = 24,  .format = rf3d::Format::rgba32_uint});
-  CHECK(b.attributes[4]  == rf3d::BindingAttribute {.offset = 40,  .format = rf3d::Format::r32_sint});
-  CHECK(b.attributes[5]  == rf3d::BindingAttribute {.offset = 44,  .format = rf3d::Format::rg32_sint});
-  CHECK(b.attributes[6]  == rf3d::BindingAttribute {.offset = 52,  .format = rf3d::Format::rgb32_sint});
-  CHECK(b.attributes[7]  == rf3d::BindingAttribute {.offset = 64,  .format = rf3d::Format::rgba32_sint});
-  CHECK(b.attributes[8]  == rf3d::BindingAttribute {.offset = 80,  .format = rf3d::Format::r16_uint});
-  CHECK(b.attributes[9]  == rf3d::BindingAttribute {.offset = 82,  .format = rf3d::Format::rg16_uint});
-  CHECK(b.attributes[10] == rf3d::BindingAttribute {.offset = 86,  .format = rf3d::Format::rgba16_uint});
-  CHECK(b.attributes[11] == rf3d::BindingAttribute {.offset = 94,  .format = rf3d::Format::r16_sint});
-  CHECK(b.attributes[12] == rf3d::BindingAttribute {.offset = 96,  .format = rf3d::Format::rg16_sint});
+  CHECK(b.attributes[0] == rf3d::BindingAttribute {.offset = 0, .format = rf3d::Format::r32_uint});
+  CHECK(b.attributes[1] == rf3d::BindingAttribute {.offset = 4, .format = rf3d::Format::rg32_uint});
+  CHECK(b.attributes[2] == rf3d::BindingAttribute {.offset = 12, .format = rf3d::Format::rgb32_uint});
+  CHECK(b.attributes[3] == rf3d::BindingAttribute {.offset = 24, .format = rf3d::Format::rgba32_uint});
+  CHECK(b.attributes[4] == rf3d::BindingAttribute {.offset = 40, .format = rf3d::Format::r32_sint});
+  CHECK(b.attributes[5] == rf3d::BindingAttribute {.offset = 44, .format = rf3d::Format::rg32_sint});
+  CHECK(b.attributes[6] == rf3d::BindingAttribute {.offset = 52, .format = rf3d::Format::rgb32_sint});
+  CHECK(b.attributes[7] == rf3d::BindingAttribute {.offset = 64, .format = rf3d::Format::rgba32_sint});
+  CHECK(b.attributes[8] == rf3d::BindingAttribute {.offset = 80, .format = rf3d::Format::r16_uint});
+  CHECK(b.attributes[9] == rf3d::BindingAttribute {.offset = 82, .format = rf3d::Format::rg16_uint});
+  CHECK(b.attributes[10] == rf3d::BindingAttribute {.offset = 86, .format = rf3d::Format::rgba16_uint});
+  CHECK(b.attributes[11] == rf3d::BindingAttribute {.offset = 94, .format = rf3d::Format::r16_sint});
+  CHECK(b.attributes[12] == rf3d::BindingAttribute {.offset = 96, .format = rf3d::Format::rg16_sint});
   CHECK(b.attributes[13] == rf3d::BindingAttribute {.offset = 100, .format = rf3d::Format::rgba16_sint});
 }
 
 TEST_CASE("Multiple struct params produce one binding each") {
   namespace fs = std::filesystem;
   auto const program =
-      rf3d::shader::compile<rf3d::shader::SpirV>(fs::path {mono::assets_path} / "shaders/reflect_multi_binding.slang",
-                                                 rf3d::shader::Stage::vertex)
+      rf3d::shader::compile<rf3d::shader::SpirV>(
+          fs::path {mono::assets_path} / "shaders/reflect_multi_binding.slang", rf3d::shader::Stage::vertex
+      )
           .value();
 
   auto const bindings = rf3d::shader::find_vertex_bindings(program);
@@ -166,7 +174,7 @@ TEST_CASE("Multiple struct params produce one binding each") {
   auto const& per_vertex = bindings[0];
   CHECK(per_vertex.byte_stride == 32);
   REQUIRE(per_vertex.attributes.size() == 3);
-  CHECK(per_vertex.attributes[0] == rf3d::BindingAttribute {.offset = 0,  .format = rf3d::Format::rgb32_sfloat});
+  CHECK(per_vertex.attributes[0] == rf3d::BindingAttribute {.offset = 0, .format = rf3d::Format::rgb32_sfloat});
   CHECK(per_vertex.attributes[1] == rf3d::BindingAttribute {.offset = 12, .format = rf3d::Format::rgb32_sfloat});
   CHECK(per_vertex.attributes[2] == rf3d::BindingAttribute {.offset = 24, .format = rf3d::Format::rg32_sfloat});
 
@@ -174,7 +182,7 @@ TEST_CASE("Multiple struct params produce one binding each") {
   auto const& per_instance = bindings[1];
   CHECK(per_instance.byte_stride == 80);
   REQUIRE(per_instance.attributes.size() == 5);
-  CHECK(per_instance.attributes[0] == rf3d::BindingAttribute {.offset = 0,  .format = rf3d::Format::rgba32_sfloat});
+  CHECK(per_instance.attributes[0] == rf3d::BindingAttribute {.offset = 0, .format = rf3d::Format::rgba32_sfloat});
   CHECK(per_instance.attributes[1] == rf3d::BindingAttribute {.offset = 16, .format = rf3d::Format::rgba32_sfloat});
   CHECK(per_instance.attributes[2] == rf3d::BindingAttribute {.offset = 32, .format = rf3d::Format::rgba32_sfloat});
   CHECK(per_instance.attributes[3] == rf3d::BindingAttribute {.offset = 48, .format = rf3d::Format::rgba32_sfloat});
@@ -184,8 +192,9 @@ TEST_CASE("Multiple struct params produce one binding each") {
 TEST_CASE("Vertex pulling shader produces no vertex buffer bindings") {
   namespace fs = std::filesystem;
   auto const program =
-      rf3d::shader::compile<rf3d::shader::SpirV>(fs::path {mono::assets_path} / "shaders/reflect_vertex_pulling.slang",
-                                                 rf3d::shader::Stage::vertex)
+      rf3d::shader::compile<rf3d::shader::SpirV>(
+          fs::path {mono::assets_path} / "shaders/reflect_vertex_pulling.slang", rf3d::shader::Stage::vertex
+      )
           .value();
 
   auto const bindings = rf3d::shader::find_vertex_bindings(program);
@@ -206,7 +215,7 @@ TEST_CASE("Uniform entry point params do not produce vertex buffer bindings") {
   auto const& b = bindings[0];
   CHECK(b.byte_stride == 20);
   REQUIRE(b.attributes.size() == 2);
-  CHECK(b.attributes[0] == rf3d::BindingAttribute {.offset = 0,  .format = rf3d::Format::rgb32_sfloat});
+  CHECK(b.attributes[0] == rf3d::BindingAttribute {.offset = 0, .format = rf3d::Format::rgb32_sfloat});
   CHECK(b.attributes[1] == rf3d::BindingAttribute {.offset = 12, .format = rf3d::Format::rg32_sfloat});
 }
 
@@ -219,7 +228,7 @@ TEST_CASE("SV_ fields inside vertex input struct are skipped") {
   rf3d::VertexBufferBinding const expected = {
     .byte_stride = 20,
     .attributes  = {
-      {.offset = 0,  .format = rf3d::Format::rgb32_sfloat},
+      {.offset = 0, .format = rf3d::Format::rgb32_sfloat},
       {.offset = 12, .format = rf3d::Format::rg32_sfloat},
     },
   };
@@ -230,5 +239,6 @@ TEST_CASE("SV_ fields inside vertex input struct are skipped") {
   CHECK(bindings[0] == expected);
   CHECK(bindings[1] == expected);
 }
+
 
 TEST_SUITE_END();
