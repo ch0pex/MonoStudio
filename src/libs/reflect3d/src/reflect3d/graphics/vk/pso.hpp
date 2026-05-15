@@ -50,7 +50,7 @@ inline auto translate_vertex_bindings(mono::span<VertexBufferBinding const> cons
       attribute_descriptions.push_back({
         .location = location++,
         .binding  = static_cast<std::uint32_t>(binding),
-        .format   = to_native(format),
+        .format   = to_native_format(format),
         .offset   = offset,
       });
     }

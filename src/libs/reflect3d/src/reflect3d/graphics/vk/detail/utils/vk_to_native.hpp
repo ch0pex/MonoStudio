@@ -252,11 +252,11 @@ constexpr core::PipelineRasterizationStateCreateInfo to_native_rasterizer(Raster
 }
 
 constexpr core::PipelineDepthStencilStateCreateInfo to_native_depth_stencil(RasterizerState const& state) noexcept {
-  bool const depth_read  = state.depth_mode == DepthMode::read || state.depth_mode == DepthMode::read_write;
-  bool const depth_write = state.depth_mode == DepthMode::write || state.depth_mode == DepthMode::read_write;
+  bool const depth_read  = state.depth_mode == DepthMode::read or state.depth_mode == DepthMode::read_write;
+  bool const depth_write = state.depth_mode == DepthMode::write or state.depth_mode == DepthMode::read_write;
 
   return {
-    .depthTestEnable       = depth_read || depth_write ? core::True : core::False,
+    .depthTestEnable       = depth_read or depth_write ? core::True : core::False,
     .depthWriteEnable      = depth_write ? core::True : core::False,
     .depthCompareOp        = depth_read ? to_native(state.depth_test) : core::CompareOp::eAlways,
     .depthBoundsTestEnable = core::False,

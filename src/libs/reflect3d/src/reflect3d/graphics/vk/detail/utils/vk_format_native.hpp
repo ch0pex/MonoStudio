@@ -6,7 +6,7 @@
 namespace rf3d::vk::detail {
 
 // clang-format off
-constexpr core::Format to_native(Format const format) noexcept {
+constexpr core::Format to_native_format(Format const format) noexcept {
   switch (format) {
     case Format::unknown:           return core::Format::eUndefined;
 
