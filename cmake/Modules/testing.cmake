@@ -38,6 +38,12 @@ function(create_test test_name test_src)
         )
     endif ()
 
+    if (SANITIZED_BUILD)
+        set_tests_properties(${target_exe} PROPERTIES
+                ENVIRONMENT "ASAN_OPTIONS=detect_odr_violation=0;LSAN_OPTIONS=suppressions=${CMAKE_SOURCE_DIR}/cmake/supp/lsan.supp"
+        )
+    endif ()
+
 endfunction()
 
 
@@ -59,6 +65,6 @@ if (BUILD_TESTING)
     find_package(doctest CONFIG REQUIRED)
     enable_testing()
     find_program(MEMORYCHECK_COMMAND valgrind)
-    set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
+    set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1 --suppressions=${CMAKE_SOURCE_DIR}/cmake/supp/valgrind.supp")
     include(CTest)
 endif ()

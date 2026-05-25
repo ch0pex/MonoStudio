@@ -79,8 +79,8 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -fconcepts-diagnostics-depth=2"
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -fconcepts-diagnostics-depth=2",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
       }
     },
     {
@@ -117,7 +117,9 @@
       "binaryDir": "${sourceDir}/build/gcc/sanitize",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/sanitize/generators/conan_toolchain.cmake",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "SANITIZED_BUILD": "ON"
       }
     },
     {
@@ -142,9 +144,9 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments -Wno-c2y-extensions",
-        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
       }
     },
     {

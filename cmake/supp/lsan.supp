@@ -1,0 +1,17 @@
+# GTK3/Pango/fontconfig — global font caches, intentionally not freed on exit
+leak:FcPatternObjectInsertElt
+leak:FcPatternObjectAddWithBinding
+leak:FcPatternObjectListAdd
+leak:FcFontSetList
+leak:FcFontRenderPrepare
+leak:FcFontSetMatch
+leak:FcConfigSubstituteWithPat
+leak:ensure_families
+leak:pango_fc_font_map_get_family
+leak:pango_fc_font_map_load_fontset
+leak:pango_context_get_metrics
+leak:fc_thread_func
+
+# GLFW Wayland backend — proxy objects not destroyed (upstream GLFW bug)
+leak:wp_fractional_scale_manager_v1_get_fractional_scale
+leak:wp_viewporter_get_viewport

@@ -15,14 +15,15 @@ create_test(signals test_signals.cpp)
 create_test(expected test_expected.cpp)
 
 # Execution
-create_test(execution_inspect test_execution_inspect.cpp)
-create_test(execution_expect test_execution_expect.cpp)
+if(NOT SANITIZED_BUILD) # TODO: Remove once Asan is fixed in stdexec
+  create_test(execution_inspect test_execution_inspect.cpp)
+  create_test(execution_expect test_execution_expect.cpp)
+endif()
 
 # Misc
 create_test(start_lifetime_as test_start_lifetime_as.cpp)
 create_test(as_span test_as_span.cpp)
 create_test(safe_ptr test_safe_ptr.cpp)
-
 
 # Ranges
 create_test(cycle_view test_cycle_view.cpp)

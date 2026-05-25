@@ -1,10 +1,10 @@
 
 #include "vixel/program/config/config.hpp"
 #include "vixel/program/dispatcher.hpp"
-#include "vixel/program/options.hpp"
-
-#include <mono/config/parser.hpp>
-#include <mono/error/log_error.hpp>
+// #include "vixel/program/options.hpp"
+//
+// #include <mono/config/parser.hpp>
+// #include <mono/error/log_error.hpp>
 
 int main() {
   using namespace vix;

@@ -1,3 +1,4 @@
+import os
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
@@ -35,7 +36,13 @@ class MonoGameRecipe(ConanFile):
         self.folders.root = ".."
         compiler_name = str(self.settings.compiler).lower()
         build_type = str(self.settings.build_type).lower()
-        base_path = f"build/{compiler_name}/{build_type}"
+        base_path = f"build/{compiler_name}"
+
+        if self.settings.compiler.sanitizer:
+            base_path += f"/sanitize"
+        else:
+            base_path += f"/{build_type}"
+
         self.folders.build = base_path
         self.folders.generators = f"{base_path}/generators"
         self.folders.source = "."

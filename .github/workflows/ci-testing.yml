@@ -77,7 +77,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [ Debug-gcc, Release-gcc, Debug-clang, Release-clang] # TODO: add Sanitize-gcc
+        preset: [ Debug-gcc, Release-gcc, Debug-clang, Release-clang, Sanitize-gcc ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

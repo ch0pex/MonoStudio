@@ -1,0 +1,112 @@
+# GTK3/Pango/fontconfig — global font caches, intentionally not freed on exit
+
+{
+   fontconfig-pattern-malloc
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   fun:malloc
+   ...
+   obj:*libfontconfig*
+}
+
+{
+   fontconfig-pattern-calloc
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   fun:calloc
+   ...
+   obj:*libfontconfig*
+}
+
+{
+   fontconfig-pattern-realloc
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   fun:realloc
+   ...
+   obj:*libfontconfig*
+}
+
+{
+   fontconfig-strdup
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   fun:strdup
+   ...
+   obj:*libfontconfig*
+}
+
+{
+   pango-font-cache
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   ...
+   obj:*libpango*
+}
+
+{
+   pangoft2-font-cache
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   ...
+   obj:*libpangoft2*
+}
+
+{
+   libdecor-gtk-decoration
+   Memcheck:Leak
+   match-leak-kinds: definite,indirect,possible,reachable
+   ...
+   obj:*libdecor-gtk*
+}
+
+# Rust async runtime (async_global_executor / async_io / smol) — thread-local
+# storage uses interior pointers that Valgrind reports as possibly lost.
+# Loaded transitively via slang or similar native deps with Rust runtimes.
+
+{
+   rust-async-executor-thread-tls
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:async_global_executor::threading::thread_main_loop
+}
+
+{
+   rust-thread-start-tls
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:std::sys::thread::unix::Thread::new::thread_start
+}
+
+{
+   rust-still-reachable-thread
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:std::sys::thread::unix::Thread::new::thread_start
+}
+
+# GLFW Wayland backend — proxy objects not destroyed (upstream GLFW bug)
+
+{
+   glfw-wayland-fractional-scale
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:wp_fractional_scale_manager_v1_get_fractional_scale
+}
+
+{
+   glfw-wayland-viewporter
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:wp_viewporter_get_viewport
+}

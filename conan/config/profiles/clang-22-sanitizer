@@ -11,10 +11,7 @@ build_type=Debug
 [conf]
 tools.build:compiler_executables={"c": "clang", "cpp": "clang++"}
 tools.cmake.cmaketoolchain:generator=Ninja
-tools.build:cflags+=["-fsanitize=address", "-fno-omit-frame-pointer"]
-tools.build:cxxflags+=["-fsanitize=address", "-fno-omit-frame-pointer"]
-tools.build:exelinkflags+=["-fsanitize=address"]
-tools.build:sharedlinkflags+=["-fsanitize=address"]
-
-[runenv]
-ASAN_OPTIONS="halt_on_error=1:detect_leaks=1"
+tools.build:cflags+=["-fsanitize=address,undefined", "-fno-omit-frame-pointer"]
+tools.build:cxxflags+=["-fsanitize=address,undefined", "-fno-omit-frame-pointer"]
+tools.build:sharedlinkflags+=["-fsanitize=address,undefined"]
+tools.build:exelinkflags+=["-fsanitize=address,undefined"]

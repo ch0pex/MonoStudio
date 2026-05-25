@@ -43,7 +43,7 @@ install_preset() {
         BUILD_TYPE="RelWithDebInfo"
         ;;
     "Sanitize-gcc")
-        PROFILE="gcc-16"
+        PROFILE="gcc-16-sanitizer"
         BUILD_TYPE="Debug"
         ;;
     "Coverage-gcc")
@@ -112,6 +112,8 @@ install_preset() {
         exit 1
     fi
 }
+
+conan config install "$SCRIPT_DIR/config"
 
 if [ "$1" == "all" ]; then
     echo "Executing batch installation for current OS..."
