@@ -55,8 +55,6 @@ target_sources(
         reflect3d/graphics/vk/detail/vk_barriers.hpp
         reflect3d/graphics/vk/detail/vk_gpu_detail.hpp
         reflect3d/graphics/vk/detail/vk_instance.hpp
-        reflect3d/graphics/vk/detail/vk_pso_builder.hpp
-        reflect3d/graphics/vk/detail/vk_pso_manager.hpp
         reflect3d/graphics/vk/detail/vk_shader.hpp
         reflect3d/graphics/vk/detail/vk_surface_info.hpp
         reflect3d/graphics/vk/detail/vk_swapchain.hpp
