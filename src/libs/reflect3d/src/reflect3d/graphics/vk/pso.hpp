@@ -1,16 +1,33 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file pso.hpp
+ * @date 26/05/2026
+ * @brief Vulkan pipeline state object (PSO) implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/pso_descriptor.hpp"
 #include "reflect3d/graphics/core/pso_states.hpp"
+#include "reflect3d/graphics/core/shader/reflection.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_format_native.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_to_native.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 #include "reflect3d/graphics/vk/detail/vk_shader.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <vector>
 
-#include "reflect3d/graphics/core/shader/reflection.hpp"
+// --- System ---
 
 namespace rf3d::vk {
 
@@ -26,6 +43,22 @@ inline constexpr core::PipelineDynamicStateCreateInfo dynamic_state_info {
   .dynamicStateCount = static_cast<std::uint32_t>(dynamic_states_list.size()),
   .pDynamicStates    = dynamic_states_list.data(),
 };
+
+struct PipelineLayoutBuilder {
+  std::vector<core::DescriptorSetLayout> descriptor_set_layouts;
+  std::vector<core::PushConstantRange> push_constant_ranges;
+};
+
+inline core::PipelineLayoutCreateInfo to_pipeline_layout_info(PipelineLayoutBuilder const& builder) {
+  return {
+    .setLayoutCount         = static_cast<std::uint32_t>(builder.descriptor_set_layouts.size()),
+    .pSetLayouts            = builder.descriptor_set_layouts.data(),
+    .pushConstantRangeCount = static_cast<std::uint32_t>(builder.push_constant_ranges.size()),
+    .pPushConstantRanges    = builder.push_constant_ranges.data(),
+  };
+}
+
+// inline auto translate_pipeline_layout(const& builder) { }
 
 
 /**
@@ -171,5 +204,6 @@ public:
 private:
   handle_type pso_handle;
 };
+
 
 } // namespace rf3d::vk

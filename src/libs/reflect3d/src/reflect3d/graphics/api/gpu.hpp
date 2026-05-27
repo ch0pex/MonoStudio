@@ -1,9 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file gpu.hpp
+ * @date 26/05/2026
+ * @brief Gpu concept for GPU device constraints
+ */
+
 #pragma once
 
+// --- Includes ---
+#include "reflect3d/graphics/api/surface.hpp"
 
-#include "surface.hpp"
+// --- Dependencies ---
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
+
+// --- System ---
+
 
 namespace rf3d {
 

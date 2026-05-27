@@ -1,7 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file enum_flags.hpp
+ * @date 26/05/2026
+ * @brief Compile-time enum flag containment check utilities
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <type_traits>
 #include <utility>
+
+// --- System ---
+
 
 namespace rf3d::detail {
 

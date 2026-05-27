@@ -1,11 +1,30 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file texture.hpp
+ * @date 26/05/2026
+ * @brief Texture concepts for GPU texture resource constraints
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/enum_flags.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/texture_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
+
+// --- System ---
+
 
 namespace rf3d {
 

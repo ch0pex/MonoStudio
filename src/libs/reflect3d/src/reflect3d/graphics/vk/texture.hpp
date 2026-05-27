@@ -1,14 +1,32 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file texture.hpp
+ * @date 26/05/2026
+ * @brief Vulkan texture resource implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/command_list.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/texture_info.hpp"
 #include "reflect3d/graphics/vk/texture_view.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
+// --- Dependencies ---
 #include <mono/misc/passkey.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <type_traits>
+
+// --- System ---
+
 
 namespace rf3d::vk {
 

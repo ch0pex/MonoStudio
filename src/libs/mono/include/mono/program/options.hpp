@@ -1,20 +1,37 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file options.hpp
+ * @date 26/05/2026
+ * @brief Command-line and configuration file option parsing
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "mono/config/base_config.hpp"
 #include "mono/config/config_tags.hpp"
 #include "mono/config/parser.hpp"
 #include "mono/containers/span.hpp"
 #include "mono/error/expected.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <boost/program_options.hpp>
 #include <rfl/toml.hpp>
 #include <rfl/toml/load.hpp>
 #include <rfl/toml/write.hpp>
 
-//
+// --- STD ---
 #include <filesystem>
 #include <print>
 #include <sstream>
+
+// --- System ---
+
 
 namespace mono::program {
 

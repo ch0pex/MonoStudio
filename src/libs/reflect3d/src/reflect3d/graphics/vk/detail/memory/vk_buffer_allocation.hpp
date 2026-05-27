@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_buffer_allocation.hpp
+ * @date 26/05/2026
+ * @brief Vulkan buffer allocation descriptor and allocation create info constants
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

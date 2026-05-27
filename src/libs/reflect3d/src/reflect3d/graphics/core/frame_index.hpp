@@ -10,9 +10,17 @@
 
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/defaults.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <atomic>
+
+// --- System ---
 
 namespace rf3d {
 

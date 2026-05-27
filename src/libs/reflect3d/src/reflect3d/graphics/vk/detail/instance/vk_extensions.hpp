@@ -1,15 +1,32 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_extensions.hpp
+ * @date 26/05/2026
+ * @brief Vulkan instance extension support and validation utilities
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/instance/vk_validation_layers.hpp"
 
-#include <format>
+// --- Dependencies ---
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
+// --- External dependencies ---
 #include <GLFW/glfw3.h>
 
+// --- STD ---
 #include <cstdint>
+#include <format>
 #include <vector>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

@@ -1,9 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_debug_callback.hpp
+ * @date 26/05/2026
+ * @brief Vulkan debug messenger callback implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/unordered_flat_map.hpp>
 #include <mono/logging/logger.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

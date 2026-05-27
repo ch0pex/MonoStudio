@@ -1,10 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file texture_info.hpp
+ * @date 26/05/2026
+ * @brief Texture dimension, usage flags and texture info descriptor types
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/format.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
 #include <utility>
+
+// --- System ---
+
 
 namespace rf3d {
 

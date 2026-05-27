@@ -1,15 +1,33 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_swapchain.hpp
+ * @date 26/05/2026
+ * @brief Vulkan swapchain class and configuration helpers
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/utils/vk_defaults.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/detail/vk_image.hpp"
 #include "reflect3d/graphics/vk/detail/vk_swapchain_detail.hpp"
-
 #include "reflect3d/window/utils/resolution.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/stable_vector.hpp>
 #include <mono/logging/logger.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

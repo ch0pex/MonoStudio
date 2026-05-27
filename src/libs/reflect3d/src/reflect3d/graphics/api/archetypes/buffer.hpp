@@ -1,14 +1,32 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file buffer.hpp
+ * @date 26/05/2026
+ * @brief Buffer archetype for GPU buffer resource modeling
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/buffer_info.hpp"
 #include "reflect3d/graphics/core/enum_flags.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 
+// --- Dependencies ---
+#include <mono/meta/concepts.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
 #include <span>
 #include <type_traits>
 
-#include "mono/meta/concepts.hpp"
+// --- System ---
+
 
 namespace rf3d::archetypes {
 

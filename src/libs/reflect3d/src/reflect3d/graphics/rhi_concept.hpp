@@ -5,19 +5,27 @@
 /**
  * @file rhi_concept.hpp
  * @date 12/04/2026
- * @brief Render Hardware Interface concept
- *
- * All implementation traits must satisfy this concept
- *
+ * @brief Render Hardware Interface concept definition
  */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/buffer.hpp"
 #include "reflect3d/graphics/api/command_list.hpp"
 #include "reflect3d/graphics/api/fence.hpp"
 #include "reflect3d/graphics/api/gpu.hpp"
 #include "reflect3d/graphics/api/pso.hpp"
 #include "reflect3d/graphics/api/surface.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d {
 

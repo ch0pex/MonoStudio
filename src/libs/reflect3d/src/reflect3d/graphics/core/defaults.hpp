@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file defaults.hpp
+ * @date 26/05/2026
+ * @brief Default rendering constants including frame count and timeout values
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <chrono>
+
+// --- System ---
+
 
 namespace rf3d::defaults {
 

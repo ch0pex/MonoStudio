@@ -1,8 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_memory_allocator.hpp
+ * @date 26/05/2026
+ * @brief VMA-based memory allocator wrapper for Vulkan buffer allocation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/memory/vk_buffer_allocation.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/detail/vk_instance.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

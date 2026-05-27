@@ -1,11 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file types.hpp
+ * @date 26/05/2026
+ * @brief Shader bytecode, layout and stage type definitions
+ */
+
 #pragma once
 
-#include "mono/containers/span.hpp"
+// --- Includes ---
 
+// --- Dependencies ---
+#include <mono/containers/span.hpp>
+
+// --- External dependencies ---
 #include <slang.h>
 
+// --- STD ---
 #include <cstdint>
 #include <string>
+
+// --- System ---
+
 
 namespace rf3d::shader {
 

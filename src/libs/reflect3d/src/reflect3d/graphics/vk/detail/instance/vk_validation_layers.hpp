@@ -1,15 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_validation_layers.hpp
+ * @date 26/05/2026
+ * @brief Vulkan validation layer support and setup utilities
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/instance/vk_debug_messenger.hpp"
 
-// Mono library
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
 #include <mono/logging/logger.hpp>
 
-// STD library
+// --- External dependencies ---
+
+// --- STD ---
 #include <ranges>
 #include <string_view>
 #include <vector>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

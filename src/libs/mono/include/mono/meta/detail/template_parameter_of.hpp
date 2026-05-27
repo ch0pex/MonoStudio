@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file template_parameter_of.hpp
+ * @date 26/05/2026
+ * @brief Template parameter extraction type traits
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <type_traits>
+
+// --- System ---
+
 
 namespace mono::meta::detail {
 

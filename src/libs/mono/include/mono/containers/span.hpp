@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file span.hpp
+ * @date 26/05/2026
+ * @brief Span container adapter (std::span wrapper)
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <span>
+
+// --- System ---
+
 
 namespace mono {
 

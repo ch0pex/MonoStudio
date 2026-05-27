@@ -1,12 +1,30 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_command_pool.hpp
+ * @date 26/05/2026
+ * @brief Vulkan command pool management
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/gpu/vk_logical_device.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_physical_device.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/stable_vector.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

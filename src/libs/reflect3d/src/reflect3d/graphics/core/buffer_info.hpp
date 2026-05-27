@@ -1,9 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file buffer_info.hpp
+ * @date 26/05/2026
+ * @brief Buffer usage flags, memory properties and buffer info descriptor types
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
 #include <string>
+
+// --- System ---
+
 
 namespace rf3d {
 

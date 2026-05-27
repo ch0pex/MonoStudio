@@ -1,13 +1,30 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_shader.hpp
+ * @date 26/05/2026
+ * @brief Vulkan shader module wrapper and bytecode loading utilities
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/shader/compiler.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 
+// --- Dependencies ---
 #include <mono/misc/start_lifetime_as.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <filesystem>
 #include <ranges>
+
+// --- System ---
 
 
 namespace rf3d::vk::detail {

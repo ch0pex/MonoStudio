@@ -1,12 +1,30 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_physical_device.hpp
+ * @date 26/05/2026
+ * @brief Vulkan physical device selection and logical device creation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/gpu/vk_gpu_families.hpp"
 #include "reflect3d/graphics/vk/detail/vk_instance.hpp"
 #include "reflect3d/graphics/vk/detail/vk_surface_info.hpp"
 
+// --- Dependencies ---
 #include <mono/logging/logger.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <map>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

@@ -1,7 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_dynamic_buffer.hpp
+ * @date 26/05/2026
+ * @brief Host-visible mapped Vulkan buffer for frequent CPU updates
+ */
+
 #pragma once
 
-#include "mono/meta/concepts.hpp"
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/memory/vk_buffer.hpp"
+
+// --- Dependencies ---
+#include <mono/meta/concepts.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
 
 
 namespace rf3d::vk::detail {

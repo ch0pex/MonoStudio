@@ -1,10 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file inspect.hpp
+ * @date 26/05/2026
+ * @brief Inspect sender adapter for peeking at values in async pipelines
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <exec/completion_signatures.hpp>
 #include <stdexec/execution.hpp>
 
+// --- STD ---
 #include <exception>
 #include <utility>
+
+// --- System ---
+
 
 namespace mono::ex {
 

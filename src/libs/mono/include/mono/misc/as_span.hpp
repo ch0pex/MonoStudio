@@ -1,8 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file as_span.hpp
+ * @date 26/05/2026
+ * @brief Helper to convert objects to span view
+ */
+
 #pragma once
 
-
-#include <memory>
+// --- Includes ---
 #include "mono/containers/span.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+#include <memory>
+
+// --- System ---
+
 
 namespace mono {
 

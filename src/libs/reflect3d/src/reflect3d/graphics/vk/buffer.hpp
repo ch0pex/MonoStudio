@@ -1,5 +1,16 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file buffer.hpp
+ * @date 26/05/2026
+ * @brief Vulkan GPU buffer resource implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/buffer.hpp"
 #include "reflect3d/graphics/api/command_list.hpp"
 #include "reflect3d/graphics/core/buffer_info.hpp"
@@ -10,13 +21,20 @@
 #include "reflect3d/graphics/vk/detail/utils/vk_to_native.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 
+// --- Dependencies ---
 #include <mono/meta/concepts.hpp>
 #include <mono/misc/passkey.hpp>
 #include <mono/misc/start_lifetime_as.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstddef>
 #include <ranges>
 #include <type_traits>
+
+// --- System ---
+
 
 namespace rf3d::vk {
 

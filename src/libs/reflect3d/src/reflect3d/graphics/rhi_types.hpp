@@ -1,7 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file rhi_types.hpp
+ * @date 26/05/2026
+ * @brief RHI template type aliases and default backend type definitions
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/backends.hpp"
 #include "reflect3d/graphics/rhi_concept.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::rhi {
 

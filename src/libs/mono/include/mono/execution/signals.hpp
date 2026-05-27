@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file signals.hpp
+ * @date 26/05/2026
+ * @brief Execution signal utilities
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "mono/execution/stop_token.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace mono::ex {
 

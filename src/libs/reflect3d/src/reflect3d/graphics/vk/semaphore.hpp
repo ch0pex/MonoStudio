@@ -1,7 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file semaphore.hpp
+ * @date 26/05/2026
+ * @brief Vulkan timeline semaphore implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/defaults.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk {
 

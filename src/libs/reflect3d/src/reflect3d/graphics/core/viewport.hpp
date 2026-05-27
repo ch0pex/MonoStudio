@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file viewport.hpp
+ * @date 26/05/2026
+ * @brief Viewport and 2D rectangle descriptor types
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/math/math.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d {
 

@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file global_session.hpp
+ * @date 26/05/2026
+ * @brief Slang global session singleton for shader compilation
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <slang-com-ptr.h>
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::shader {
 

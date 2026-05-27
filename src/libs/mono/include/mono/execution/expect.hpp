@@ -1,15 +1,33 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file expect.hpp
+ * @date 26/05/2026
+ * @brief Expect sender adapter for error-handling in async pipelines
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "mono/meta/concepts.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <exec/completion_signatures.hpp>
 #include <stdexec/__detail/__completion_signatures.hpp>
 #include <stdexec/execution.hpp>
 
+// --- STD ---
 #include <exception>
 #include <expected>
 #include <type_traits>
 #include <utility>
+
+// --- System ---
+
 
 namespace mono::ex {
 

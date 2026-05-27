@@ -16,12 +16,12 @@
 #include "reflect3d/graphics/api/semaphore.hpp"
 
 // --- Dependencies ---
-#include <optional>
-#include <vector>
 
 // --- External dependencies ---
 
 // --- STD ---
+#include <optional>
+#include <vector>
 
 // --- System ---
 

@@ -3,18 +3,25 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file slang_context.hpp
- * @version 1.0
+ * @file target_session.hpp
  * @date 13/01/2026
- * @brief Short description
- *
- * Longer description
+ * @brief Slang target session singleton for shader target-specific compilation sessions
  */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/shader/targets.hpp"
 
+// --- Dependencies ---
 #include <assets_path.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::shader {
 

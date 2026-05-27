@@ -1,7 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file stop_token.hpp
+ * @date 26/05/2026
+ * @brief Stop token integration for graceful execution cancellation
+ */
+
 #pragma once
+
+// --- Includes ---
+#include "mono/logging/logger.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <csignal>
 #include <stop_token>
-#include "mono/logging/logger.hpp"
+
+// --- System ---
+
 
 namespace mono::ex {
 

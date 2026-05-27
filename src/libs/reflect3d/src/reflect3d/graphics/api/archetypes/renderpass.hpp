@@ -10,6 +10,7 @@
 
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/pso.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
@@ -19,11 +20,18 @@
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
 #include <mono/misc/reference.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <string>
 #include <tuple>
+
+// --- System ---
+
 
 namespace rf3d::archetypes {
 

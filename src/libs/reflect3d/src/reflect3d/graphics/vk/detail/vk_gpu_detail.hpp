@@ -1,17 +1,32 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_gpu_detail.hpp
+ * @date 26/05/2026
+ * @brief Vulkan GPU frame synchronization, factory and memory resource functions
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/command_list_type.hpp"
+#include "reflect3d/graphics/core/frame_index.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_submit_info.hpp"
 #include "reflect3d/graphics/vk/detail/memory/vk_buffer_allocation.hpp"
 #include "reflect3d/graphics/vk/detail/vk_surface_info.hpp"
 
-//
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
 #include <mono/error/expected.hpp>
-//
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <chrono>
 
-#include "reflect3d/graphics/core/frame_index.hpp"
+// --- System ---
 
 
 namespace rf3d::vk::detail {

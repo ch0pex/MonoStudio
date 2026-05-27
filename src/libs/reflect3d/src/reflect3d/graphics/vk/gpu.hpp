@@ -1,11 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file gpu.hpp
+ * @date 26/05/2026
+ * @brief Vulkan GPU device and frame management implementation
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/primitive_types.hpp"
 #include "reflect3d/graphics/core/submit_info.hpp"
 #include "reflect3d/graphics/vk/command_list.hpp"
 #include "reflect3d/graphics/vk/fence.hpp"
 #include "reflect3d/graphics/vk/fwd.hpp"
 #include "reflect3d/graphics/vk/semaphore.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk {
 

@@ -1,5 +1,16 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file command_list.hpp
+ * @date 26/05/2026
+ * @brief CommandList concepts for GPU command recording constraints
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/renderpass.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
@@ -9,7 +20,15 @@
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
+
+// --- System ---
+
 
 namespace rf3d {
 

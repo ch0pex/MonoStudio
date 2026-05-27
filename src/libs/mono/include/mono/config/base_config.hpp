@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file base_config.hpp
+ * @date 26/05/2026
+ * @brief Base configuration type definitions
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
+
+// --- System ---
+
 
 namespace mono::config {
 

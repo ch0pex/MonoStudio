@@ -1,5 +1,20 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file hive.hpp
+ * @date 26/05/2026
+ * @brief Hive (stable-pointer unordered collection) container adapter
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -20,6 +35,11 @@
 #elif defined(_MSC_VER)
 #pragma warning(pop)
 #endif
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace mono {
 

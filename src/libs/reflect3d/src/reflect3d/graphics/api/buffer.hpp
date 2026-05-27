@@ -1,10 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file buffer.hpp
+ * @date 26/05/2026
+ * @brief Buffer concepts for GPU buffer resource constraints
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/buffer_info.hpp"
 #include "reflect3d/graphics/core/enum_flags.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
+
+// --- System ---
+
 
 namespace rf3d {
 

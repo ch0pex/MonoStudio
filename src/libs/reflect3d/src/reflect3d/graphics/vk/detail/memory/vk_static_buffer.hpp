@@ -1,7 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_static_buffer.hpp
+ * @date 26/05/2026
+ * @brief Device-local static Vulkan buffer with staging upload
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/memory/vk_buffer.hpp"
 #include "reflect3d/graphics/vk/detail/memory/vk_staging_buffer.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
 
 
 namespace rf3d::vk::detail {

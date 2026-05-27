@@ -1,9 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file log_error.hpp
+ * @date 26/05/2026
+ * @brief Error logging utilities for expected types
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "mono/error/expected.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <print>
 #include <stdexcept>
+
+// --- System ---
+
 
 namespace mono {
 

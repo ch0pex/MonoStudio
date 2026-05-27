@@ -1,14 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_gpu_queues.hpp
+ * @date 26/05/2026
+ * @brief Vulkan device queue type definitions and management
+ */
+
 #pragma once
 
-#include "mono/meta/concepts.hpp"
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/gpu/vk_gpu_families.hpp"
 #include "reflect3d/graphics/vk/detail/gpu/vk_logical_device.hpp"
 
+// --- Dependencies ---
+#include <mono/meta/concepts.hpp>
 #include <mono/misc/passkey.hpp>
 
-//
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
 #include <type_traits>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

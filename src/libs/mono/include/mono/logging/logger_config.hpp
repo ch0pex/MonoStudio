@@ -1,9 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file logger_config.hpp
+ * @date 26/05/2026
+ * @brief Logging backend configuration and sink setup
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <quill/Backend.h>
 #include <quill/Frontend.h>
 #include <quill/sinks/ConsoleSink.h>
 #include <quill/sinks/FileSink.h>
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace mono {
 

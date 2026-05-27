@@ -1,9 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file cycle_view.hpp
+ * @date 26/05/2026
+ * @brief Infinite cycle view range adapter
+ */
+
+#pragma once
+
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <compare>
 #include <concepts>
 #include <iterator>
 #include <memory>
 #include <ranges>
 #include <utility>
+
+// --- System ---
+
 
 namespace mono::views {
 

@@ -1,13 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file targets.hpp
+ * @date 26/05/2026
+ * @brief Slang shader target definitions for SPIR-V, HLSL, DXIL, GLSL, Metal, WGSL and CUDA
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/shader/global_session.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <slang-com-helper.h>
 #include <slang-com-ptr.h>
 #include <slang.h>
 
+// --- STD ---
 #include <array>
 #include <ranges>
+
+// --- System ---
+
 
 namespace rf3d::shader {
 

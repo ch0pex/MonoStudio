@@ -1,11 +1,30 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_defaults.hpp
+ * @date 26/05/2026
+ * @brief Default Vulkan pipeline state and rendering configuration constants
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/viewport.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
 
-#include <limits>
+// --- Dependencies ---
+
+// --- External dependencies ---
 #include <vulkan/vulkan_structs.hpp>
+
+// --- STD ---
+#include <limits>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail::defaults {
 

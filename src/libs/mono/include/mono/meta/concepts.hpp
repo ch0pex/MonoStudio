@@ -1,10 +1,29 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file concepts.hpp
+ * @date 26/05/2026
+ * @brief General-purpose meta-programming concepts
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "mono/meta/detail/specialization_of.hpp"
 #include "mono/meta/detail/template_parameter_of.hpp"
 
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
 #include <type_traits>
+
+// --- System ---
+
 
 namespace mono::meta {
 

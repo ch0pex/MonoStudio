@@ -1,5 +1,16 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file command_list.hpp
+ * @date 26/05/2026
+ * @brief CommandList archetype for GPU command recording interface modeling
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/pso.hpp"
 #include "reflect3d/graphics/api/archetypes/renderpass.hpp"
@@ -8,7 +19,15 @@
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::archetypes {
 

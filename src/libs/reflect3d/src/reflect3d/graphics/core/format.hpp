@@ -1,7 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file format.hpp
+ * @date 26/05/2026
+ * @brief Texture and image format enum with byte size and string conversion utilities
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
 #include <string>
+
+// --- System ---
+
 
 namespace rf3d {
 

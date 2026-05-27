@@ -4,14 +4,13 @@
  ************************************************************************/
 /**
  * @file backends.hpp
- * @version 1.0
  * @date 11/04/2026
- * @brief Short description
- *
- * Longer description
+ * @brief Backend aggregation header for all rendering backend implementations
  */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/vk/buffer.hpp"
 #include "reflect3d/graphics/vk/command_list.hpp"
 #include "reflect3d/graphics/vk/draw_stream.hpp"
@@ -20,6 +19,15 @@
 #include "reflect3d/graphics/vk/pso.hpp"
 #include "reflect3d/graphics/vk/surface.hpp"
 #include "reflect3d/graphics/vk/texture.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::impl {
 

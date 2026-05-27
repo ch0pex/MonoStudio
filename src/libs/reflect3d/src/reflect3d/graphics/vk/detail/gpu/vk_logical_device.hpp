@@ -1,8 +1,28 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_logical_device.hpp
+ * @date 26/05/2026
+ * @brief Vulkan logical device wrapper
+ */
+
 #pragma once
 
-#include <chrono>
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/utils/vk_checker.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+#include <chrono>
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

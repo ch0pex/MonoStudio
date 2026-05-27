@@ -1,7 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_format_native.hpp
+ * @date 26/05/2026
+ * @brief Bidirectional conversion between reflect3d Format and Vulkan native format enums
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/core/format.hpp"
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail {
 

@@ -1,6 +1,26 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file gpu.hpp
+ * @date 26/05/2026
+ * @brief Gpu archetype for GPU device modeling
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/archetypes/surface.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::archetypes {
 

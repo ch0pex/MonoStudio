@@ -1,5 +1,16 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file command_list.hpp
+ * @date 26/05/2026
+ * @brief Vulkan command list implementation for graphics, compute and copy commands
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/buffer.hpp"
 #include "reflect3d/graphics/api/renderpass.hpp"
 #include "reflect3d/graphics/api/texture.hpp"
@@ -12,12 +23,19 @@
 #include "reflect3d/graphics/vk/detail/vk_gpu_detail.hpp"
 #include "reflect3d/graphics/vk/pso.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/static_vector.hpp>
 #include <mono/containers/tuple.hpp>
 #include <mono/logging/logger.hpp>
 #include <mono/misc/passkey.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstdint>
+
+// --- System ---
+
 
 namespace rf3d::vk {
 

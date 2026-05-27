@@ -1,8 +1,27 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file start_lifetime_as.hpp
+ * @date 26/05/2026
+ * @brief std::start_lifetime_as utilities for reinterpreting memory
+ */
+
 #pragma once
 
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
 #include <cstring>
 #include <new>
 #include <type_traits>
+
+// --- System ---
 
 
 namespace mono {

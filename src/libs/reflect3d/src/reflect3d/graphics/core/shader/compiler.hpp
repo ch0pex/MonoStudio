@@ -1,19 +1,35 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file compiler.hpp
+ * @date 26/05/2026
+ * @brief Slang shader compilation functions for single and multi entry point targets
+ */
+
 #pragma once
 
-
+// --- Includes ---
 #include "reflect3d/graphics/core/shader/program.hpp"
 #include "reflect3d/graphics/core/shader/target_session.hpp"
 #include "reflect3d/graphics/core/shader/targets.hpp"
 #include "reflect3d/graphics/core/shader/types.hpp"
 
+// --- Dependencies ---
+#include <assets_path.hpp>
 #include <mono/containers/span.hpp>
 #include <mono/error/expected.hpp>
 #include <mono/logging/logger.hpp>
 
-#include <assets_path.hpp>
-
-#include <filesystem>
+// --- External dependencies ---
 #include <slang-com-ptr.h>
+
+// --- STD ---
+#include <filesystem>
+
+// --- System ---
+
 
 namespace rf3d::shader {
 

@@ -1,11 +1,31 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file vk_swapchain_detail.hpp
+ * @date 26/05/2026
+ * @brief Vulkan swapchain helper functions for format, present mode and extent selection
+ */
+
 #pragma once
 
-#include <vulkan/vulkan.hpp>
+// --- Includes ---
 #include "reflect3d/graphics/vk/detail/utils/vk_native_types.hpp"
 #include "reflect3d/graphics/vk/detail/vk_gpu.hpp"
 #include "reflect3d/graphics/vk/detail/vk_image.hpp"
 #include "reflect3d/graphics/vk/detail/vk_surface_info.hpp"
 #include "reflect3d/window/utils/resolution.hpp"
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+#include <vulkan/vulkan.hpp>
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace rf3d::vk::detail::detail {
 

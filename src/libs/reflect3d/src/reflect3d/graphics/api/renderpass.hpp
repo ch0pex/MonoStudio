@@ -10,19 +10,27 @@
 
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/buffer.hpp"
 #include "reflect3d/graphics/api/pso.hpp"
 
+// --- Dependencies ---
 #include <mono/containers/tuple.hpp>
 #include <mono/meta/concepts.hpp>
 #include <mono/misc/reference.hpp>
 
+// --- External dependencies ---
+
+// --- STD ---
 #include <concepts>
 #include <ranges>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+// --- System ---
+
 
 namespace rf3d {
 

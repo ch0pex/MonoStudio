@@ -1,4 +1,25 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file passkey.hpp
+ * @date 26/05/2026
+ * @brief PassKey idiom for controlled access to private constructors
+ */
+
 #pragma once
+
+// --- Includes ---
+
+// --- Dependencies ---
+
+// --- External dependencies ---
+
+// --- STD ---
+
+// --- System ---
+
 
 namespace mono {
 

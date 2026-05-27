@@ -1,5 +1,16 @@
+/************************************************************************
+ * Copyright (c) 2026 Alvaro Cabrera Barrio
+ * This code is licensed under MIT license (see LICENSE.txt for details)
+ ************************************************************************/
+/**
+ * @file renderpass_descriptor.hpp
+ * @date 26/05/2026
+ * @brief Render pass descriptor types including draw calls, color and depth targets
+ */
+
 #pragma once
 
+// --- Includes ---
 #include "reflect3d/graphics/api/archetypes/buffer.hpp"
 #include "reflect3d/graphics/api/archetypes/pso.hpp"
 #include "reflect3d/graphics/api/archetypes/texture.hpp"
@@ -10,13 +21,19 @@
 #include "reflect3d/graphics/core/load_store_operation.hpp"
 #include "reflect3d/graphics/core/resource_state.hpp"
 #include "reflect3d/graphics/core/viewport.hpp"
-//
+
+// --- Dependencies ---
 #include <mono/containers/span.hpp>
 #include <mono/meta/concepts.hpp>
 #include <mono/misc/reference.hpp>
 
-//
+// --- External dependencies ---
+
+// --- STD ---
 #include <string>
+
+// --- System ---
+
 
 namespace rf3d {
 
