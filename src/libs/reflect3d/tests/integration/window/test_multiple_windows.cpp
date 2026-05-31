@@ -1,9 +1,10 @@
 
+#include <iostream>
 #include "common.hpp"
 #include "reflect3d/window/window_types.hpp"
 
 
-int main() { //
+int main() try { //
   using namespace rf3d;
   mono::ex::setup_signals();
 
@@ -24,4 +25,12 @@ int main() { //
       window.make_context_current();
     }
   }
+}
+catch (std::exception const& e) {
+  std::cerr << "Error: " << e.what() << '\n';
+  return EXIT_FAILURE;
+}
+catch (...) {
+  std::cerr << "Unknown error occurred" << '\n';
+  return EXIT_FAILURE;
 }

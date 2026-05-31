@@ -152,7 +152,7 @@ mono::expected<Program> compile(std::filesystem::path const& shader_path) {
   }
 
   std::vector<IComponentType*> components = {module.get()};
-  for (auto& entry_point: entry_points) {
+  for (const auto& entry_point: entry_points) {
     components.push_back(entry_point.get());
   }
 
@@ -210,7 +210,7 @@ mono::expected<std::vector<Program>> compile(std::filesystem::path const& shader
   std::vector<Program> programs;
   programs.reserve(entry_points.size());
 
-  for (auto& entry_point: entry_points) {
+  for (const auto& entry_point: entry_points) {
     std::array<IComponentType*, 2> components = {module.get(), entry_point.get()};
 
     Slang::ComPtr<IComponentType> composite;

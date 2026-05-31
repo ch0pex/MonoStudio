@@ -16,12 +16,11 @@
 #include "reflect3d/window/utils/resolution.hpp"
 
 // --- Dependencies ---
+#include <mono/containers/span.hpp>
 
 // --- External dependencies ---
-#include <vulkan/vulkan_structs.hpp>
 
 // --- STD ---
-#include <limits>
 
 // --- System ---
 

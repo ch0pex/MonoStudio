@@ -40,7 +40,7 @@
 namespace rf3d::vk {
 
 
-template<CommandListType Type = graphics>
+template<CommandListType Type = CommandListType::graphics>
 class CommandList {
 public:
   // --- Type Traits ---
@@ -148,7 +148,7 @@ public:
   }
 
   CommandList& flush_barriers() {
-    detail::core::DependencyInfo dependency_info {
+    detail::core::DependencyInfo const dependency_info {
       .bufferMemoryBarrierCount = static_cast<std::uint32_t>(pending_buffer_barriers.size()),
       .pBufferMemoryBarriers    = pending_buffer_barriers.data(),
       .imageMemoryBarrierCount  = static_cast<std::uint32_t>(pending_image_barriers.size()),
@@ -190,7 +190,7 @@ public:
   // --- Compute and Graphics ---
 
   CommandList& dispatch(math::uvec3 const vec)
-    requires(list_type::value == compute or Type == graphics)
+    requires(list_type::value == CommandListType::compute or Type == CommandListType::graphics)
   {
     cmd_buffer.dispatch(vec.x, vec.y, vec.z);
     return *this;
@@ -199,7 +199,7 @@ public:
   // --- Graphics Only ---
 
   CommandList& render_pass(RenderPassDesc auto const& rp)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     mono::tuple::visit(
         rp.render_targets,
@@ -231,7 +231,7 @@ public:
   }
 
   CommandList& begin_pass(RenderPassDesc auto const& rp)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     mono::static_vector<detail::core::RenderingAttachmentInfo, 8> color_attachments {};
 
@@ -239,7 +239,7 @@ public:
       color_attachments.push_back(detail::to_color_attachment(t));
     });
 
-    detail::core::RenderingInfo rendering_info = {
+    detail::core::RenderingInfo const rendering_info = {
       .renderArea           = detail::to_native(rp.draw_area.viewport.rect),
       .layerCount           = 1,
       .colorAttachmentCount = static_cast<std::uint32_t>(color_attachments.size()),
@@ -251,56 +251,56 @@ public:
   }
 
   CommandList& end_pass()
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.endRendering();
     return *this;
   }
 
   CommandList& set_viewport(Viewport const& viewport)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.setViewportWithCount(detail::to_native(viewport));
     return *this;
   }
 
   CommandList& set_scissor(Rect2D const& scissor)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.setScissorWithCount(detail::to_native(scissor));
     return *this;
   }
 
   CommandList& primitive_topology(PrimitiveTopology const topology)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.setPrimitiveTopology(static_cast<detail::core::PrimitiveTopology>(topology));
     return *this;
   }
 
   CommandList& bind_vertex_buffer(VertexBuffer auto const& vb)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.bindVertexBuffers(0, {vb.handle()}, {0});
     return *this;
   }
 
   CommandList& bind_index_buffer(IndexBuffer auto const& ib)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.bindIndexBuffer(ib.handle(), 0, detail::core::IndexType::eUint16);
     return *this;
   }
 
   CommandList& draw(DrawParameters const& params)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.draw(params.vertex_count, params.instance_count, params.first_vertex, params.first_instance);
     return *this;
   }
 
   CommandList& draw_indexed(DrawParameters const& params)
-    requires(list_type::value == graphics)
+    requires(list_type::value == CommandListType::graphics)
   {
     cmd_buffer.drawIndexed(
         params.index_count, //
@@ -326,8 +326,8 @@ private:
 
 using GraphicsCommandList = CommandList<>;
 
-using ComputeCommandList = CommandList<compute>;
+using ComputeCommandList = CommandList<CommandListType::compute>;
 
-using CopyCommandList = CommandList<copy>;
+using CopyCommandList = CommandList<CommandListType::copy>;
 
 } // namespace rf3d::vk

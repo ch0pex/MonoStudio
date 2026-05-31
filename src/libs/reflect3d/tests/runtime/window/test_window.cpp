@@ -7,14 +7,15 @@
 TEST_SUITE_BEGIN("Window");
 
 TEST_CASE("One window") {
-  rf3d::Window window = rf3d::defaults::make_window();
+  rf3d::Window const window = rf3d::defaults::make_window();
   CHECK_FALSE(window.should_close());
   CHECK(window.size() == rf3d::Resolution {});
 }
 
 TEST_CASE("Two window") {
-  rf3d::Window window  = rf3d::defaults::make_window();
-  rf3d::Window window2 = rf3d::defaults::make_window({.title = "Window2", .resolution {800, 800}});
+  rf3d::Window const window = rf3d::defaults::make_window();
+  rf3d::Window const window2 =
+      rf3d::defaults::make_window({.title = "Window2", .resolution {.width = 800, .height = 800}});
 
   CHECK(window.size() == rf3d::Resolution {});
 
@@ -24,7 +25,7 @@ TEST_CASE("Two window") {
 }
 
 TEST_CASE("Move constructor and assignment") {
-  rf3d::Window window = rf3d::defaults::make_window({.title = "Window1", .resolution {800, 800}});
+  rf3d::Window window = rf3d::defaults::make_window({.title = "Window1", .resolution {.width = 800, .height = 800}});
   // auto handle           = window.native_handle();
 
   rf3d::Window window2 {std::move(window)};

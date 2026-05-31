@@ -128,7 +128,7 @@ inline auto translate_attachment_layouts(RenderPassLayout const& render_pass_lay
                               ? to_native_format(render_pass_layout.depth_attachment.value()) //
                               : core::Format::eUndefined; //
 
-  return std::make_tuple(std::move(color_attachments), std::move(depth_attachment));
+  return std::make_tuple(std::move(color_attachments), depth_attachment);
 }
 
 /**
@@ -152,12 +152,14 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
   bool const has_depth      = create_info.rasterizer_state.depth_mode != DepthMode::none;
 
   // --- Pipeline bindings ---
-  auto const vertex_bindings_info      = create_info.vertex_buffer_bindings.empty()
-                                             ? shader::find_vertex_bindings(create_info.shader)
-                                             : create_info.vertex_buffer_bindings;
-  auto const [bindings, attributes]    = translate_vertex_bindings(vertex_bindings_info);
-  auto const vertex_input_info         = create_vertex_input_state(bindings, attributes);
-  raii::PipelineLayout pipeline_layout = make_pipeline_layout(defaults::pipeline_layout_info);
+  auto const vertex_bindings_info   = create_info.vertex_buffer_bindings.empty()
+                                          ? shader::find_vertex_bindings(create_info.shader)
+                                          : create_info.vertex_buffer_bindings;
+  auto const [bindings, attributes] = translate_vertex_bindings(vertex_bindings_info);
+  auto const vertex_input_info      = create_vertex_input_state(bindings, attributes);
+
+  // auto set_layouts = make_set_layouts(translate_binding_layouts());
+  raii::PipelineLayout const pipeline_layout = make_pipeline_layout(defaults::pipeline_layout_info);
 
   auto const [color_attachments, depth_attachment] = translate_attachment_layouts(create_info.render_pass_layout);
 
@@ -186,7 +188,6 @@ inline raii::Pipeline create_pipeline(PipelineCreateInfo const& create_info) {
 }
 
 } // namespace detail
-
 
 class PipelineState {
 public:

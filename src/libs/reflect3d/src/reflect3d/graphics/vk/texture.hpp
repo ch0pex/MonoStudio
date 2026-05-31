@@ -63,7 +63,7 @@ public:
   // --- Member functions ---
 
   [[nodiscard]] view_type view() const
-    requires(owning)
+    requires owning
   {
     return view_type {
       .gpu_handle = *image_handle,

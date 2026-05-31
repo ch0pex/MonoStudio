@@ -49,7 +49,7 @@ struct Texture {
 
   Texture() = default;
 
-  Texture(config_type const& config);
+  explicit Texture(config_type const& config);
 
   Texture(Texture const&) = delete;
 

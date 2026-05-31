@@ -36,7 +36,7 @@ concept FramenContext = requires(T& ctx) {
 
 template<typename T>
 concept Gpu =
-    requires(T& gpu, typename T::frame_context_type& ctx, mono::span<typename T::surface_type* const> surfaces) {
+    requires(T& gpu, T::frame_context_type& ctx, mono::span<typename T::surface_type* const> surfaces) {
       requires not std::movable<T>;
       requires not std::copyable<T>;
       requires FramenContext<typename T::frame_context_type>;

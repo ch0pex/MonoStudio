@@ -53,7 +53,7 @@ public:
 
   void set_stopped() noexcept { stdexec::set_stopped(std::move(receiver)); }
 
-  decltype(auto) get_env() const noexcept { return stdexec::get_env(receiver); }
+  [[nodiscard]] decltype(auto) get_env() const noexcept { return stdexec::get_env(receiver); }
 
 private:
   R receiver;
@@ -82,7 +82,7 @@ struct InspectSender {
     return stdexec::connect(std::move(sender), InspectReceiver<R, F> {std::move(r), std::move(func)});
   }
 
-  decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
+  [[nodiscard]] decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
 
   Child sender;
   F func;

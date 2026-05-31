@@ -78,11 +78,12 @@ struct CycleView : std::ranges::view_interface<CycleView<V>> {
       requires Const && std::convertible_to<std::ranges::iterator_t<V>, std::ranges::iterator_t<Base>>
       : current_(std::move(i.current_)), parent_(i.parent_), n_(i.n_) { }
 
-    constexpr std::ranges::iterator_t<Base> base() const { return current_; }
+    [[nodiscard]] constexpr std::ranges::iterator_t<Base> base() const { return current_; }
 
     constexpr decltype(auto) operator*() const { return *current_; }
 
     constexpr iterator& operator++() {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       if (++current_ == std::ranges::end(parent_->base_)) {
         current_ = std::ranges::begin(parent_->base_);
         ++n_;
@@ -151,7 +152,7 @@ struct CycleView : std::ranges::view_interface<CycleView<V>> {
     friend constexpr auto operator<=>(iterator const& x, iterator const& y)
       requires std::ranges::random_access_range<Base> && std::three_way_comparable<std::ranges::iterator_t<Base>>
     {
-      if (auto cmp = x.n_ <=> y.n_; cmp != 0)
+      if (auto cmp = x.n_ <=> y.n_; not std::is_eq(cmp))
         return cmp;
       return x.current_ <=> y.current_;
     }
@@ -192,7 +193,7 @@ struct CycleView : std::ranges::view_interface<CycleView<V>> {
   = default;
   constexpr explicit CycleView(V base) : base_(std::move(base)) { }
 
-  constexpr V base() const&
+  [[nodiscard]] constexpr V base() const&
     requires std::copy_constructible<V>
   {
     return base_;
@@ -200,13 +201,13 @@ struct CycleView : std::ranges::view_interface<CycleView<V>> {
   constexpr V base() && { return std::move(base_); }
 
   constexpr auto begin() { return iterator<false>(*this, std::ranges::begin(base_)); }
-  constexpr auto begin() const
+  [[nodiscard]] constexpr auto begin() const
     requires std::ranges::forward_range<V const>
   {
     return iterator<true>(*this, std::ranges::begin(base_));
   }
 
-  constexpr auto end() const noexcept { return std::default_sentinel; }
+  [[nodiscard]] constexpr auto end() const noexcept { return std::default_sentinel; }
 };
 
 template<class R>

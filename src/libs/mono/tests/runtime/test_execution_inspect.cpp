@@ -9,8 +9,11 @@
 
 TEST_SUITE_BEGIN("Execution");
 
+namespace {
 
 int function(int const number) { return number + 1; }
+
+} // namespace
 
 TEST_CASE("Tap algorithm returned value ignored") {
 

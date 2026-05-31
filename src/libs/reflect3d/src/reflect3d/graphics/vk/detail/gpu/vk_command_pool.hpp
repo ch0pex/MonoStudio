@@ -54,7 +54,7 @@ public:
     gpu_device(std::addressof(device)) { }
 
   buffers_type allocate_transient_buffers(std::uint32_t const count) {
-    core::CommandBufferAllocateInfo alloc_info {
+    core::CommandBufferAllocateInfo const alloc_info {
       .commandPool        = unique_use_pool,
       .level              = core::CommandBufferLevel::ePrimary,
       .commandBufferCount = count,
@@ -64,7 +64,7 @@ public:
   }
 
   buffers_type allocate_primary_buffers(std::uint32_t const count) {
-    core::CommandBufferAllocateInfo alloc_info {
+    core::CommandBufferAllocateInfo const alloc_info {
       .commandPool        = primary_pool,
       .level              = core::CommandBufferLevel::ePrimary,
       .commandBufferCount = count,

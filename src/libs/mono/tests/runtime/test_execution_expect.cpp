@@ -12,6 +12,7 @@
 
 TEST_SUITE_BEGIN("Execution");
 
+namespace {
 
 mono::expected<int> expected_function(int const number) {
   if (number == 42) {
@@ -43,6 +44,7 @@ int test_function(F func, int const number) {
   return value;
 }
 
+} // namespace
 
 TEST_CASE("Expect algorithm with std::expected") {
   CHECK_EQ(test_function(expected_function, 42), 43);

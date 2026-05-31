@@ -24,12 +24,10 @@ TEST_CASE("compile<MultiEntryPointTarget> compiles all entry points into a singl
 TEST_CASE("compile<ShaderTarget>(stage) compiles a single pipeline stage") {
   using namespace rf3d::shader;
 
-  auto const vert = compile<SpirV>(
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang", Stage::vertex
-  );
-  auto const frag = compile<SpirV>(
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang", Stage::fragment
-  );
+  auto const vert =
+      compile<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang", Stage::vertex);
+  auto const frag =
+      compile<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang", Stage::fragment);
 
   REQUIRE(vert.has_value());
   REQUIRE(frag.has_value());
@@ -42,17 +40,16 @@ TEST_CASE("compile<ShaderTarget>(stage) compiles a single pipeline stage") {
 TEST_CASE("compile<ShaderTarget>(stage) fails for a non-existent entry point") {
   using namespace rf3d::shader;
 
-  auto const result = compile<SpirV>(
-      std::filesystem::path {mono::assets_path} / "shaders/hardcoded_triangle.slang", Stage::compute
-  );
+  auto const result =
+      compile<SpirV>(std::filesystem::path {mono::assets_path} / "shaders/hardcoded_triangle.slang", Stage::compute);
 
   CHECK_FALSE(result.has_value());
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST_CASE("compile<GLSL> produces one program per entry point") {
   using namespace rf3d::shader;
-  std::filesystem::path const shader_path =
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
+  std::filesystem::path const shader_path = std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
 
   auto const programs = compile<GLSL>(shader_path);
 
@@ -66,8 +63,7 @@ TEST_CASE("compile<GLSL> produces one program per entry point") {
 
 TEST_CASE("compile<GLSL>(stage) compiles a single pipeline stage") {
   using namespace rf3d::shader;
-  std::filesystem::path const shader_path =
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
+  std::filesystem::path const shader_path = std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
 
   auto const vert = compile<GLSL>(shader_path, Stage::vertex);
   auto const frag = compile<GLSL>(shader_path, Stage::fragment);
@@ -82,8 +78,7 @@ TEST_CASE("compile<GLSL>(stage) compiles a single pipeline stage") {
 
 TEST_CASE("compile<HLSL>(stage) compiles a single pipeline stage") {
   using namespace rf3d::shader;
-  std::filesystem::path const shader_path =
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
+  std::filesystem::path const shader_path = std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
 
   auto const vert = compile<HLSL>(shader_path, Stage::vertex);
   auto const frag = compile<HLSL>(shader_path, Stage::fragment);
@@ -96,8 +91,7 @@ TEST_CASE("compile<HLSL>(stage) compiles a single pipeline stage") {
 
 TEST_CASE("compile<WGSL>(stage) compiles a single pipeline stage") {
   using namespace rf3d::shader;
-  std::filesystem::path const shader_path =
-      std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
+  std::filesystem::path const shader_path = std::filesystem::path {mono::assets_path} / "shaders/basic_shader.slang";
 
   auto const vert = compile<WGSL>(shader_path, Stage::vertex);
   auto const frag = compile<WGSL>(shader_path, Stage::fragment);

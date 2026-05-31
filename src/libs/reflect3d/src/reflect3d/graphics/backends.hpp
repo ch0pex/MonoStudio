@@ -67,7 +67,7 @@ struct vk {
   using StorageTexture      = rf3d::vk::StorageTexture;
 };
 
-#if defined(RF3D_SUPPORT_DX12)
+#ifdef RF3D_SUPPORT_DX12
 struct dx12 {
   using gpu           = rf3d::dx12::Gpu;
   using Fence         = rf3d::dx12::Fence;
@@ -103,7 +103,7 @@ struct dx12 {
 };
 #endif
 
-#if defined(RF3D_SUPPORT_METAL)
+#ifdef RF3D_SUPPORT_METAL
 struct metal {
   using gpu           = rf3d::metal::Gpu;
   using Fence         = rf3d::metal::Fence;
@@ -139,7 +139,7 @@ struct metal {
 };
 #endif
 
-#if defined(RF3D_VULKAN_DEFAULT)
+#ifdef RF3D_VULKAN_DEFAULT
 using DefaultBackend = vk;
 #elif defined(RF3D_SUPPORT_DX12) && defined(RF3D_DX12_DEFAULT)
 #error "DirectX 12 backend is not implemented yet"

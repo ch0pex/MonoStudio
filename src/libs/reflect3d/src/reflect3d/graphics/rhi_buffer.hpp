@@ -46,7 +46,7 @@ Buffer make_buffer(std::ranges::contiguous_range auto initial_data, std::size_t 
   capacity              = std::max(capacity, size_bytes);
 
   Buffer buffer {capacity};
-  BufferCopyRegion copy_region {.size = size_bytes};
+  BufferCopyRegion const copy_region {.size = size_bytes};
   auto staging_buffer = make_buffer<transfer_buffer_t<Rhi>>(initial_data, capacity);
 
   graphics_command_list_t<Rhi> cmd {};
@@ -57,29 +57,30 @@ Buffer make_buffer(std::ranges::contiguous_range auto initial_data, std::size_t 
   return buffer;
 }
 
-template<Buffer BufferType>
-class BufferSpan {
-public:
-  using buffer_type = BufferType;
-  using size_type   = typename buffer_type::size_type;
-
-  BufferSpan() = default;
-
-  BufferSpan(buffer_type& buffer, size_type offset = 0, size_type size = 0) :
-    buffer(std::addressof(buffer)), span_offset(offset), span_size(size) {
-    assert(offset + size <= buffer.size() && "Buffer span range exceeds buffer size");
-  }
-
-  [[nodiscard]] buffer_type& data() const { return *buffer; }
-
-  [[nodiscard]] size_type offset() const { return span_offset; }
-
-  [[nodiscard]] size_type size() const { return span_size; }
-
-private:
-  buffer_type* buffer;
-  size_type span_offset;
-  size_type span_size;
-};
+// TODO
+// template<Buffer BufferType>
+// class BufferSpan {
+// public:
+//   using buffer_type = BufferType;
+//   using size_type   = buffer_type::size_type;
+//
+//   BufferSpan() = default;
+//
+//   BufferSpan(buffer_type& buffer, size_type offset = 0, size_type size = 0) :
+//     buffer(std::addressof(buffer)), span_offset(offset), span_size(size) {
+//     assert(offset + size <= buffer.size() && "Buffer span range exceeds buffer size");
+//   }
+//
+//   [[nodiscard]] buffer_type& data() const { return *buffer; }
+//
+//   [[nodiscard]] size_type offset() const { return span_offset; }
+//
+//   [[nodiscard]] size_type size() const { return span_size; }
+//
+// private:
+//   buffer_type* buffer;
+//   size_type span_offset;
+//   size_type span_size;
+// };
 
 } // namespace rf3d::rhi

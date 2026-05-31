@@ -30,7 +30,7 @@ namespace rf3d {
 
 
 template<typename T>
-concept Texture = requires(T& texture, typename T::config_type const& config, typename T::state_type state) {
+concept Texture = requires(T& texture, T::config_type const& config, T::state_type state) {
   requires std::movable<T>;
   requires not std::copyable<T>;
 

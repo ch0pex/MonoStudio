@@ -4,7 +4,6 @@
 #include "reflect3d/window/window.hpp"
 #include "reflect3d/window/window_builder.hpp"
 #include "reflect3d/window/window_config.hpp"
-#include "reflect3d/window/window.hpp"
 
 namespace rf3d::defaults {
 

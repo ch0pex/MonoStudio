@@ -46,7 +46,7 @@ public:
     auto result = std::invoke(func, std::forward<As>(as)...);
 
     if (not result) {
-      throw result.error();
+      throw std::runtime_error(result.error());
     }
 
     stdexec::set_value(std::move(receiver), result.value());
@@ -77,7 +77,7 @@ public:
 
   void set_stopped() noexcept { stdexec::set_stopped(std::move(receiver)); }
 
-  decltype(auto) get_env() const noexcept { return stdexec::get_env(receiver); }
+  [[nodiscard]] decltype(auto) get_env() const noexcept { return stdexec::get_env(receiver); }
 
 private:
   R receiver;
@@ -106,7 +106,7 @@ struct ExpectSender {
     return stdexec::connect(std::move(sender), ExpectReceiver<R, F> {std::move(r), std::move(func)});
   }
 
-  decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
+  [[nodiscard]] decltype(auto) get_env() const noexcept { return stdexec::get_env(sender); }
 
   Child sender;
   F func;

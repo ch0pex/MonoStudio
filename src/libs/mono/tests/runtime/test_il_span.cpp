@@ -7,6 +7,8 @@
 
 #include <mono/containers/span.hpp>
 
+namespace {
+
 struct Numbers {
   mono::span<int const> integers;
   mono::span<float const> floats;
@@ -31,6 +33,7 @@ void consume_numbers(Numbers const& numbers) {
   }
 }
 
+} // namespace
 
 TEST_CASE("mono::span supports initializer-list construction for const element types") {
   static_assert(std::is_constructible_v<mono::span<int const>, std::initializer_list<int>>);
@@ -46,10 +49,10 @@ TEST_CASE("mono::span supports initializer-list construction for const element t
   }
 
   SUBCASE("Consume numbers 2") {
-    auto integers   = {0, 1, 2, 3, 4};
-    auto floats     = {0.0F, 1.0F, 2.0F, 3.0F, 4.0F};
-    auto doubles    = {0.0, 1.0, 2.0, 3.0, 4.0};
-    Numbers numbers = {
+    auto integers         = {0, 1, 2, 3, 4};
+    auto floats           = {0.0F, 1.0F, 2.0F, 3.0F, 4.0F};
+    auto doubles          = {0.0, 1.0, 2.0, 3.0, 4.0};
+    Numbers const numbers = {
       .integers = integers,
       .floats   = floats,
       .doubles  = doubles,
@@ -106,6 +109,7 @@ TEST_CASE("mono::span supports initializer-list construction for const element t
 #endif
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST_CASE("mono::span preserves pointer and pointee constness semantics") {
   SUBCASE("span of const pointers allows mutating pointed objects") {
     int a = 1;
@@ -124,7 +128,7 @@ TEST_CASE("mono::span preserves pointer and pointee constness semantics") {
   }
 
   SUBCASE("span of pointers-to-const remains read-only for pointees") {
-    int x        = 100;
+    int const x  = 100;
     int const* p = &x;
 
     auto read_first = [](mono::span<int const* const> pointers) { return *pointers[0]; };

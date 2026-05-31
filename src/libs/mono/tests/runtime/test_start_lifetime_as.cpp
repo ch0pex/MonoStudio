@@ -26,7 +26,7 @@ TEST_CASE("Start lifetime as array multiple") {
   };
 
   auto* d2 = mono::start_lifetime_as_array<std::complex<float>>(network_data.data(), 2);
-  mono::span<std::complex<float>> d2_span {d2, 2};
+  mono::span<std::complex<float>> const d2_span {d2, 2};
 
   std::complex<float> expected1 {0.1F, 0.2F};
   std::complex<float> expected2 {2.4F, 3.4F};

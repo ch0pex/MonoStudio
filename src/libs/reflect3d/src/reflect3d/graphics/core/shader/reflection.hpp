@@ -27,6 +27,53 @@
 
 namespace rf3d::shader {
 
+namespace detail {
+
+inline bool is_varying_input(slang::VariableLayoutReflection* param) {
+
+  if (param == nullptr) {
+    throw std::invalid_argument("Parameter reflection cannot be null");
+  }
+
+  for (std::uint32_t c = 0; c < param->getCategoryCount(); ++c) {
+    if (param->getCategoryByIndex(c) == slang::VaryingInput) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+inline VertexBufferBinding extract_vertex_buffer_binding(slang::TypeLayoutReflection* layout) {
+  std::vector<VertexBindingAttribute> attributes;
+  std::uint32_t cumulative_offset = 0;
+
+  for (std::uint32_t j = 0; j < layout->getFieldCount(); ++j) {
+    auto* field_layout = layout->getFieldByIndex(j);
+
+    char const* semantic = field_layout->getSemanticName();
+    if (semantic != nullptr and std::string_view(semantic).starts_with("SV_")) {
+      continue;
+    }
+
+    Format const fmt = map_slang_format_to_rf3d(field_layout->getType());
+    if (fmt == Format::unknown) {
+      continue;
+    }
+
+    attributes.emplace_back(cumulative_offset, fmt);
+    cumulative_offset += format_byte_size(fmt);
+  }
+
+  return {
+    .byte_stride = cumulative_offset,
+    .attributes  = std::move(attributes),
+  };
+}
+
+
+} // namespace detail
+
 
 /**
  * @brief Finds vertex buffer bindings from shader reflection data.
@@ -39,7 +86,7 @@ namespace rf3d::shader {
  * @param program Shader program
  * @return Vertex buffer bindings extracted from the shader program reflection.
  */
-inline std::vector<VertexBufferBinding> find_vertex_bindings(shader::Program const& program) {
+inline std::vector<VertexBufferBinding> find_vertex_bindings(Program const& program) {
   std::vector<VertexBufferBinding> bindings;
 
   for (auto* entry_point: program.entry_points()) {
@@ -50,15 +97,7 @@ inline std::vector<VertexBufferBinding> find_vertex_bindings(shader::Program con
     for (std::uint32_t i = 0; i < entry_point->getParameterCount(); ++i) {
       auto* param = entry_point->getParameterByIndex(i);
 
-      bool is_varying_input = false;
-      for (std::uint32_t c = 0; c < param->getCategoryCount(); ++c) {
-        if (param->getCategoryByIndex(c) == slang::VaryingInput) {
-          is_varying_input = true;
-          break;
-        }
-      }
-
-      if (not is_varying_input)
+      if (not detail::is_varying_input(param))
         continue;
 
       auto* type        = param->getType();
@@ -68,32 +107,9 @@ inline std::vector<VertexBufferBinding> find_vertex_bindings(shader::Program con
         continue;
       }
 
-      std::vector<BindingAttribute> attributes;
-      std::uint32_t cumulative_offset = 0;
-      for (std::uint32_t j = 0; j < type_layout->getFieldCount(); ++j) {
-        auto* field_layout = type_layout->getFieldByIndex(j);
-
-        char const* semantic = field_layout->getSemanticName();
-        if (semantic != nullptr and std::string_view(semantic).starts_with("SV_")) {
-          continue;
-        }
-
-        Format const fmt = map_slang_format_to_rf3d(field_layout->getType());
-        if (fmt == Format::unknown) {
-          continue;
-        }
-
-        attributes.push_back(BindingAttribute {.offset = cumulative_offset, .format = fmt});
-        cumulative_offset += format_byte_size(fmt);
-      }
-
-      if (not attributes.empty()) {
-        bindings.push_back(
-            VertexBufferBinding {
-              .byte_stride = cumulative_offset,
-              .attributes  = std::move(attributes),
-            }
-        );
+      auto binding = detail::extract_vertex_buffer_binding(type_layout);
+      if (not binding.attributes.empty()) {
+        bindings.emplace_back(std::move(binding));
       }
     }
   }

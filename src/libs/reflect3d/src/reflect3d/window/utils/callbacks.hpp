@@ -7,7 +7,6 @@
 #include <GLFW/glfw3.h>
 
 //
-#include <chrono>
 #include <mono/containers/span.hpp>
 #include <string_view>
 
@@ -100,16 +99,19 @@ inline constexpr WindowFocus window_focus = [](GLFWwindow* handle [[maybe_unused
   LOG_INFO("Window '{}' focus changed: {}", get_title(handle), std::string_view(focus ? "focused" : "unfocused"));
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr WindowRefresh window_refresh = [](GLFWwindow* handle [[maybe_unused]]) {
   using namespace std::chrono_literals;
   LOG_INFO_LIMIT(1000ms, "Window '{}' requested refresh.", get_title(handle));
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr WindowPos window_pos = [](GLFWwindow* handle [[maybe_unused]], int x, int y) {
   using namespace std::chrono_literals;
   LOG_INFO_LIMIT(1000ms, "Window '{}' moved to position ({}, {}).", get_title(handle), x, y);
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr WindowSize window_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
   using namespace std::chrono_literals;
   LOG_INFO_LIMIT(1000ms, "Window '{}' resized to {}x{}.", get_title(handle), width, height);
@@ -128,11 +130,13 @@ inline constexpr WindowMaximize window_maximize = [](GLFWwindow* handle [[maybe_
   );
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr FramebufferSize framebuffer_size = [](GLFWwindow* handle [[maybe_unused]], int width, int height) {
   using namespace std::chrono_literals;
   LOG_INFO_LIMIT(1000ms, "Framebuffer for window '{}' resized to {}x{}.", get_title(handle), width, height);
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr WindowContentScale window_content_scale = [](GLFWwindow* handle [[maybe_unused]], float xscale,
                                                               float yscale) {
   using namespace std::chrono_literals;
@@ -141,6 +145,7 @@ inline constexpr WindowContentScale window_content_scale = [](GLFWwindow* handle
 
 // --- Input callbacks ---
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr Key key_event = [](GLFWwindow* handle [[maybe_unused]], int key, int scancode, int action, int mods) {
   LOG_INFO(
       "Key event on window '{}': key = {}, scancode = {}, action = {}, mods = {}", get_title(handle), key, scancode,
@@ -152,10 +157,12 @@ inline constexpr Char character = [](GLFWwindow* handle [[maybe_unused]], unsign
   LOG_INFO("Character input on window '{}': codepoint = {}", get_title(handle), codepoint);
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr CharMods char_mods = [](GLFWwindow* handle [[maybe_unused]], unsigned int codepoint, int mods) {
   LOG_INFO("Character with mods on window '{}': codepoint = {}, mods = {}", get_title(handle), codepoint, mods);
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline constexpr MouseButton mouse_button = [](GLFWwindow* handle [[maybe_unused]], int button, int action, int mods) {
   LOG_INFO("Mouse button on window '{}': button = {}, action = {}, mods = {}", get_title(handle), button, action, mods);
 };

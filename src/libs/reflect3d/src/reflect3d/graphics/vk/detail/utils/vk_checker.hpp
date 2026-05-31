@@ -27,6 +27,7 @@
 namespace rf3d::vk::detail {
 
 struct Error {
+  // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
   Error(core::Result result, std::source_location const& location = std::source_location::current()) noexcept :
     result(result), location(location) { };
   core::Result result;

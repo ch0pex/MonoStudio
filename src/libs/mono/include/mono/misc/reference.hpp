@@ -52,7 +52,8 @@ public:
 
   template<typename U>
     requires(std::is_convertible_v<U&, T&> and not std::same_as<std::decay_t<U>, SafePtr>)
-  constexpr SafePtr(U&& x) noexcept : ptr(std::addressof(std::forward<U>(x))) { }
+  constexpr SafePtr(U&& x) noexcept : // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+    ptr(std::addressof(std::forward<U>(x))) { }
 
   constexpr SafePtr(std::nullptr_t) = delete;
 
@@ -61,7 +62,9 @@ public:
 
   constexpr T* operator->() const noexcept { return ptr; }
 
-  constexpr operator T*() const noexcept { return ptr; }
+  constexpr operator T*() const noexcept { // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+    return ptr;
+  }
 
 private:
   T* ptr;

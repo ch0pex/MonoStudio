@@ -17,14 +17,14 @@ using context_type  = raii::Context;
 using instance_type = std::conditional_t<enable_validation_layers, detail::DebugInstance, detail::ReleaseInstance>;
 
 instance_type& instance() {
-  static context_type context {};
+  static context_type const context {};
   static instance_type instance {context};
   return instance;
 }
 
 } // namespace
 
-raii::SurfaceKHR create_surface(NativeWindow const window) {
+raii::SurfaceKHR create_surface(NativeWindow window) {
   LOG_INFO("Creating Vulkan surface for the window");
   core::SurfaceKHR::NativeType surface = nullptr;
 
@@ -37,7 +37,7 @@ raii::SurfaceKHR create_surface(NativeWindow const window) {
 
 raii::PhysicalDevices const& physical_devices() {
   LOG_INFO("Selecting physical devices available on the system");
-  static raii::PhysicalDevices physical_devices {instance().handle};
+  static raii::PhysicalDevices const physical_devices {instance().handle};
 
   return physical_devices;
 }

@@ -64,7 +64,7 @@ expected<T> parse_options(mono::span<char*> const args) try {
 
   if (vm.contains("help")) {
     std::println("{}", detail::help_message<T>(desc));
-    std::exit(0);
+    std::exit(0); // NOLINT TODO: find a better way to handle this without exiting the program
   }
 
   if (not vm.contains("config")) {

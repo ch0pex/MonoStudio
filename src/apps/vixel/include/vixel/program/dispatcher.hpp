@@ -11,7 +11,7 @@
 
 namespace vix::program {
 
-void run([[maybe_unused]] config::Vixel const& config) {
+inline void run([[maybe_unused]] config::Vixel const& config) {
   // namespace exec = mono::ex;
   // // auto sched = main_pool.get_scheduler();
   //

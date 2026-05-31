@@ -25,7 +25,7 @@
 namespace rf3d {
 
 template<typename T>
-concept Semaphore = requires(T& semaphore, typename T::count_type const value, typename T::timeout_type const timeout) {
+concept Semaphore = requires(T& semaphore, T::count_type const value, T::timeout_type const timeout) {
   requires std::movable<T>;
   requires not std::copyable<T>;
 

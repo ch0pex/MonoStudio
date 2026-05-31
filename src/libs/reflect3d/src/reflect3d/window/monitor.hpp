@@ -8,9 +8,9 @@
 #include <mono/logging/logger.hpp>
 
 #include <GLFW/glfw3.h>
+#include <mono/containers/span.hpp>
 #include <optional>
 #include <ranges>
-#include <mono/containers/span.hpp>
 #include <stdexcept>
 #include <vector>
 
@@ -36,7 +36,7 @@ struct MonitorWorkingArea {
 };
 
 class Monitor {
-  explicit Monitor(NativeMonitor const monitor) : handle(monitor) { }
+  explicit Monitor(NativeMonitor monitor) : handle(monitor) { }
 
 public:
   // --- Type traits ---
@@ -75,7 +75,7 @@ public:
 
   [[nodiscard]] std::string name() const { return glfwGetMonitorName(handle); }
 
-  void attach_window(NativeWindow const window) const {
+  void attach_window(NativeWindow window) const {
     glfwSetWindowMonitor(
         window, handle, 0, 0, physical_resolution().width, physical_resolution().height, refresh_rate()
     );
@@ -141,8 +141,8 @@ public:
     glfwGetMonitorWorkarea(handle, &x, &y, &width, &height);
 
     return {
-      {static_cast<std::uint16_t>(x), static_cast<std::uint16_t>(y)},
-      {.width = static_cast<std::uint16_t>(width), .height = static_cast<std::uint16_t>(height)}
+      .position = {static_cast<std::uint16_t>(x), static_cast<std::uint16_t>(y)},
+      .size     = {.width = static_cast<std::uint16_t>(width), .height = static_cast<std::uint16_t>(height)}
     };
   }
 

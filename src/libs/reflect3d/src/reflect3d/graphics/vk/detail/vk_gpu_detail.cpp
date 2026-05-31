@@ -16,7 +16,7 @@ namespace rf3d::vk::detail {
 namespace {
 
 struct Gpu {
-  Gpu(PhysicalDevice&& physical_device) :
+  explicit Gpu(PhysicalDevice&& physical_device) :
     physical(std::move(physical_device)), //
     logical(physical.create_logical_device()), //
     memory_allocator(create_allocator(*physical, *logical)), //
@@ -66,13 +66,13 @@ void wait_semaphores(
   get_gpu().logical.wait_semaphores(semaphore, wait_values, timeout);
 }
 
-void wait_semaphore(core::Semaphore const semaphore, std::uint64_t const value, std::chrono::milliseconds timeout) {
-  wait_semaphores({semaphore}, {value}, timeout);
-}
-
-void signal_semaphore(core::Semaphore const& semaphore, std::uint64_t const signalValue) {
-  get_gpu().logical.signal_semaphore(semaphore, signalValue);
-}
+// void wait_semaphore(core::Semaphore const semaphore, std::uint64_t const value, std::chrono::milliseconds timeout) {
+//   wait_semaphores({semaphore}, {value}, timeout);
+// }
+//
+// void signal_semaphore(core::Semaphore const& semaphore, std::uint64_t const signalValue) {
+//   get_gpu().logical.signal_semaphore(semaphore, signalValue);
+// }
 
 void submit_work(SubmitInfo const& submit_info, core::Fence const fence) {
   get_gpu().queues.graphics().submit(to_native(submit_info), fence);

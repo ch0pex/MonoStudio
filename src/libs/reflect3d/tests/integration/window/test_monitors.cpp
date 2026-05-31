@@ -1,9 +1,8 @@
 
-#include "common.hpp"
 #include "reflect3d/window/monitor.hpp"
 
 #include <GLFW/glfw3.h>
-#include <print>
+#include <iostream>
 
 int main() try { //
   // if (glfwInit() == 0) {
@@ -11,6 +10,9 @@ int main() try { //
   // };
   rf3d::log_monitors();
 }
+catch (std::exception const& e) {
+  std::cerr << "An error occurred while logging monitors: " << e.what() << '\n';
+}
 catch (...) {
-  std::println("Something went wrong...");
+  std::cerr << "An error occurred while logging monitors\n";
 }

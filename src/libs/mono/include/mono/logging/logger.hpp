@@ -42,16 +42,17 @@ enum class LogLevel : uint8_t {
   none
 };
 
-inline quill::Logger*& get_global_logger() noexcept try {
+inline quill::Logger* get_global_logger() try {
   static auto* logger = create_logger({.name = "Rflect", .path = std::filesystem::temp_directory_path()});
   return logger;
 }
 catch (std::exception& e) {
   std::println("Something went wrong while accessing to the logger. {}", e.what());
-  std::exit(-1);
+  return nullptr;
 }
 
 // clang-format off
+// NOLINTBEGIN
 #define LOG_DYNAMIC(level, fmt, ...)      QUILL_LOG_DYNAMIC(mono::get_global_logger(), static_cast<quill::LogLevel>(level), fmt, ## __VA_ARGS__)
 #define LOG_INFO(fmt, ...)                QUILL_LOG_INFO(mono::get_global_logger(), fmt, ## __VA_ARGS__)
 #define LOG_WARNING(fmt, ...)             QUILL_LOG_WARNING(mono::get_global_logger(), fmt, ## __VA_ARGS__)
@@ -59,6 +60,7 @@ catch (std::exception& e) {
 #define LOG_INFO_LIMIT(min,fmt, ...)      QUILL_LOG_INFO_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
 #define LOG_WARNING_LIMIT(min,fmt, ...)   QUILL_LOG_WARNING_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
 #define LOG_ERROR_LIMIT(min, fmt, ...)    QUILL_LOG_ERROR_LIMIT(min, mono::get_global_logger(), fmt, ## __VA_ARGS__)
+// NOLINTEND
 // clang-format on
 
 } // namespace mono

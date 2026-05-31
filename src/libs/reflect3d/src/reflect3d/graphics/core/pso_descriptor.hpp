@@ -33,18 +33,18 @@ namespace rf3d {
 
 using ShaderBytecode = mono::span<char const>;
 
-struct BindingAttribute {
+struct VertexBindingAttribute {
   std::uint32_t offset {};
   Format format {};
 
-  friend bool operator==(BindingAttribute const& lhs, BindingAttribute const& rhs) {
+  friend bool operator==(VertexBindingAttribute const& lhs, VertexBindingAttribute const& rhs) {
     return lhs.offset == rhs.offset and lhs.format == rhs.format;
   }
 };
 
 struct VertexBufferBinding {
   std::uint32_t byte_stride {};
-  std::vector<BindingAttribute> attributes {};
+  std::vector<VertexBindingAttribute> attributes {};
 
   friend bool operator==(VertexBufferBinding const& lhs, VertexBufferBinding const& rhs) {
     return lhs.byte_stride == rhs.byte_stride and std::ranges::equal(lhs.attributes, rhs.attributes);
@@ -58,6 +58,20 @@ struct RenderPassLayout {
   std::uint32_t view_mask {};
 };
 
+enum class BindingType : uint8_t {
+  constant_buffer,
+  storage_buffer,
+  rw_storage_buffer,
+  texture_2D,
+  rw_texture_2D,
+  sampler_state,
+};
+
+struct BindingGroupLayout {
+  std::uint32_t index {};
+  BindingType type {};
+  shader::Stage stage {};
+};
 
 /**
  * @brief Pipeline creation descriptor that contains all the necessary information to create a graphics pipeline state
@@ -75,6 +89,7 @@ struct PipelineCreateInfo {
 
   // --- Reflected by default ---
   std::vector<VertexBufferBinding> vertex_buffer_bindings {};
+  std::vector<BindingGroupLayout> binding_groups {};
 };
 
 } // namespace rf3d

@@ -60,11 +60,13 @@ void visit(Tuple&& t, Func&&... f) {
   );
 }
 
+
+// TODO: Think about value category preservation and perfect forwarding in this function
 template<meta::specialization_of<std::tuple> Tuple, typename Func>
-auto transform(Tuple&& t, Func&& f) {
+auto transform(Tuple const& t, Func f) {
   constexpr auto n = std::tuple_size_v<std::decay_t<Tuple>>;
   return [&f, &t]<std::size_t... Idx>(std::index_sequence<Idx...>) {
-    return std::make_tuple(f(std::get<Idx>(std::forward<Tuple>(t)))...);
+    return std::make_tuple(f(std::get<Idx>(t))...);
   }(std::make_index_sequence<n> {});
 }
 

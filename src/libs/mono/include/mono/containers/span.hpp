@@ -41,7 +41,9 @@ struct span : std::span<T, Extent> {
 };
 
 template<typename Type, size_t ArrayExtent>
-span(Type (&)[ArrayExtent]) -> span<Type, ArrayExtent>; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+span(
+    Type (&)[ArrayExtent] // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+) -> span<Type, ArrayExtent>;
 
 template<typename Type, size_t ArrayExtent>
 span(std::array<Type, ArrayExtent>&) -> span<Type, ArrayExtent>;

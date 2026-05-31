@@ -1,6 +1,5 @@
 #include "reflect3d/window/utils/context.hpp"
 
-#include <mono/misc/passkey.hpp>
 //
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -30,6 +29,6 @@ struct ContextInstance {
 
 } // namespace
 
-void init() { static ContextInstance instance {}; }
+void init() { static ContextInstance const instance {}; }
 
 } // namespace rf3d::platform

@@ -46,7 +46,7 @@ concept Buffer = requires(T& buffer) {
 };
 
 template<typename T>
-concept DedicatedBuffer = requires(T& buffer, typename T::state_type const state) {
+concept DedicatedBuffer = requires(T& buffer, T::state_type const state) {
   requires Buffer<T>;
   requires detail::ContainsFlag<T::memory::value, MemoryProperty::dedicated>;
   requires std::same_as<typename T::state_type, ResourceState>;

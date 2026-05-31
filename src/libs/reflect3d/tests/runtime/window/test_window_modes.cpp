@@ -29,12 +29,12 @@ auto constexpr window_config = [](WindowMode const mode) {
 };
 
 TEST_CASE("Full screen") {
-  Window window = rf3d::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
+  Window const window = rf3d::WindowBuilder(window_config(WindowMode::exclusive_full_screen)).build();
   CHECK(window.is_full_screen() == true);
 }
 
 TEST_CASE("Full screen borderless") {
-  Window window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
+  Window const window = rf3d::WindowBuilder(window_config(WindowMode::borderless_full_screen)).build();
   if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
     CHECK(window.is_full_screen() == true);
   }
@@ -44,13 +44,13 @@ TEST_CASE("Full screen borderless") {
 }
 
 TEST_CASE("Windowed borderless") {
-  Window window = rf3d::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
+  Window const window = rf3d::WindowBuilder(window_config(WindowMode::windowed_borderless)).build();
   CHECK(window.is_full_screen() == false);
   CHECK(window.size() == resolution);
 }
 
 TEST_CASE("Windowed normal") {
-  Window window = rf3d::WindowBuilder(window_config(WindowMode::windowed)).build();
+  Window const window = rf3d::WindowBuilder(window_config(WindowMode::windowed)).build();
 
   CHECK(window.is_full_screen() == false);
   CHECK(window.size() == resolution);

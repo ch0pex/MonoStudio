@@ -8,9 +8,9 @@
 #include <reflect3d/window/window.hpp>
 #include <reflect3d/window/window_builder.hpp>
 
+#include <iostream>
 #include <mono/execution/signals.hpp>
 #include <mono/logging/logger.hpp>
-
 #include "common.hpp"
 
 
@@ -64,10 +64,10 @@ int main() try {
   rhi::gpu::wait_idle();
 }
 catch (std::exception const& e) {
-  LOG_ERROR("Program execution terminated with an unhandled exception: {}", e.what());
+  std::cerr << "Error: " << e.what() << '\n';
   return EXIT_FAILURE;
 }
 catch (...) {
-  LOG_ERROR("Program execution terminated with an unknown error");
+  std::cerr << "Unknown error occurred" << '\n';
   return EXIT_FAILURE;
 }

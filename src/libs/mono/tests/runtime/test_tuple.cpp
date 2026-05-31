@@ -43,7 +43,7 @@ TEST_CASE("transform maps every tuple element and returns tuple") {
 TEST_CASE("transform supports heterogenous tuples") {
   auto values = std::make_tuple(5, std::string {"mono"});
 
-  auto transformed = mono::tuple::transform(std::move(values), [](auto&& value) {
+  auto transformed = mono::tuple::transform(values, [](auto&& value) {
     using value_t = std::decay_t<decltype(value)>;
     if constexpr (std::is_same_v<value_t, int>) {
       return value * 3;

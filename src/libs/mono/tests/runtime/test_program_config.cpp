@@ -11,12 +11,14 @@
 
 #include <filesystem>
 
+namespace {
+
 struct ConfigExample {
   using config_concept = mono::config::Tag;
   mono::LoggerConfig logger;
 };
 
-inline bool check_file(std::filesystem::path const& path) {
+bool check_file(std::filesystem::path const& path) {
   if (not std::filesystem::exists(path)) {
     return false;
   }
@@ -27,6 +29,8 @@ inline bool check_file(std::filesystem::path const& path) {
   }
   return true;
 }
+
+} // namespace
 
 TEST_SUITE_BEGIN("Program");
 

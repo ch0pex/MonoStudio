@@ -224,8 +224,7 @@ public:
 
   void recreate(config_type new_config) {
     new_config.oldSwapchain = *swapchain_handle;
-    handle_type new_handle  = make_swapchain(config);
-    swapchain_handle        = std::move(new_handle);
+    swapchain_handle        = make_swapchain(config);
     config                  = new_config;
     images                  = get_images(swapchain_handle, config);
     current_image_index     = 0;
@@ -297,12 +296,13 @@ public:
 
   Surface& operator=(Surface&&) = default;
 
-  ~Surface() {
-    // TODO: think about this wait_idle
-    // if (surface_handle != nullptr) {
-    //   detail::wait_idle();
-    // }
-  }
+  ~Surface() = default;
+  // {
+  //   // TODO: think about this wait_idle
+  //   // if (surface_handle != nullptr) {
+  //   //   detail::wait_idle();
+  //   // }
+  // }
 
   // --- Member functions ---
 

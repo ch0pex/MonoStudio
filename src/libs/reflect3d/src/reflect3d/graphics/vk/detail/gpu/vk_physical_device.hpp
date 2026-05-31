@@ -69,7 +69,7 @@ public:
     };
 
     // create a Device
-    core::DeviceCreateInfo create_info {
+    core::DeviceCreateInfo const create_info {
       .pNext                   = &featureChain.get<core::PhysicalDeviceFeatures2>(),
       .queueCreateInfoCount    = static_cast<std::uint32_t>(queue_create_infos.size()),
       .pQueueCreateInfos       = queue_create_infos.data(),

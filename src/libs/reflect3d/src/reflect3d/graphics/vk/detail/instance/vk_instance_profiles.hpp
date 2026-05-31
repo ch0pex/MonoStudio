@@ -34,7 +34,7 @@ namespace rf3d::vk::detail {
  * @note may throw if mandatory extensions are not supported
  * @return A NativeInstance handle representing the created Vulkan instance.
  */
-raii::Instance create_instance(raii::Context const& context) {
+inline raii::Instance create_instance(raii::Context const& context) {
   LOG_INFO("Initializing Vulkan instance");
   platform::init();
   static constexpr core::ApplicationInfo app_info {
@@ -105,7 +105,7 @@ struct DebugInstance {
    *    Constructors    *
    **********************/
 
-  DebugInstance(raii::Context const& context) :
+  explicit DebugInstance(raii::Context const& context) :
     handle(detail::create_instance(context)),
     debug_messenger(handle.createDebugUtilsMessengerEXT(debug_utils_messenger_create_info)) { }
 

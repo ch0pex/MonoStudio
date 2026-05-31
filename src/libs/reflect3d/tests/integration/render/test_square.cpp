@@ -1,6 +1,7 @@
 
 #include "common.hpp"
 
+#include <iostream>
 #include <reflect3d/graphics/core/renderpass_descriptor.hpp>
 #include <reflect3d/graphics/core/resource_state.hpp>
 #include <reflect3d/graphics/core/shader/compiler.hpp>
@@ -17,6 +18,8 @@
 #include <mono/execution/stop_token.hpp>
 #include <mono/logging/logger.hpp>
 
+
+namespace {
 
 template<rf3d::RenderHardwareInterface Impl>
 void test_square() {
@@ -69,14 +72,16 @@ void test_square() {
   }
 }
 
+} // namespace
+
 int main() try { //
   test_square<rf3d::impl::vk>();
 }
 catch (std::exception const& e) {
-  LOG_ERROR("Program execution terminated with an unhandled exception: {}", e.what());
+  std::cerr << "Error: " << e.what() << '\n';
   return EXIT_FAILURE;
 }
 catch (...) {
-  LOG_ERROR("Program execution terminated with an unknown error");
+  std::cerr << "Unknown error occurred" << '\n';
   return EXIT_FAILURE;
 }

@@ -18,14 +18,11 @@
 
 namespace rf3d::detail {
 
-inline void center_window_on_monitor(
-    NativeWindow const window, Monitor const monitor, std::uint16_t const width, std::uint16_t const height
-) {
+inline void center_window_on_monitor(NativeWindow window, Monitor const monitor, Resolution resolution) {
   MonitorWorkingArea const work_area = monitor.working_area();
 
-  auto const x = static_cast<std::uint16_t>(work_area.position.x + ((work_area.size.width - width) / 2));
-  auto const y = static_cast<std::uint16_t>(work_area.position.y + ((work_area.size.height - height) / 2));
-
+  auto const x = static_cast<std::uint16_t>(work_area.position.x + ((work_area.size.width - resolution.width) / 2));
+  auto const y = static_cast<std::uint16_t>(work_area.position.y + ((work_area.size.height - resolution.height) / 2));
   glfwSetWindowPos(window, x, y);
 }
 
@@ -41,7 +38,7 @@ inline NativeWindow create_handle(
     std::string const& title, //
     std::optional<Monitor> const monitor = std::nullopt
 ) {
-  NativeWindow const window = glfwCreateWindow(resolution.width, resolution.height, title.c_str(), nullptr, nullptr);
+  NativeWindow window = glfwCreateWindow(resolution.width, resolution.height, title.c_str(), nullptr, nullptr);
 
   if (window == nullptr) {
     throw WindowException("Failed to create window: " + get_window_error());
@@ -63,9 +60,9 @@ inline NativeWindow create_windowed(config::Window const& config, Monitor monito
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-  NativeWindow const window = create_handle(config.resolution, config.title);
+  NativeWindow window = create_handle(config.resolution, config.title);
 
-  center_window_on_monitor(window, monitor, config.resolution.width, config.resolution.height);
+  center_window_on_monitor(window, monitor, config.resolution);
 
   return window;
 }
@@ -76,8 +73,8 @@ inline NativeWindow create_windowed_borderless(config::Window const& config, Mon
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  NativeWindow const window = create_handle(config.resolution, config.title);
-  center_window_on_monitor(window, monitor, config.resolution.width, config.resolution.height);
+  NativeWindow window = create_handle(config.resolution, config.title);
+  center_window_on_monitor(window, monitor, config.resolution);
 
   return window;
 }

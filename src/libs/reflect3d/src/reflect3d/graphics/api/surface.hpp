@@ -30,8 +30,8 @@ namespace rf3d {
 template<typename T>
 concept Surface = requires( //
     T& surface,  //
-    typename T::resolution_type const& resolution,  //
-    typename T::window_type&& window //
+    T::resolution_type const& resolution,  //
+    T::window_type&& window //
 ) {
   requires std::movable<T>;
   requires not std::copyable<T>;

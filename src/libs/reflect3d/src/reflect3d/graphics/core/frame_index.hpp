@@ -48,6 +48,7 @@ public:
 
   counter_type operator*() const { return value(); }
 
+  // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
   operator counter_type() const { return value(); }
 
 private:

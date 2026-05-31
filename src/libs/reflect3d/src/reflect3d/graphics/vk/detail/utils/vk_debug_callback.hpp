@@ -43,17 +43,22 @@ inline VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
   mono::LogLevel const level = (it_sev != severity_map.end()) ? it_sev->second : mono::LogLevel::critical;
 
   std::string type_string;
-  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::eGeneral)
+  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::eGeneral) {
     type_string += "GENERAL ";
-  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::eValidation)
+  }
+  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::eValidation) {
     type_string += "VALIDATION ";
-  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
+  }
+  if (message_type & core::DebugUtilsMessageTypeFlagBitsEXT::ePerformance) {
     type_string += "PERFORMANCE ";
+  }
 
-  if (type_string.empty())
+  if (type_string.empty()) {
     type_string = "UNKNOWN";
-  else
+  }
+  else {
     type_string.pop_back();
+  }
 
   LOG_DYNAMIC(level, "[Vulkan {}] {}", type_string, callback_data->pMessage);
 

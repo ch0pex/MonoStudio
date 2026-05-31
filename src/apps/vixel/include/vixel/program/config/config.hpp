@@ -21,7 +21,7 @@ struct Vixel {
 } // namespace vix::config
 //
 template<>
-vix::config::Vixel mono::config::example<vix::config::Vixel>() {
+inline vix::config::Vixel mono::config::example<vix::config::Vixel>() {
   return {
     .logger = {.name = "VixelLogger", .path = "/tmp/vixel/logger"},
     .window = {

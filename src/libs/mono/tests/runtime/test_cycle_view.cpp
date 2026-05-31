@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <compare>
 #include <mono/ranges/cycle_view.hpp>
 
 #include <algorithm>
@@ -41,7 +41,7 @@ TEST_CASE("CycleView works with std::array") {
 
   auto it = cycled.begin();
   for (int i = 0; i < 10; ++i) {
-    CHECK_EQ(*it, arr[i % 3]);
+    CHECK_EQ(*it, arr.at(i % 3));
     ++it;
   }
 }
@@ -230,9 +230,9 @@ TEST_CASE("CycleView iterator three-way comparison") {
   auto it2 = it1 + 5;
   auto it3 = cycled.begin();
 
-  auto const result  = it1 <=> it2 < 0;
-  auto const result2 = it2 <=> it1 > 0;
-  auto const result3 = it1 <=> it3 == 0;
+  auto const result  = std::is_lt(it1 <=> it2);
+  auto const result2 = std::is_gt(it2 <=> it1);
+  auto const result3 = std::is_eq(it1 <=> it3);
 
   CHECK(result);
   CHECK(result2);
@@ -242,7 +242,7 @@ TEST_CASE("CycleView iterator three-way comparison") {
 TEST_CASE("CycleView base() returns underlying view") {
   std::vector<int> vec = {1, 2, 3};
   auto view            = std::views::all(vec);
-  CycleView cycled(view);
+  CycleView const cycled(view);
 
   auto base = cycled.base();
   CHECK(std::ranges::equal(base, vec));
@@ -303,7 +303,7 @@ TEST_CASE("CycleView with const vector") {
 
   auto it = cycled.begin();
   for (int i = 0; i < 6; ++i) {
-    CHECK_EQ(*it, vec[i % 2]);
+    CHECK_EQ(*it, vec.at(i % 2));
     ++it;
   }
 }
@@ -314,6 +314,7 @@ TEST_CASE("CycleView iter_move works correctly") {
 
   auto it = cycled.begin();
 
+  CHECK(*it == "hello");
   CHECK(std::is_same_v<decltype(std::ranges::iter_move(it)), std::string&&>);
 }
 

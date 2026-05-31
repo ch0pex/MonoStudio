@@ -25,8 +25,8 @@
 
 namespace rf3d::vk::detail {
 
-namespace core = ::vk;
-namespace raii = ::vk::raii;
+namespace core = ::vk; // NOLINT
+namespace raii = ::vk::raii; // NOLINT
 
 using Allocator            = VmaAllocator;
 using Allocation           = VmaAllocation;

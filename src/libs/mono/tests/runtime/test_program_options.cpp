@@ -9,12 +9,14 @@
 #include <filesystem>
 #include <fstream>
 
+namespace {
+
 struct SampleConfig {
   using config_concept = mono::config::Tag;
   mono::LoggerConfig logger;
 };
 
-static std::filesystem::path create_temp_toml(std::string const& content) {
+std::filesystem::path create_temp_toml(std::string const& content) {
   auto tmp = std::filesystem::temp_directory_path() / "test_config.toml";
   std::ofstream ofs(tmp);
   ofs << content;
@@ -22,6 +24,12 @@ static std::filesystem::path create_temp_toml(std::string const& content) {
 }
 
 struct TempFile {
+  TempFile()                           = default;
+  TempFile(TempFile const&)            = default;
+  TempFile(TempFile&&)                 = delete;
+  TempFile& operator=(TempFile const&) = default;
+  TempFile& operator=(TempFile&&)      = delete;
+  explicit TempFile(std::filesystem::path path) : path(std::move(path)) { }
   std::filesystem::path path;
   ~TempFile() {
     if (!path.empty() && std::filesystem::exists(path)) {
@@ -30,6 +38,7 @@ struct TempFile {
   }
 };
 
+} // namespace
 
 TEST_CASE("parse_options error if no arguments") {
   std::string program {"program"};
