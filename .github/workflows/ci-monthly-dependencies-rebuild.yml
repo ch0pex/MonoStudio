@@ -10,6 +10,12 @@ jobs:
     name: Cleanup Remote
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Linux build environment
+        uses: ./.github/actions/setup-linux-build-env
+
       - name: Clean remote
         run: |
           conan config install conan/config
