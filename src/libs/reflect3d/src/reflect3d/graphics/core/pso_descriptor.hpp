@@ -65,13 +65,49 @@ enum class BindingType : uint8_t {
   texture_2D,
   rw_texture_2D,
   sampler_state,
+  unknown,
 };
 
+
+/**
+ * A binding group layout describes a set of resource bindings that are grouped together in a shader. Each binding group
+ * layout specifies the type of resources, the number of resources, and the shader stages that can access them.
+ * - Vk equivalent: VkDescriptorSetLayoutBinding
+ * - D3D12 equivalent: D3D12_DESCRIPTOR_RANGE
+ * - Metal equivalent: MTLArgumentDescriptor
+ */
 struct BindingGroupLayout {
-  std::uint32_t index {};
+  std::uint32_t count {};
   BindingType type {};
   shader::Stage stage {};
 };
+
+/**
+ * A push constant range describes a contiguous range of push constants that can be accessed by a shader stage.
+ * - Vk equivalent: VkPushConstantRange
+ * - D3D12 equivalent: D3D12_ROOT_CONSTANTS
+ * - Metal equivalent: MTLArgumentDescriptor (for constant values)
+ */
+struct PushConstantRange {
+  std::uint32_t offset {};
+  std::uint32_t size {};
+  shader::Stage stage {};
+};
+
+/**
+ * - Slang equivalent: ParameterBlock
+ * - Vulkan equivalent: DescriptorSet
+ */
+struct SetBindingGroup {
+  std::vector<BindingGroupLayout> bindings;
+};
+
+
+struct PipelineLayout {
+  std::vector<SetBindingGroup> sets {};
+  std::vector<PushConstantRange> push_constants {};
+};
+
 
 /**
  * @brief Pipeline creation descriptor that contains all the necessary information to create a graphics pipeline state

@@ -71,6 +71,8 @@ public:
     return std::views::iota(0U, layout.getEntryPointCount()) | std::views::transform(get_entry_point);
   }
 
+  [[nodiscard]] auto* layout() const { return program->getLayout(); }
+
 private:
   code_type code {};
   program_type program;

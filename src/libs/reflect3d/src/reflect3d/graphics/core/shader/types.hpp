@@ -31,12 +31,14 @@ using Bytecode = mono::span<char const>;
 using Layout   = slang::ProgramLayout;
 
 enum class Stage : std::uint8_t {
-  vertex = 0,
-  fragment,
-  compute,
-  tessellation_control,
-  tessellation_evaluation,
-  geometry,
+  none                    = 0U,
+  vertex                  = 1U << 0,
+  fragment                = 1U << 1,
+  compute                 = 1U << 2,
+  tessellation_control    = 1U << 3,
+  tessellation_evaluation = 1U << 4,
+  geometry                = 1U << 5,
+  all                     = (1U << 0) | (1U << 1) | (1U << 2) | (1U << 3) | (1U << 4) | (1U << 5)
 };
 
 inline std::string entry_point_name(Stage const stage) {
