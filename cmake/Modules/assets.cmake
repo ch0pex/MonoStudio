@@ -1,5 +1,5 @@
-macro(add_target_assets_path TARGET_NAME)
-  set(ASSETS_ABSOLUTE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+macro(add_target_assets_path TARGET_NAME ASSETS_PATH)
+  set(ASSETS_ABSOLUTE_PATH "${ASSETS_PATH}")
 
   configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/src/assets_path.hpp.in"
