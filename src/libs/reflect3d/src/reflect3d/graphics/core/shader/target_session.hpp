@@ -25,6 +25,10 @@
 
 namespace rf3d::shader {
 
+// TODO: Conceptually this is incorrect having global session as a singleton is fine, but target sessions should be
+// created on demand. Rather than having one session per target, the user should be able to give a list of search
+// per compile call.
+
 namespace detail {
 
 template<ShaderTarget Target>
