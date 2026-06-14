@@ -35,7 +35,7 @@ core::ShaderModuleCreateInfo create_shader_module_info(std::ranges::contiguous_r
   auto const bytecode_size = bytecode.size() / sizeof(std::uint32_t);
   core::ShaderModuleCreateInfo const create_info {
     .codeSize = bytecode.size(),
-    .pCode    = mono::start_lifetime_as_array<std::uint32_t const>(bytecode.data(), bytecode_size),
+    .pCode    = mono::start_lifetime_as_array<std::uint32_t>(bytecode.data(), bytecode_size),
   };
 
   return create_info;

@@ -5,7 +5,7 @@ compiler=clang
 compiler.version=22
 compiler.cppstd=26
 compiler.cstd=gnu11
-compiler.libcxx=libstdc++11
+compiler.libcxx=libc++
 compiler.sanitizer=AddressUndefinedBehavior
 build_type=Debug
 [conf]

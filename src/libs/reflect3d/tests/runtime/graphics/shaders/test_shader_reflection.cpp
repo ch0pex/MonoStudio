@@ -12,6 +12,7 @@
 // --- Includes ---
 
 // --- Dependencies ---
+#include <mono/ranges/enumerate.hpp>
 #include <reflect3d/graphics/core/pso_descriptor.hpp>
 #include <reflect3d/graphics/core/pso_states.hpp>
 #include <reflect3d/graphics/core/shader/compiler.hpp>
@@ -60,7 +61,7 @@ TEST_CASE("Reflection exposes all global parameters with correct names") {
 
   auto parameters = program.parameters();
   CHECK(std::ranges::distance(parameters) == 6);
-  for (auto [idx, parameter]: parameters | std::views::enumerate) {
+  for (auto [idx, parameter]: parameters | mono::views::enumerate) {
     LOG_INFO("Parameter {}: name='{}', type='{}'", idx, parameter->getName(), parameter->getType()->getName());
     CHECK(std::string {parameter->getName()} == std::format("gParameter{}", idx));
   }
@@ -75,7 +76,7 @@ TEST_CASE("Reflection exposes all entry points with correct names and stages") {
 
   auto entry_points = program.entry_points();
   CHECK(std::ranges::distance(entry_points) == 2);
-  for (auto [idx, entry_point]: entry_points | std::views::enumerate) {
+  for (auto [idx, entry_point]: entry_points | mono::views::enumerate) {
     LOG_INFO("Entry point {}: name='{}'", idx, entry_point->getName());
     CHECK(
         std::string {entry_point->getName()} ==

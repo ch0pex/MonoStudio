@@ -10,7 +10,8 @@ runs:
         dnf -y update
         dnf -y install git xorg-x11-server-Xvfb xkeyboard-config-devel ccache \
                        gcc gcc-c++ clang python3-pip cmake ninja-build valgrind clang-tidy \
-                       texinfo libasan libubsan libubsan-static libasan-static compiler-rt
+                       texinfo libasan libubsan libubsan-static libasan-static compiler-rt \
+                       libcxx-devel libcxxabi-devel
 
     - name: Install Python dependencies
       shell: bash

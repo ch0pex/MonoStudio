@@ -207,11 +207,9 @@ public:
     return nullptr;
   }
 
-  [[nodiscard]] Semaphore const& present_semaphore() const noexcept {
-    return present_semaphores.at(frame_index().value());
-  }
+  [[nodiscard]] Semaphore const& present_semaphore() const { return present_semaphores.at(frame_index().value()); }
 
-  [[nodiscard]] Semaphore const& render_semaphore() const noexcept { //
+  [[nodiscard]] Semaphore const& render_semaphore() const { //
     return render_semaphores.at(current_image_index);
   }
 

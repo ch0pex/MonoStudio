@@ -26,7 +26,7 @@
 
 namespace rf3d::vk::detail {
 
-constexpr std::string error_message(core::Result const result) noexcept { // clang-format off
+constexpr std::string error_message(core::Result const result) { // clang-format off
   switch (result) {
     case core::Result::eSuccess:                                         return "Command successfully completed";
     case core::Result::eNotReady:                                        return "A fence or query has not yet completed";

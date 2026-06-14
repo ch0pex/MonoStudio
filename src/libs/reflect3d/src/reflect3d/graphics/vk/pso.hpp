@@ -11,6 +11,7 @@
 #pragma once
 
 // --- Includes ---
+#include <mono/ranges/enumerate.hpp>
 #include "reflect3d/graphics/core/pso_descriptor.hpp"
 #include "reflect3d/graphics/core/pso_states.hpp"
 #include "reflect3d/graphics/core/shader/reflection.hpp"
@@ -72,7 +73,7 @@ inline auto translate_vertex_bindings(mono::span<VertexBufferBinding const> cons
   std::vector<core::VertexInputAttributeDescription> attribute_descriptions;
 
   std::uint32_t location = 0;
-  for (auto [binding, vb]: vertex_bindings | std::views::enumerate) {
+  for (auto [binding, vb]: vertex_bindings | mono::views::enumerate) {
     binding_descriptions.push_back({
       .binding   = static_cast<std::uint32_t>(binding),
       .stride    = vb.byte_stride,
