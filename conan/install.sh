@@ -63,25 +63,26 @@ install_preset() {
         PROFILE="clang-22"
         BUILD_TYPE="RelWithDebInfo"
         ;;
+
     "Sanitize-clang")
         PROFILE="clang-22-sanitizer"
         BUILD_TYPE="Debug"
         ;;
 
     "Debug-msvc")
-        PROFILE="msvc-194"
+        PROFILE="msvc-195"
         BUILD_TYPE="Debug"
         ;;
     "Release-msvc")
-        PROFILE="msvc-194"
+        PROFILE="msvc-195"
         BUILD_TYPE="Release"
         ;;
     "RelWithDebInfo-msvc")
-        PROFILE="msvc-194"
+        PROFILE="msvc-195"
         BUILD_TYPE="RelWithDebInfo"
         ;;
     "Sanitize-msvc")
-        PROFILE="msvc-194"
+        PROFILE="msvc-195"
         BUILD_TYPE="Debug"
         ;;
 

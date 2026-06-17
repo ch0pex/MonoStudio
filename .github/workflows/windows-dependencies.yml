@@ -10,7 +10,7 @@ jobs:
   sync-windows:
     name: Windows (${{ matrix.preset }})
     if: ${{ !inputs.skip }}
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
