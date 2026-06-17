@@ -337,19 +337,23 @@ inline BindingType from_native(slang::BindingType slangType) {
   }
 }
 
+/**
+ * @brief Processes a Slang ParameterBlock and appends its bindings to the pipeline layout.
+ *
+ * Each Slang ParameterBlock maps to a DescriptorSet (Vulkan), DescriptorTable (DX12),
+ * Argument Buffer (Metal), or Binding Group (WebGPU).
+ *
+ * Inside every parameter block there are multiple things to consider:
+ * - A Uniform Buffer will be implicitly inserted in the first binding if any ordinary data is present.
+ * - Then the rest of the bindings are added.
+ * - ParameterBlocks might be nested, so to sort them properly iteration uses depth-first pre-ordering.
+ *
+ * @param element_layout The type layout of the element inside the ParameterBlock.
+ * @param stage The shader stage this block belongs to.
+ * @param layout The pipeline layout to append the new descriptor set and bindings to.
+ */
 inline void
 process_parameter_block(slang::TypeLayoutReflection* element_layout, shader::Stage stage, PipelineLayout& layout) {
-  // Each Slang ParameterBlock represents:
-  // - DescriptorSet in Vulkan
-  // - DescriptorTables in DX12
-  // - Argument Buffers in Metal
-  // - Binding Groups in WebGPU
-
-  // Inside every parameter block there are multiple things to consider
-  // - Uniforma Buffer will be implicitly inserted in the first binding if any
-  // - Then we will add the rest of the bindings
-  // - ParameterBlocks might be nested so to sort them properly iteration depth-frist pre-ordering needs to be used
-
   // We need to introduce and reserve some space for the current set
   std::size_t const set_index = layout.sets.size();
   layout.sets.emplace_back();
